@@ -1,17 +1,24 @@
 # To do
 
-## This week (due Wed 11/4)
+Format: `- [ ] task (owner, due date)`
 
-- [ ] Write the first README paragraph ("What we're making" / "Who it's for")
-- [ ] 3 interviews each, one file per interview in `notes/`
-  - [ ] Loudon (0/3)
+## Week 1
+
+- [ ] Everyone clones the repo and commits before leaving the room (all, Mon 11/2)
+- [ ] Write down how we're splitting the work (all, Mon 11/2)
+- [ ] Plan interviews: who, when, and what we want to find out (all, Mon 11/2)
+- [ ] First README paragraph: who we might design for and why (TBD, Wed 11/4)
+- [ ] Use and document 3 multiplayer things each in `audit.md`, to discuss in class (all, Wed 11/4)
+- [ ] 3 interviews each, 30–60 min, in person or on a call, no surveys. Record audio, then transcribe. Post notes in `notes/`. (due TBD)
   - [ ] Cami (0/3)
+  - [ ] Loudon (0/3)
   - [ ] Madi (0/3)
-- [ ] Multiplayer audit: 3 things that already bring people together, and why they work
-- [ ] Everyone has a commit in the log
+- [ ] Create the group Figma file and link it in the README (TBD)
 
 ## Backlog
 
-- [ ] Pick a first thing to test with real people
-- [ ] Decide how we count "people reached"
-- [ ] Plan a moment to get 5 people live at once
+- [ ] Choose who we're designing for
+- [ ] First testable prototype; test with real people every week
+- [ ] Decide how we count unique people reached
+- [ ] Plan the 5-people-live-at-once moment, and how we'll record it
+- [ ] Safety guardrails against destructive behavior

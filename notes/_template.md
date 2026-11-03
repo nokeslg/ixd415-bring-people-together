@@ -1,21 +1,25 @@
 # Interview: <first name or alias>
 
-Copy this file to `notes/YYYY-MM-DD-name.md`, one file per interview.
+Copy this file to `notes/YYYY-MM-DD-interviewer-name.md`, one file per interview. It doesn't need to be polished; just capture what happened.
 
 - **Date:**
 - **Interviewer:**
-- **Where / how:**
+- **In person or call:**
+- **Length:** (aim for 30–60 min)
+- **Recording / transcript:**
 
-## Who they are
+## Who they are, and what their days are like
 
-## How they get together with people now
+## Group activities and experiences they're already part of
 
-## What gets in the way
+## How they want to connect with people
+
+## What's getting in the way
 
 ## Quotes worth keeping
 
 >
 
-## What surprised us
+## Takeaways
 
-## Follow-ups
+## What surprised us
