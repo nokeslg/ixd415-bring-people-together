@@ -10,7 +10,7 @@ Format: `- [ ] task (owner, due date)`
 - [ ] First README paragraph each: who we might design for and why (all, Wed 11/4)
   - [x] Loudon
   - [ ] Cami
-  - [ ] Madi
+  - [x] Madi
 - [ ] Use and document 3 multiplayer things each in `audit.md`, to discuss in class (all, Wed 11/4)
 - [ ] 3 interviews each, 30–60 min, in person or on a call, no surveys. Record audio, then transcribe. Post notes in `notes/`. (due TBD)
   - [ ] Cami (0/3)

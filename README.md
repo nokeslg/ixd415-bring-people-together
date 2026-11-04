@@ -17,7 +17,7 @@ _TBD_
 
 ### Madi
 
-_TBD_
+I think our target audience will be college students with busy schedules, who have a hard time branching out and making friends, or keeping in contact with their current friends who have conflicting schedules. Something digital like a shared game or a calendar that forces you to spend time with each other could potentially solve these issues.
 
 ## What we're making
 
@@ -60,7 +60,7 @@ Design something that gets real people working in a product together, online and
 | --- | --- | --- |
 | Cami | | TBD |
 | Loudon | @nokeslg | TBD |
-| Madi | | TBD |
+| Madi | @lock-madi | TBD |
 
 ## House rules
 
