@@ -5,7 +5,19 @@ Team: Cami, Loudon, Madi.
 
 ## Who we might be designing for, and why
 
-_TBD (Week 1 homework). One paragraph about who we might be designing for and why. Rewrite this section whenever the project changes._
+Week 1 homework: one paragraph each. Rewrite this section whenever the project changes.
+
+### Loudon
+
+Upon getting the project brief, my immediate thought went to two different areas. One of these areas was a party game that could stay relevant for years to come. So many party games that I play tend to feel dated even a few years later because they fail to update and rely on meta humor. The second area was overall social connection and micro-event based interactions. Young adults seem to feel more lonely than ever and rather than direct people to events that already exist, I think that creating a platform to help organize small events in your area could be a fun way to meet people while bonding over something you're all passionate about. Either way, it seems that young adults are my main target audience simply because I think that I can relate to them and also because they are seemingly struggling the most in today's current world.
+
+### Cami
+
+_TBD_
+
+### Madi
+
+_TBD_
 
 ## What we're making
 
