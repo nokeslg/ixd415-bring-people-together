@@ -15,7 +15,7 @@ Format: `- [ ] task (owner, due date)`
 - [ ] 3 interviews each, 30–60 min, in person or on a call, no surveys. Record audio, then transcribe. Post notes in `notes/`. (due TBD)
   - [ ] Cami (0/3)
   - [ ] Loudon (0/3)
-  - [ ] Madi (0/3)
+  - [x] Madi (3/3)
 - [ ] Create the group Figma file and link it in the README (TBD)
 
 ## Backlog

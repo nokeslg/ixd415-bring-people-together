@@ -55,8 +55,36 @@ Interactive quiz platform where multiple people play at one time answering quest
 
 ## Madi
 
-1. **Thing:**
-   - What told me others were here:
-   - What told me others were watching:
-2. **Thing:**
-3. **Thing:**
+### 1. Microsoft Teams
+
+Workplace and school chat app with group chats, calls and shared channels
+
+**Multiplayer design choices:**
+
+- **Status indicators:** profile pictures with status dots show who is available
+- **Typing indicator:** shows when someone is writing a message
+- **Member count:** the group chat tab displays the number of members
+- **Group image:** new group chats show a combined profile image made of cropped member photos
+- **Messages and reactions:** members can post, respond and give feedback
+
+### 2. Roblox
+
+Online game platform where players join each other's games
+
+**Multiplayer design choices:**
+
+- **Add Friends tab:** makes it easy to connect with other players
+- **Avatars:** other players appear as characters within multiplayer games
+- **Player list:** pressing Tab in some games displays a list of other players
+- **Text and voice chat:** players can communicate during games
+
+### 3. Canva
+
+Design tool where several people can edit the same document or slideshow
+
+**Multiplayer design choices:**
+
+- **Collaborator avatars:** profile pictures at the top of the page show who is collaborating
+- **Per-page presence:** in multi-page documents or slideshows, profile pictures show who is working on each page
+- **Named cursors:** when editing the same page, names follow each person's cursor
+- **Selection outlines:** selected text boxes and graphics are outlined in a colored box to show who is editing them
