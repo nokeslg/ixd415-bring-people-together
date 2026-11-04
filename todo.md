@@ -14,7 +14,7 @@ Format: `- [ ] task (owner, due date)`
 - [ ] Use and document 3 multiplayer things each in `audit.md`, to discuss in class (all, Wed 11/4)
 - [ ] 3 interviews each, 30–60 min, in person or on a call, no surveys. Record audio, then transcribe. Post notes in `notes/`. (due TBD)
   - [ ] Cami (0/3)
-  - [ ] Loudon (0/3)
+  - [x] Loudon (3/3)
   - [x] Madi (3/3)
 - [ ] Create the group Figma file and link it in the README (TBD)
 
