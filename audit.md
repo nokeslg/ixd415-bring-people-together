@@ -4,11 +4,46 @@ Each of us uses and documents three different multiplayer things: a game, a shar
 
 ## Cami
 
-1. **Thing:**
-   - What told me others were here:
-   - What told me others were watching:
-2. **Thing:**
-3. **Thing:**
+### 1. RealTV Fantasy
+
+A fantasy league platform where you make predictions and compete with friends based on what happens on reality TV shows
+
+**Multiplayer design choices:**
+
+- **League members:** seeing other people's names and teams shows you who you're competing against
+- **Leaderboard:** Rankings and points lets you compare how well you're doing to other people
+- **Player profiles:** every player in your league has a profile and a team name
+- **Player count:** the amount of players in your league is displayed on the leaderboard
+- **Weekly score updates:** changing in standings after each episode shows players progress
+- **Shared deadlines:** everyone has the same deadline to make picks and predictions
+- **League chat:** a group conversation giving players a way to react to episodes discuss strategies, and interact directly
+
+### 2. Duolingo
+
+Language learning app that encourages people to stay consistent
+
+**Multiplayer design choices:**
+
+- **Leaderboards:** users are ranked against each other
+- **Friend streaks:** friends work together to maintain a shared streak
+- **Friend quests:** two friends work together toward a shared goal
+- **Pfp and usernames:** every user has a profile and a username
+- **Friend Activity:** shows friends accomplishments and allows you to celebrate their progress
+- **Reactions:** you can celebrate your friends achievements
+
+### 3. Kahoot
+
+Interactive quiz platform where multiple people play at one time answering questions and earning points
+
+**Multiplayer design choices:**
+
+- **Game pin:** users enter a pin to join the session
+- **Player nicknames:** every name appears in the lobby, showing who has joined
+- **Player count:** displays how many people are participating
+- **Live leaderboard:** shows who is currently at the top after each question
+- **Kahoot:** shows how many people selected each answer
+- **Countdown timer:** creates shared urgency
+- **Podium:** shows top 3 at the end
 
 ## Loudon
 
