@@ -231,3 +231,117 @@ All three mention shared activities as an important part of friendship, but the 
 - In multi-page documents or slideshows, profile pictures indicate who is working on each page.
 - When editing the same page, names follow each person's cursor.
 - Selected text boxes and graphics are outlined in a colored box to show who is editing them.
+
+---
+
+# First concept and user testing: The Skim
+
+- **Date:** 11/7
+- **Round:** 1
+
+The direction I chose is a Jackbox-style party game about the mob. Everyone at the table is part of the family, but a few players are secretly rats working with the cops. The laptop is the Boss: it talks, runs the game and shows everyone's progress. Each player joins on their own phone by scanning a QR code, so there's nothing to download.
+
+The game is four short minigames (jobs) in a row. Loyal players try to do each job well. Rats get secret tasks that quietly mess things up. After each job, the table talks it out and votes on who they think the rat is.
+
+I had Claude build a working prototype so I could test it with real people on their own phones.
+
+> These screenshots are recreated from the exact version my testers played in round 1, using made-up players. They weren't captured during the actual test.
+
+## Joining and roles
+
+<p>
+  <img src="images/madi/skim-join.png" width="260" alt="Phone join screen with a username field and a choice of mascots">
+  <img src="images/madi/skim-role-rat.png" width="260" alt="Rat role card listing a secret task for each job">
+  <img src="images/madi/skim-role-loyal.png" width="260" alt="Loyal role card listing what to do in each job">
+</p>
+
+Players pick a username and a mascot, then hit Ready to play. When the game starts, each phone flashes the player's role. Rats get a secret task for every job (for example, "Spell DOLLARS with one L" on the money). Loyal players get tips on what to look out for.
+
+## Job 1: Crime Scene Clean Up
+
+![Phone turned sideways, scrubbing blood off a checkered floor](images/madi/skim-cleanup-phone.png)
+
+Players turn their phones sideways and scrub the blood off the floor as fast as they can. Rats are supposed to leave at least a quarter of it behind.
+
+![Laptop showing each player's cleaning progress as a meter](images/madi/skim-cleanup-meters.png)
+
+The Boss screen shows everyone's progress as meters filling up, so the table can see who's slacking.
+
+## Voting
+
+![Laptop vote screen with vote counts and a computer player accusing someone](images/madi/skim-vote.png)
+
+After each job, everyone votes on their phone for who they think the rat is. Computer players can fill empty seats, and they chime in with their own accusations based on how people did.
+
+## Job 2: Money Painting
+
+![Phone turned sideways, painting a bill with a smiley face in the middle](images/madi/skim-money.png)
+
+Players paint a bill by hand from a prompt. Rats have to sneak a flaw onto theirs. Then every bill is shown side by side on the big screen.
+
+## Job 3: Getaway Car Driving
+
+![Phone turned sideways showing a red car driving down a road toward a police car](images/madi/skim-getaway.png)
+
+Players tilt their phone to steer and race to the hideout while dodging cop cars. Rats are supposed to crash into at least three of them and make it look like an accident.
+
+## Job 4: The Ransom Note
+
+![Laptop showing a ransom note with the players' words filled in](images/madi/skim-ransom-note.png)
+
+Players fill in Mad Libs-style blanks on their phones. The Boss reads every note out loud, and everyone votes for the best one. Rats have to slip a secret word into theirs.
+
+![Game over screen saying the family is safe, showing who was loyal and who was the rat](images/madi/skim-game-over.png)
+
+At the end, the Boss reveals who was loyal and who was the rat.
+
+## User feedback
+
+### What worked
+
+- People had fun from the start. Picking names and mascots got a lot of laughs and joking around.
+- The Getaway Car was the favorite. "This is really fun." The tilt steering worked well.
+- The Ransom Note got the biggest reactions. Hearing the Boss read the notes out loud, then voting for the best one, was a highlight.
+- Players liked that "each bill is different" in Money Painting.
+- People liked the look and the fonts.
+- The deduction worked at least once: a player caught a rat because she spelled DOLLARS with one L on her bill.
+
+### Pacing and clarity
+
+- **Everything was too fast.** There wasn't enough time to read the role card, so players started the game not knowing what they were supposed to do. One loyal player said they didn't know what was going on the whole time.
+- **Rat tasks only showed at the beginning.** Players forgot them, and one rat missed their secret word on the ransom note. They need a reminder before each job.
+- **The RAT! button confused people.** One player pressed it just because it was there. "Watch the cash pile" didn't make sense because there was no physical money pile at the table.
+- **Rats didn't feel powerful.** Their tasks only hurt their own score, not anyone else's game.
+- **The rat card gave the same tasks every time.** Two rats got the same money flaw, which made them easy to spot.
+- **Mad Libs needed help.** People asked "What's an adjective again?" They wanted a description for each blank, a dice button for a random word, and more time to write.
+- **Waiting was slow.** When everyone finishes early, the game should jump ahead instead of running out the clock.
+- **The Boss's voice** could be better, and it needs captions.
+
+### Minigames
+
+- **Turning the phone sideways didn't work well.** Rotating broke things, and the Safari bar at the top got in the way. Most games should stay upright.
+- **Crime Scene Clean Up froze** around 96 to 98 percent. Players couldn't reach the corners, and the I'm Done button didn't work.
+- **Money Painting:** the "put a famous building on it" prompt was confusing, and there was no vote for the best bill.
+- **Getaway Car:** you could drive in the grass the whole way with no penalty.
+
+### Technical issues
+
+- We had to stop in the middle of the game and restart or reconnect.
+- Rescanning the QR code led to a blank page.
+- Players kept duplicating after reloading their phones ("two Tunas, three Allys"), and there was no way to remove them.
+- Voting timed out.
+- The game crashed on an older iPad.
+- In full screen on a TV, the bottom of the page was cut off.
+
+## Changes for round 2
+
+- The role screen stays up until each player taps Got it, and a reminder of their task shows before every job.
+- Each rat gets a different flaw and a different secret word.
+- The RAT! button is gone. Rats now sabotage other players during a job (they can't hit the same person twice), and the victim's phone flashes. Everyone gets a Watch button with tips on what to look for.
+- Phones stay upright for every game except the Getaway Car.
+- Crime Scene Clean Up is rebuilt: lifting your finger no longer stops you, the edges are easier to reach, and the job finishes at 95 percent.
+- The Ransom Note has a hint for every blank, a dice button for a random word, and more time.
+- Players vote for the best bill and the best ransom note. The winner gets the Boss's protection from the next vote.
+- Driving in the grass slows the car down.
+- Players can rejoin with the same name, the host can remove extra players, and the game pauses if a player who still owes work drops out.
+- The game moves on as soon as everyone is done, and the Boss's voice has captions.
