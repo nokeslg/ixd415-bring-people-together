@@ -4,15 +4,15 @@ Updated every week. "Reached" means unique people who actually used or tested th
 
 | Goal | Target | Now |
 | --- | --- | --- |
-| Unique people reached | 100 (minimum) | 0 |
-| Most people in live interaction at the same time | 5 | 0 |
+| Unique people reached | 100 (minimum) | 5 |
+| Most people in live interaction at the same time | 5 | 1 |
 
 ## By week
 
 | Week | New people | Running total | Peak live at once | Where they came from | Evidence |
 | --- | --- | --- | --- | --- | --- |
 | 1 | 0 | 0 | 0 | | |
-| 2 | | | | | |
+| 2 | 5 | 5 | 1 | Loudon: one-on-one tests of Open Seat V1 | [notes](notes/Loudon_V1_User_Testing_Notes.md) |
 | 3 | | | | | |
 | 4 | | | | | |
 | 5 | | | | | |

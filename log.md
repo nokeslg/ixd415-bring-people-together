@@ -2,6 +2,21 @@
 
 Updated at least weekly. For each entry: what we tested, with whom, what happened, what surprised us. Newest at the top.
 
+## Week 2
+
+### Loudon: user testing Open Seat V1
+
+- **What I tested:** the first working prototype of Open Seat ([Loudon/Open_Seat_V1](Loudon/Open_Seat_V1/)), a live app for finding someone to have lunch or study with on campus. You can open a seat, join a table, Spin into a random table, or get a random group.
+- **With whom:** 5 people, one-on-one. Something came up with work, so I could only test with one person at a time.
+- **What happened:** two people opened their own seats and filled out the whole form. The other testers tried Spin, found no open seats, and switched to a random group, which couldn't form with only one person. People found the flow easy overall, liked emojis as anonymous profiles, and really liked the table chat.
+- **What surprised me:**
+  - A woman tester said she wouldn't feel safe being randomly put in a group of all men. People need a way to choose who they meet, like pronouns/gender.
+  - Testers wanted to know how they'd actually find the other person, and suggested maps/navigation.
+  - One tester asked if group searching would time out. I'm thinking of a 120 sec countdown, like Pokemon Go lobbies.
+  - The Lunch/Study switch and the "I'm here" button weren't obvious to everyone.
+- **Next:** test with several people at the same time so tables and groups actually fill. Bring these findings to crit, then build V2.
+- Full notes: [notes/Loudon_V1_User_Testing_Notes.md](notes/Loudon_V1_User_Testing_Notes.md)
+
 ## Week 1: Get out there and talk to people
 
 ### Session I: Kickoff
