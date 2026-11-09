@@ -82,3 +82,46 @@
 - A daily shared game with a group leaderboard that also works as an in-person party mode.
 - A way to keep party-game content fresh.
 - A cue that sparks spontaneous hangouts around the group chat people already use.
+
+# Sketches and concepts
+
+- **Date:** 11/4
+
+![Sketches 1](images/cami-sketches1.jpg)
+
+![Sketches 2](images/cami-sketches2.jpg)
+
+![Sketches 3](images/cami-sketches3.jpg)
+
+![Sketches 4](images/cami-sketches4.jpg)
+
+# First concept and user testing
+
+The direction I chose was to combine the concepts "same brain" and "who's most likely". I had Claude create me a very ugly prototype just to test the concept.
+
+For testing purposes, you can choose to play against bots (which are the Kardashians/Jenners), or you can choose to play with real people and pass the phone/laptop.
+
+![Game setup: custom prompts, heat, rounds and pregame mode](images/cami-prototype1.png)
+
+You can include your own questions to add to the rotation. You choose how extreme you want the questions to be, the amount of rounds you play, and whether or not you want to make it a drinking game.
+
+![Round results with group votes](images/cami-prototype2.png)
+
+You are able to answer questions as a group. There are multiple kinds of questions to be answered such as "who's most likely to" and "same brain".
+
+If the person most guessed has enough points, they can choose to reveal who selected them for the question.
+
+![Most picked result with anonymous votes](images/cami-prototype3.png)
+
+![Pass the phone screen](images/cami-prototype4.png)
+
+This is a visual for how the real life one works. Each round you have to pass the phone to whoever's turn it is.
+
+## User feedback
+
+- Overall, the feedback that I received is that there is just too much going on. Players were confused about what the overall purpose was.
+- The players understood the questions, but they didn't necessarily understand that they were competing against each other.
+- I think the point also got a little blurry. Some questions were asking something specific that got overlooked just a little bit.
+- Players also didn't realize they were on a timer, so there was no urgency.
+- I think overall, the lack of urgency and the unclear purpose made users a bit confused or disengaged.
+- I think if we go in this direction, we will have to figure out a way to make the concept more clear, the UI less busy, and overall appeal more enticing.
