@@ -87,13 +87,13 @@
 
 - **Date:** 11/4
 
-![Sketches 1](images/cami-sketches1.jpg)
+![Sketches 1](images/Cami/cami-sketches1.jpg)
 
-![Sketches 2](images/cami-sketches2.jpg)
+![Sketches 2](images/Cami/cami-sketches2.jpg)
 
-![Sketches 3](images/cami-sketches3.jpg)
+![Sketches 3](images/Cami/cami-sketches3.jpg)
 
-![Sketches 4](images/cami-sketches4.jpg)
+![Sketches 4](images/Cami/cami-sketches4.jpg)
 
 # First concept and user testing
 
@@ -101,19 +101,19 @@ The direction I chose was to combine the concepts "same brain" and "who's most l
 
 For testing purposes, you can choose to play against bots (which are the Kardashians/Jenners), or you can choose to play with real people and pass the phone/laptop.
 
-![Game setup: custom prompts, heat, rounds and pregame mode](images/cami-prototype1.png)
+![Game setup: custom prompts, heat, rounds and pregame mode](images/Cami/cami-prototype1.png)
 
 You can include your own questions to add to the rotation. You choose how extreme you want the questions to be, the amount of rounds you play, and whether or not you want to make it a drinking game.
 
-![Round results with group votes](images/cami-prototype2.png)
+![Round results with group votes](images/Cami/cami-prototype2.png)
 
 You are able to answer questions as a group. There are multiple kinds of questions to be answered such as "who's most likely to" and "same brain".
 
 If the person most guessed has enough points, they can choose to reveal who selected them for the question.
 
-![Most picked result with anonymous votes](images/cami-prototype3.png)
+![Most picked result with anonymous votes](images/Cami/cami-prototype3.png)
 
-![Pass the phone screen](images/cami-prototype4.png)
+![Pass the phone screen](images/Cami/cami-prototype4.png)
 
 This is a visual for how the real life one works. Each round you have to pass the phone to whoever's turn it is.
 
