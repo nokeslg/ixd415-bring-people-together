@@ -1,0 +1,15 @@
+{
+  "name": "open-seat",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "reset": "curl -s -X POST -H \"x-reset-key: $(cat .reset-key)\" https://open-seat.loudonnokes.workers.dev/parties/open-seat/lobby"
+  },
+  "dependencies": {
+    "partyserver": "0.5.10"
+  },
+  "devDependencies": {
+    "wrangler": "4.152.0"
+  }
+}

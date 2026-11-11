@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open Seat</title>
+<style>
+  :root {
+    --bg: #f6f4ef; --card: #fff; --ink: #1d1d1b; --muted: #6d6a63; --line: #e3dfd6;
+    --lunch: #e8572a; --study: #2a6be8; --go: #1f9d55;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #161614; --card: #22211e; --ink: #f1efe9; --muted: #a29e95; --line: #35332e; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.4 system-ui, -apple-system, sans-serif; }
+  main { max-width: 440px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 28px; margin: 8px 0 4px; }
+  h2 { font-size: 18px; margin: 20px 0 8px; }
+  .muted { color: var(--muted); font-size: 14px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin: 10px 0; }
+  button { font: inherit; border: 0; border-radius: 12px; padding: 12px 14px; cursor: pointer; background: var(--ink); color: var(--bg); font-weight: 600; }
+  button.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+  button.go { background: var(--go); color: #fff; }
+  button:disabled { opacity: .4; cursor: default; }
+  .row { display: flex; gap: 8px; align-items: center; }
+  .row > * { flex: 1; }
+  input, select { font: inherit; width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--ink); }
+  label { display: block; font-size: 14px; color: var(--muted); margin: 12px 0 4px; }
+  .live { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--go); animation: pulse 1.6s infinite; }
+  @keyframes pulse { 50% { opacity: .3; } }
+  .tag { display: inline-block; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; padding: 2px 8px; border-radius: 99px; color: #fff; }
+  .tag.lunch { background: var(--lunch); } .tag.study { background: var(--study); }
+  .seg { display: flex; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .seg button { flex: 1; border-radius: 0; background: transparent; color: var(--ink); font-weight: 500; }
+  .seg button.on { background: var(--ink); color: var(--bg); }
+  .chairs { font-size: 22px; letter-spacing: 2px; }
+  .emojis { display: flex; flex-wrap: wrap; gap: 6px; }
+  .emojis button { background: var(--card); border: 1px solid var(--line); font-size: 22px; padding: 6px 10px; }
+  .emojis button.on { border-color: var(--ink); border-width: 2px; }
+  .chat { max-height: 180px; overflow-y: auto; font-size: 14px; }
+  .chat p { margin: 4px 0; }
+  .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; max-width: 90vw; }
+  .hidden { display: none; }
+  .group-btn { width: 100%; margin-top: 8px; background: #7b4ce0; color: #fff; display: flex; justify-content: center; gap: 8px; align-items: baseline; }
+  .muted-on { font-weight: 400; font-size: 13px; opacity: .8; }
+  .banner { color: #fff; font-size: 26px; font-weight: 800; text-align: center; padding: 22px 12px; border-radius: 16px; margin-bottom: 14px; }
+  .banner small { display: block; font-size: 13px; font-weight: 500; opacity: .9; margin-top: 4px; }
+</style>
+</head>
+<body>
+<main id="app"></main>
+<div id="toast" class="toast hidden"></div>
+
+<script>
+const EMOJIS = ["🙂","😎","🐱","🐸","🌻","🎸","📚","🍕","☕","🦊","🌙","🎨"];
+// sessionStorage, so each browser tab can be a different person while testing.
+const store = { get: (k) => { try { return sessionStorage.getItem(k); } catch { return null; } },
+                set: (k, v) => { try { sessionStorage.setItem(k, v); } catch {} } };
+
+let uid = store.get("uid");
+let state = null;
+let view = "board";          // board | open
+let filter = "lunch";        // lunch | study
+let draft = { mode: "lunch", spot: "", minutes: 30, topic: "", hint: "", chairs: 5 };
+let pickedEmoji = store.get("emoji") || EMOJIS[0];
+let socket = null;
+
+const $ = (html) => { const t = document.createElement("template"); t.innerHTML = html.trim(); return t.content; };
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const minsLeft = (t) => Math.max(0, Math.ceil((t.endsAt - Date.now()) / 60000));
+
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg; el.classList.remove("hidden");
+  clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.add("hidden"), 2500);
+}
+
+function api(action, body = {}) {
+  if (socket?.readyState !== WebSocket.OPEN) return toast("Reconnecting…");
+  socket.send(JSON.stringify({ type: action, ...body }));
+}
+
+// One live PartyServer room ("lobby") for everyone. Reconnects on its own,
+// and says hello again so the room knows who this is.
+function connect() {
+  socket = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/parties/open-seat/lobby`);
+  socket.onopen = () => socket.send(JSON.stringify({ type: "hello", uid, name: store.get("name"), emoji: store.get("emoji") }));
+  socket.onmessage = (e) => {
+    const msg = JSON.parse(e.data);
+    if (msg.type === "error") return toast(msg.error);
+    state = msg;
+    liveRender();
+  };
+  socket.onclose = () => setTimeout(connect, 1000);
+}
+
+function myTable() { return state?.tables.find((t) => t.members.some((m) => m.id === uid)); }
+function myQueue() { return state && Object.keys(state.queues).find((m) => state.queues[m].some((e) => e.uid === uid)); }
+
+function render() {
+  const app = document.getElementById("app");
+  app.replaceChildren();
+  if (!uid) return app.append(joinView());
+  if (!state) return app.append($(`<p class="muted">Connecting…</p>`));
+  const t = myTable();
+  if (t) return app.append(tableView(t));
+  const q = myQueue();
+  if (q) return app.append(waitingView(q));
+  app.append(view === "open" ? openView() : view === "group" ? groupView() : boardView());
+}
+
+// ---------- Join ----------
+function joinView() {
+  const f = $(`
+    <h1>Open Seat</h1>
+    <p class="muted">Lunch or study with someone new, right now, somewhere public on campus.</p>
+    <div class="card">
+      <label for="name">First name</label>
+      <input id="name" maxlength="20" placeholder="Loudon" autocomplete="off">
+      <label>Pick an emoji (that's your whole profile)</label>
+      <div class="emojis">${EMOJIS.map((e) => `<button data-e="${e}" class="${e === pickedEmoji ? "on" : ""}">${e}</button>`).join("")}</div>
+      <p></p>
+      <button id="go" style="width:100%">Let's go</button>
+    </div>`);
+  f.querySelectorAll("[data-e]").forEach((b) => b.onclick = () => { pickedEmoji = b.dataset.e; const n = document.getElementById("name").value; render(); document.getElementById("name").value = n; });
+  f.getElementById("go").onclick = async () => {
+    const name = document.getElementById("name").value.trim();
+    if (!name) return toast("Add your first name");
+    uid = crypto.randomUUID().slice(0, 8);
+    store.set("uid", uid); store.set("name", name); store.set("emoji", pickedEmoji);
+    connect();
+    render();
+  };
+  return f;
+}
+
+// ---------- Board ----------
+function boardView() {
+  const open = state.tables.filter((t) => t.mode === filter && !t.group);
+  const seated = state.tables.reduce((n, t) => n + t.members.length, 0);
+  const waitingNow = state.queues[filter].length;
+  const f = $(`
+    <h1>Open Seat</h1>
+    <p class="live"><span class="dot"></span>${state.online.length} online · ${seated} in groups</p>
+    <p class="muted" style="margin:4px 0 0">Here now: ${state.online.map((p) => `${esc(p.emoji)} ${esc(p.name)}${p.id === uid ? " (you)" : ""}`).join(", ")}</p>
+    <div class="seg" style="margin:12px 0">
+      <button data-f="lunch" class="${filter === "lunch" ? "on" : ""}">🍕 Lunch</button>
+      <button data-f="study" class="${filter === "study" ? "on" : ""}">📚 Study</button>
+    </div>
+    <div class="row">
+      <button class="go" id="spin">🎲 Spin</button>
+      <button class="ghost" id="open">＋ Start a group</button>
+    </div>
+    <button class="group-btn" id="group">👥 Get a random group <span class="muted-on">${waitingNow} waiting</span></button>
+    <h2>Open ${filter} groups to join</h2>
+    <div id="list"></div>`);
+  f.querySelectorAll("[data-f]").forEach((b) => b.onclick = () => { filter = b.dataset.f; render(); });
+  f.getElementById("spin").onclick = () => api("spin", { mode: filter });
+  f.getElementById("open").onclick = () => { draft.mode = filter; view = "open"; render(); };
+  f.getElementById("group").onclick = () => { draft.mode = filter; view = "group"; render(); };
+  const list = f.getElementById("list");
+  if (!open.length) list.append($(`<p class="muted">Nobody has started a ${filter} group yet. Start one!</p>`));
+  for (const t of open) {
+    const full = t.members.length >= t.chairs;
+    const host = t.members.find((m) => m.id === t.hostId) || t.members[0];
+    const card = $(`
+      <div class="card">
+        <div class="row" style="justify-content:space-between">
+          <div style="flex:0"><span class="tag ${t.mode}">${t.mode}</span></div>
+          <div class="muted" style="text-align:right">${minsLeft(t)} min left</div>
+        </div>
+        <h2 style="margin:8px 0 2px">${esc(t.spot)}</h2>
+        <div class="muted">${esc(host.emoji)} ${esc(host.name)}'s group · ${esc(t.topic)}</div>
+        <div class="chairs" style="margin:8px 0">${t.members.map((m) => esc(m.emoji)).join("")}${"🪑".repeat(t.chairs - t.members.length)}</div>
+        <button ${full ? "disabled" : ""} style="width:100%">${full ? "Full" : "Join"}</button>
+      </div>`);
+    card.querySelector("button").onclick = () => api("join", { tableId: t.id });
+    list.append(card);
+  }
+  return f;
+}
+
+// ---------- Open a seat ----------
+function openView() {
+  if (!draft.spot) draft.spot = state.spots[0];
+  const f = $(`
+    <button class="ghost" id="back">← Back</button>
+    <h1>Start a ${draft.mode} group</h1>
+    <div class="card">
+      <label>What for?</label>
+      <div class="seg">
+        <button data-m="lunch" class="${draft.mode === "lunch" ? "on" : ""}">🍕 Lunch</button>
+        <button data-m="study" class="${draft.mode === "study" ? "on" : ""}">📚 Study</button>
+      </div>
+      <label>Where? (public spots only)</label>
+      <select id="spot">${state.spots.map((s) => `<option ${s === draft.spot ? "selected" : ""}>${esc(s)}</option>`).join("")}</select>
+      <label>How to find you</label>
+      <input id="hint" maxlength="80" placeholder="By the windows, green backpack" value="${esc(draft.hint)}">
+      <label>${draft.mode === "study" ? "Studying" : "Topic"} (optional)</label>
+      <input id="topic" maxlength="40" placeholder="${draft.mode === "study" ? "BIO 150, anything quiet…" : "anything, music, cats…"}" value="${esc(draft.topic)}">
+      <div class="row">
+        <div><label>For how long?</label>
+          <select id="minutes">${[30, 45, 60].map((m) => `<option value="${m}" ${m == draft.minutes ? "selected" : ""}>${m} min</option>`).join("")}</select></div>
+        <div><label>Group size</label>
+          <select id="chairs">${[2, 3, 4, 5].map((c) => `<option value="${c}" ${c == draft.chairs ? "selected" : ""}>${c} people</option>`).join("")}</select></div>
+      </div>
+      <p></p>
+      <button class="go" id="post" style="width:100%">Start my group</button>
+    </div>`);
+  const save = () => ["spot", "hint", "topic", "minutes", "chairs"].forEach((k) => draft[k] = document.getElementById(k).value);
+  f.getElementById("back").onclick = () => { view = "board"; render(); };
+  f.querySelectorAll("[data-m]").forEach((b) => b.onclick = () => { save(); draft.mode = b.dataset.m; render(); });
+  f.getElementById("post").onclick = async () => { save(); await api("open", draft); view = "board"; filter = draft.mode; render(); };
+  return f;
+}
+
+// ---------- Random group: setup ----------
+function groupView() {
+  const f = $(`
+    <button class="ghost" id="back">← Back</button>
+    <h1>Get a random group</h1>
+    <p class="muted">We'll put you with up to ${state.groupSize - 1} other people and pick a spot. Once ${state.groupMin}+ people have waited ${Math.round(state.groupWaitMs / 60000)} min, we start with whoever's there.</p>
+    <div class="card">
+      <label>What for?</label>
+      <div class="seg">
+        <button data-m="lunch" class="${draft.mode === "lunch" ? "on" : ""}">🍕 Lunch</button>
+        <button data-m="study" class="${draft.mode === "study" ? "on" : ""}">📚 Study</button>
+      </div>
+      <label for="gspot">Where would you like to meet?</label>
+      <select id="gspot"><option value="">Anywhere, surprise me</option>${state.spots.map((s) => `<option ${s === draft.gspot ? "selected" : ""}>${esc(s)}</option>`).join("")}</select>
+      <p></p>
+      <button class="go" id="find" style="width:100%">Find my group</button>
+    </div>`);
+  f.getElementById("back").onclick = () => { view = "board"; render(); };
+  f.querySelectorAll("[data-m]").forEach((b) => b.onclick = () => { draft.gspot = document.getElementById("gspot").value; draft.mode = b.dataset.m; render(); });
+  f.getElementById("find").onclick = async () => {
+    draft.gspot = document.getElementById("gspot").value;
+    view = "board";
+    await api("queue", { mode: draft.mode, spot: draft.gspot });
+    render();
+  };
+  return f;
+}
+
+// ---------- Random group: waiting ----------
+function waitingView(mode) {
+  const q = state.queues[mode];
+  const waitedMin = Math.floor((Date.now() - q[0].at) / 60000);
+  const slots = Array.from({ length: state.groupSize }, (_, i) => i < q.length ? (q[i].uid === uid ? esc(store.get("emoji") || "🙂") : "👤") : "⬜").join(" ");
+  const f = $(`
+    <span class="tag ${mode}">${mode}</span>
+    <h1>Finding your group…</h1>
+    <p class="live"><span class="dot"></span>${q.length} of ${state.groupSize} people found</p>
+    <div class="card" style="text-align:center">
+      <div class="chairs" style="font-size:32px">${slots}</div>
+      <p class="muted">${q.length >= state.groupMin
+        ? `Starting in under ${Math.max(1, Math.ceil(state.groupWaitMs / 60000) - waitedMin)} min, even if the group isn't full.`
+        : `Need ${state.groupMin - q.length} more to start. Names stay hidden until your group forms.`}</p>
+    </div>
+    <button class="ghost" id="cancel" style="width:100%">Cancel</button>`);
+  f.getElementById("cancel").onclick = () => api("unqueue");
+  return f;
+}
+
+// ---------- Table ----------
+function tableView(t) {
+  const meHere = t.members.find((m) => m.id === uid)?.here;
+  const waiting = t.members.length === 1 && !t.group;
+  const f = $(`
+    ${t.group ? `<div class="banner" style="background:${t.group.hex}">👥 ${esc(t.group.name)} group<small>Hold up your screen so your group can spot you</small></div>` : ""}
+    <span class="tag ${t.mode}">${t.mode}</span>
+    <h1>${esc(t.spot)}</h1>
+    <p class="muted">${t.hint ? "📍 " + esc(t.hint) + " · " : ""}${esc(t.topic)} · <b id="left">${minsLeft(t)}</b> min left</p>
+    <div class="card">
+      <b>${waiting ? "Waiting for someone to sit down…" : "At this table"}</b>
+      ${t.members.map((m) => `<div class="row" style="margin-top:8px"><span style="flex:0;font-size:24px">${esc(m.emoji)}</span><span>${esc(m.name)}${m.id === t.hostId && !t.group ? " <span class='muted'>(host)</span>" : ""}${m.id === uid ? " <span class='muted'>(you)</span>" : ""}</span><span style="flex:0;white-space:nowrap" class="muted">${m.here ? "✅ here" : "on the way"}</span></div>`).join("")}
+      <div class="chairs" style="margin-top:8px">${"🪑".repeat(t.chairs - t.members.length)}</div>
+    </div>
+    <div class="row">
+      <button class="go" id="here" ${meHere ? "disabled" : ""}>${meHere ? "✅ You're here" : "I'm here"}</button>
+      <button class="ghost" id="leave">Leave</button>
+    </div>
+    <h2>Table chat</h2>
+    <div class="card">
+      <div class="chat" id="chat">${t.chat.length ? t.chat.map((c) => `<p><b>${esc(c.emoji)} ${esc(c.name)}:</b> ${esc(c.text)}</p>`).join("") : `<p class="muted">"Running 5 min late," "I'm in the red hoodie"…</p>`}</div>
+      <form class="row" id="send" style="margin-top:8px"><input id="msg" maxlength="200" placeholder="Say something" autocomplete="off"><button style="flex:0">Send</button></form>
+    </div>`);
+  f.getElementById("here").onclick = () => api("checkin");
+  f.getElementById("leave").onclick = () => api("leave");
+  f.getElementById("send").onsubmit = (e) => { e.preventDefault(); const i = document.getElementById("msg"); if (i.value.trim()) api("chat", { text: i.value }); i.value = ""; };
+  requestAnimationFrame(() => { const c = document.getElementById("chat"); if (c) c.scrollTop = c.scrollHeight; });
+  return f;
+}
+
+// Live updates re-render the page, so don't wipe the Open a seat form,
+// and keep a half-typed chat message.
+function liveRender() {
+  if ((view === "open" || view === "group") && !myTable() && !myQueue()) return;
+  const msg = document.getElementById("msg");
+  const typed = msg && msg.value, focused = msg && document.activeElement === msg;
+  render();
+  const m2 = document.getElementById("msg");
+  if (m2 && typed) m2.value = typed;
+  if (m2 && focused) m2.focus();
+}
+
+setInterval(() => { if (uid && state) liveRender(); }, 15000);
+if (uid) connect();
+render();
+</script>
+</body>
+</html>
