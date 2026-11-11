@@ -1,6 +1,6 @@
 # Tablemates: PartyServer proof of concept
 
-**Live multiplayer link:** _add after `npm run deploy`_
+**Live multiplayer link: https://tablemates.madi-ixd-bpt.workers.dev**
 
 A live group lobby for meeting people on campus for lunch or studying. Everyone waits together on a shared 2-minute countdown, and the app puts people who are open to each other into a small group with a place to meet.
 

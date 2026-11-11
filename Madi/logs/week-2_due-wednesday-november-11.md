@@ -6,7 +6,7 @@
 
 **Tablemates**, a live group lobby for finding people to eat lunch or study with on campus. Built with PartyServer (PartyKit's successor) on Cloudflare.
 
-- **Live link:** _TBD_
+- **Live link:** https://tablemates.madi-ixd-bpt.workers.dev
 - **Code:** [Madi/tablemates](../tablemates/)
 
 How it works:
@@ -30,5 +30,4 @@ How it works:
 
 ## Next
 
-- Deploy and add the live link.
 - Get 4+ people on it at the same time and see if groups form the way they should.
