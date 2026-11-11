@@ -86,3 +86,6 @@ h2 { margin: 0; }
 .checks input { width: 18px; height: 18px; accent-color: var(--accent); margin: 0; padding: 0; }
 .hint { color: var(--muted); font-size: 13px; margin: 0; }
 .hint.warn { color: var(--accent); font-weight: 600; }
+.seg.three { grid-template-columns: 1fr 1fr 1fr; }
+select { font: inherit; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; width: 100%; }
+select.warn { border: 2px solid var(--accent); }

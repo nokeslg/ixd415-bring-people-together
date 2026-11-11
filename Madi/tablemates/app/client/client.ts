@@ -22,6 +22,7 @@ document.querySelectorAll<HTMLElement>(".seg").forEach((seg) => {
     seg.querySelectorAll("button").forEach((x) => x.classList.remove("on"));
     b.classList.add("on");
     choice[seg.dataset.name!] = b.dataset.v!;
+    if (seg.dataset.name === "mode") $("hobbyBox").classList.toggle("hidden", b.dataset.v !== "hobby");
   });
 });
 
@@ -57,8 +58,21 @@ $("join").onclick = () => {
     ($("note") as HTMLInputElement).placeholder = "Add a quick note so your group can find you";
     return;
   }
-  const room = choice.mode;
-  $("roomLabel").textContent = choice.mode === "lunch" ? "🍜 Lunch lobby" : "📚 Study lobby";
+  // Each hobby gets its own lobby, so you're only grouped with people into the same thing.
+  const hobbySel = $("hobby") as HTMLSelectElement;
+  if (choice.mode === "hobby" && !hobbySel.value) {
+    hobbySel.classList.add("warn");
+    hobbySel.focus();
+    return;
+  }
+  hobbySel.classList.remove("warn");
+  const room = choice.mode === "hobby" ? `hobby-${hobbySel.value}` : choice.mode;
+  $("roomLabel").textContent =
+    choice.mode === "lunch"
+      ? "🍜 Lunch lobby"
+      : choice.mode === "study"
+        ? "📚 Study lobby"
+        : `Hobby lobby · ${hobbySel.selectedOptions[0].text}`;
 
   socket?.close();
   socket = new PartySocket({ host: location.host, party: "lobby", room });

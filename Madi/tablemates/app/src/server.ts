@@ -2,7 +2,7 @@ import { routePartykitRequest, Server, type Connection } from "partyserver";
 
 type Env = { Lobby: DurableObjectNamespace<Lobby>; ASSETS: Fetcher };
 
-// Tablemates: one PartyServer room = one lobby ("lunch" or "study").
+// Tablemates: one PartyServer room = one lobby ("lunch", "study", or "hobby-<interest>").
 // People wait together on a shared 120s countdown. Everyone says what they are
 // and who they're open to being grouped with; a group only forms between people
 // who are ALL open to each other. Once grouped, everyone sees each other's

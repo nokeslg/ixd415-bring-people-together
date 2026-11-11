@@ -16,9 +16,25 @@
       <!-- 1. setup -->
       <section id="setup" class="card">
         <label class="q">What are you looking for?</label>
-        <div class="seg" data-name="mode">
+        <div class="seg three" data-name="mode">
           <button data-v="lunch" class="on">🍜 Lunch</button>
           <button data-v="study">📚 Study</button>
+          <button data-v="hobby">🎨 Hobby</button>
+        </div>
+
+        <div id="hobbyBox" class="hidden">
+          <label class="q" for="hobby">What are you into?</label>
+          <select id="hobby">
+            <option value="">Pick one…</option>
+            <option value="artsy">🎨 Artsy</option>
+            <option value="athletic">🏀 Athletic</option>
+            <option value="music">🎸 Music</option>
+            <option value="gaming">🎮 Gaming</option>
+            <option value="outdoors">🌲 Outdoors</option>
+            <option value="books">📖 Books &amp; writing</option>
+            <option value="food">🍳 Cooking &amp; food</option>
+            <option value="tech">💻 Tech &amp; making</option>
+          </select>
         </div>
 
         <label class="q">I am a…</label>

@@ -7,7 +7,7 @@ A live group lobby for meeting people on campus for lunch or studying. Everyone 
 Log: [Week 2 (due Wednesday, November 11)](../logs/week-2_due-wednesday-november-11.md)
 
 ## How it works
-1. Pick **Lunch** or **Study**, what you are (woman, man, nonbinary, or prefer not to say), and who you're open to being grouped with.
+1. Pick **Lunch**, **Study**, or **Hobby** (then choose an interest like artsy or athletic; each interest has its own lobby), what you are (woman, man, nonbinary, or prefer not to say), and who you're open to being grouped with.
 2. Pick an emoji and write a short "how to spot me" note (e.g. green hoodie, red backpack).
 3. Join the lobby. Everyone sees the same 120-second countdown and who's waiting, plus how many of them could join *your* group.
 4. A group forms as soon as 4 people are all open to each other, or when the timer ends (2+ people). If nobody matches, you can keep waiting or leave.
@@ -20,7 +20,7 @@ Log: [Week 2 (due Wednesday, November 11)](../logs/week-2_due-wednesday-november
 - The pickiest people (fewest possible matches) are grouped first, so nobody is left out when a match exists.
 
 ## Stack
-- PartyServer (PartyKit's successor) on Cloudflare Workers, one room per lobby (`lunch`, `study`), plain HTML/CSS, TypeScript client
+- PartyServer (PartyKit's successor) on Cloudflare Workers, one room per lobby (`lunch`, `study`, `hobby-artsy`, …), plain HTML/CSS, TypeScript client
 - Hosted PartyKit shut down on Oct 23, 2026, so this deploys to Cloudflare instead
 - Lobbies live in memory, so they reset when everyone leaves.
 
