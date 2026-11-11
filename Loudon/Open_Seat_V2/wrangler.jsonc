@@ -1,0 +1,11 @@
+{
+  "name": "open-seat",
+  "main": "src/server.js",
+  "compatibility_date": "2025-10-01",
+  // The app's pages. Anything that isn't a file here goes to the server.
+  "assets": { "directory": "./public" },
+  "durable_objects": {
+    "bindings": [{ "name": "OpenSeat", "class_name": "OpenSeat" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["OpenSeat"] }]
+}

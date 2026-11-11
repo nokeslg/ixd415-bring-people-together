@@ -82,10 +82,10 @@ function api(action, body = {}) {
   socket.send(JSON.stringify({ type: action, ...body }));
 }
 
-// One live PartyKit room ("lobby") for everyone. Reconnects on its own,
+// One live PartyServer room ("lobby") for everyone. Reconnects on its own,
 // and says hello again so the room knows who this is.
 function connect() {
-  socket = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/party/lobby`);
+  socket = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/parties/open-seat/lobby`);
   socket.onopen = () => socket.send(JSON.stringify({ type: "hello", uid, name: store.get("name"), emoji: store.get("emoji") }));
   socket.onmessage = (e) => {
     const msg = JSON.parse(e.data);

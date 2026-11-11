@@ -1,6 +1,9 @@
-// Open Seat on PartyKit. Same rules as V1, but everyone connects to one
-// live "lobby" room over WebSockets, and it runs in the cloud.
+// Open Seat on PartyServer (PartyKit's open-source successor, running on
+// Cloudflare). Same rules as V1, but everyone connects to one live "lobby"
+// room over WebSockets, and it runs in the cloud.
 // Everything lives in the room's memory: if the room restarts, it's wiped.
+
+import { Server, routePartykitRequest } from "partyserver";
 
 const SPOTS = [
   "Kansas Union",
@@ -31,9 +34,8 @@ const GROUP_COLORS = [
 const id = () => crypto.randomUUID().slice(0, 8);
 const clip = (s, n) => String(s ?? "").trim().slice(0, n);
 
-export default class OpenSeat {
-  constructor(room) {
-    this.room = room;
+export class OpenSeat extends Server {
+  onStart() {
     this.users = new Map(); // uid -> { id, name, emoji, tableId }
     this.tables = new Map(); // id -> table
     this.queues = { lunch: [], study: [] }; // [{ uid, spot, at }] waiting for a random group
@@ -51,7 +53,7 @@ export default class OpenSeat {
           changed = true;
         }
       }
-      if (changed) this.broadcast();
+      if (changed) this.sync();
     }, 5000);
   }
 
@@ -92,9 +94,10 @@ export default class OpenSeat {
     };
   }
 
-  broadcast() {
+  // Send everyone the latest state.
+  sync() {
     this.stats.peakOnline = Math.max(this.stats.peakOnline, this.online().size);
-    this.room.broadcast(JSON.stringify(this.snapshot()));
+    this.broadcast(JSON.stringify(this.snapshot()));
   }
 
   leaveTable(u) {
@@ -226,7 +229,7 @@ export default class OpenSeat {
     },
   };
 
-  onMessage(raw, conn) {
+  onMessage(conn, raw) {
     let b;
     try { b = JSON.parse(raw); } catch { return; }
 
@@ -241,7 +244,7 @@ export default class OpenSeat {
       this.users.set(uid, u);
       this.stats.uniqueUsers.add(uid);
       this.conns.set(conn.id, uid);
-      return this.broadcast();
+      return this.sync();
     }
 
     const u = this.users.get(this.conns.get(conn.id));
@@ -249,15 +252,15 @@ export default class OpenSeat {
     if (!u || !action) return;
     const result = action(u, b) || {};
     if (result.error) conn.send(JSON.stringify({ type: "error", error: result.error }));
-    this.broadcast();
+    this.sync();
   }
 
   onClose(conn) {
     this.conns.delete(conn.id);
-    this.broadcast();
+    this.sync();
   }
 
-  // GET /party/lobby: numbers for numbers.md.
+  // GET /parties/open-seat/lobby: numbers for numbers.md.
   onRequest() {
     return Response.json({
       uniquePeople: this.stats.uniqueUsers.size,
@@ -270,3 +273,9 @@ export default class OpenSeat {
     });
   }
 }
+
+export default {
+  async fetch(request, env) {
+    return (await routePartykitRequest(request, env)) || new Response("Not found", { status: 404 });
+  },
+};
