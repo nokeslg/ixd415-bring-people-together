@@ -1,0 +1,6 @@
+{
+  "name": "open-seat",
+  "main": "src/server.js",
+  "compatibilityDate": "2025-05-01",
+  "serve": "public"
+}
