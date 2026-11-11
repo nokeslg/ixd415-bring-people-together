@@ -63,7 +63,7 @@ let uid = store.get("uid");
 let state = null;
 let view = "board";          // board | open
 let filter = "lunch";        // lunch | study
-let draft = { mode: "lunch", spot: "", minutes: 30, topic: "", hint: "", chairs: 4 };
+let draft = { mode: "lunch", spot: "", minutes: 30, topic: "", hint: "", chairs: 5 };
 let pickedEmoji = store.get("emoji") || EMOJIS[0];
 let socket = null;
 
@@ -143,32 +143,25 @@ function boardView() {
   const waitingNow = state.queues[filter].length;
   const f = $(`
     <h1>Open Seat</h1>
-    <p class="live"><span class="dot"></span>${state.online.length} online · ${seated} at tables</p>
+    <p class="live"><span class="dot"></span>${state.online.length} online · ${seated} in groups</p>
+    <p class="muted" style="margin:4px 0 0">Here now: ${state.online.map((p) => `${esc(p.emoji)} ${esc(p.name)}${p.id === uid ? " (you)" : ""}`).join(", ")}</p>
     <div class="seg" style="margin:12px 0">
       <button data-f="lunch" class="${filter === "lunch" ? "on" : ""}">🍕 Lunch</button>
       <button data-f="study" class="${filter === "study" ? "on" : ""}">📚 Study</button>
     </div>
     <div class="row">
       <button class="go" id="spin">🎲 Spin</button>
-      <button class="ghost" id="open">＋ Open a seat</button>
+      <button class="ghost" id="open">＋ Start a group</button>
     </div>
     <button class="group-btn" id="group">👥 Get a random group <span class="muted-on">${waitingNow} waiting</span></button>
-    <h2>Lobby chat</h2>
-    <div class="card">
-      <div class="muted">Here now: ${state.online.map((p) => `${esc(p.emoji)} ${esc(p.name)}${p.id === uid ? " (you)" : ""}`).join(", ")}</div>
-      <div class="chat" id="chat" style="margin-top:8px">${state.lobbyChat.length ? state.lobbyChat.map((c) => `<p><b>${esc(c.emoji)} ${esc(c.name)}:</b> ${esc(c.text)}</p>`).join("") : `<p class="muted">Say hi to everyone who's on right now.</p>`}</div>
-      <form class="row" id="send" style="margin-top:8px"><input id="msg" maxlength="200" placeholder="Say hi" autocomplete="off"><button style="flex:0">Send</button></form>
-    </div>
-    <h2>Open seats right now</h2>
+    <h2>Open ${filter} groups to join</h2>
     <div id="list"></div>`);
-  f.getElementById("send").onsubmit = (e) => { e.preventDefault(); const i = document.getElementById("msg"); if (i.value.trim()) api("say", { text: i.value }); i.value = ""; };
-  requestAnimationFrame(() => { const c = document.getElementById("chat"); if (c) c.scrollTop = c.scrollHeight; });
   f.querySelectorAll("[data-f]").forEach((b) => b.onclick = () => { filter = b.dataset.f; render(); });
   f.getElementById("spin").onclick = () => api("spin", { mode: filter });
   f.getElementById("open").onclick = () => { draft.mode = filter; view = "open"; render(); };
   f.getElementById("group").onclick = () => { draft.mode = filter; view = "group"; render(); };
   const list = f.getElementById("list");
-  if (!open.length) list.append($(`<p class="muted">Nobody has an open ${filter} seat yet. Be the first.</p>`));
+  if (!open.length) list.append($(`<p class="muted">Nobody has started a ${filter} group yet. Start one!</p>`));
   for (const t of open) {
     const full = t.members.length >= t.chairs;
     const host = t.members.find((m) => m.id === t.hostId) || t.members[0];
@@ -179,9 +172,9 @@ function boardView() {
           <div class="muted" style="text-align:right">${minsLeft(t)} min left</div>
         </div>
         <h2 style="margin:8px 0 2px">${esc(t.spot)}</h2>
-        <div class="muted">${esc(host.emoji)} ${esc(host.name)}'s table · ${esc(t.topic)}</div>
+        <div class="muted">${esc(host.emoji)} ${esc(host.name)}'s group · ${esc(t.topic)}</div>
         <div class="chairs" style="margin:8px 0">${t.members.map((m) => esc(m.emoji)).join("")}${"🪑".repeat(t.chairs - t.members.length)}</div>
-        <button ${full ? "disabled" : ""} style="width:100%">${full ? "Full" : "Sit here"}</button>
+        <button ${full ? "disabled" : ""} style="width:100%">${full ? "Full" : "Join"}</button>
       </div>`);
     card.querySelector("button").onclick = () => api("join", { tableId: t.id });
     list.append(card);
@@ -194,7 +187,7 @@ function openView() {
   if (!draft.spot) draft.spot = state.spots[0];
   const f = $(`
     <button class="ghost" id="back">← Back</button>
-    <h1>Open a seat</h1>
+    <h1>Start a ${draft.mode} group</h1>
     <div class="card">
       <label>What for?</label>
       <div class="seg">
@@ -210,11 +203,11 @@ function openView() {
       <div class="row">
         <div><label>For how long?</label>
           <select id="minutes">${[30, 45, 60].map((m) => `<option value="${m}" ${m == draft.minutes ? "selected" : ""}>${m} min</option>`).join("")}</select></div>
-        <div><label>Table size</label>
+        <div><label>Group size</label>
           <select id="chairs">${[2, 3, 4, 5].map((c) => `<option value="${c}" ${c == draft.chairs ? "selected" : ""}>${c} people</option>`).join("")}</select></div>
       </div>
       <p></p>
-      <button class="go" id="post" style="width:100%">Open my seat</button>
+      <button class="go" id="post" style="width:100%">Start my group</button>
     </div>`);
   const save = () => ["spot", "hint", "topic", "minutes", "chairs"].forEach((k) => draft[k] = document.getElementById(k).value);
   f.getElementById("back").onclick = () => { view = "board"; render(); };

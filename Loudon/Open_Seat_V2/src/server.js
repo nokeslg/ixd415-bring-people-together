@@ -39,7 +39,6 @@ export class OpenSeat extends Server {
     this.users = new Map(); // uid -> { id, name, emoji, tableId }
     this.tables = new Map(); // id -> table
     this.queues = { lunch: [], study: [] }; // [{ uid, spot, at }] waiting for a random group
-    this.lobbyChat = []; // everyone online can see this, to prove who's here
     this.conns = new Map(); // connection id -> uid
     this.stats = { uniqueUsers: new Set(), peakOnline: 0, peakTable: 0, tablesOpened: 0, meetups: 0, groupsFormed: 0 };
 
@@ -74,7 +73,6 @@ export class OpenSeat extends Server {
       groupSize: GROUP_SIZE,
       groupMin: GROUP_MIN,
       groupWaitMs: GROUP_WAIT_MS,
-      lobbyChat: this.lobbyChat.slice(-50),
       queues: Object.fromEntries(
         Object.entries(this.queues).map(([mode, q]) => [mode, q.map((e) => ({ uid: e.uid, at: e.at }))])
       ),
@@ -176,7 +174,7 @@ export class OpenSeat extends Server {
         spot,
         topic: clip(b.topic, 40) || "anything",
         hint: clip(b.hint, 80),
-        chairs: Math.min(MAX_CHAIRS, Math.max(2, Number(b.chairs) || 4)),
+        chairs: Math.min(MAX_CHAIRS, Math.max(2, Number(b.chairs) || 5)),
         endsAt: Date.now() + minutes * 60_000,
         members: [],
         checkedIn: new Set(),
@@ -208,11 +206,6 @@ export class OpenSeat extends Server {
       const t = this.tables.get(u.tableId);
       const text = clip(b.text, 200);
       if (t && text) t.chat.push({ name: u.name, emoji: u.emoji, text, at: Date.now() });
-    },
-    say: (u, b) => {
-      const text = clip(b.text, 200);
-      if (text) this.lobbyChat.push({ name: u.name, emoji: u.emoji, text, at: Date.now() });
-      if (this.lobbyChat.length > 200) this.lobbyChat.splice(0, 100);
     },
     leave: (u) => {
       this.leaveTable(u);
