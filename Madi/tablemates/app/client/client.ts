@@ -1,6 +1,5 @@
 import PartySocket from "partysocket";
 
-declare const PARTYKIT_HOST: string; // injected by PartyKit at build time
 
 const $ = (id: string) => document.getElementById(id)!;
 const EMOJIS = ["🦊", "🐸", "🐼", "🦉", "🐙", "🌵", "🍄", "🌻", "🚀", "🎧", "🧃", "🐢"];
@@ -62,7 +61,7 @@ $("join").onclick = () => {
   $("roomLabel").textContent = choice.mode === "lunch" ? "🍜 Lunch lobby" : "📚 Study lobby";
 
   socket?.close();
-  socket = new PartySocket({ host: PARTYKIT_HOST, room });
+  socket = new PartySocket({ host: location.host, party: "lobby", room });
   socket.addEventListener("open", () => {
     socket!.send(
       JSON.stringify({

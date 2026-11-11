@@ -1,6 +1,6 @@
-# Tablemates: PartyKit proof of concept
+# Tablemates: PartyServer proof of concept
 
-**Live multiplayer link:** _add after `npx partykit deploy`_
+**Live multiplayer link:** _add after `npm run deploy`_
 
 A live group lobby for meeting people on campus for lunch or studying. Everyone waits together on a shared 2-minute countdown, and the app puts people who are open to each other into a small group with a place to meet.
 
@@ -20,7 +20,8 @@ Log: [Week 2 (due Wednesday, November 11)](../logs/week-2_due-wednesday-november
 - The pickiest people (fewest possible matches) are grouped first, so nobody is left out when a match exists.
 
 ## Stack
-- PartyKit (one room per lobby: `lunch`, `study`), plain HTML/CSS, TypeScript client
+- PartyServer (PartyKit's successor) on Cloudflare Workers, one room per lobby (`lunch`, `study`), plain HTML/CSS, TypeScript client
+- Hosted PartyKit shut down on Oct 23, 2026, so this deploys to Cloudflare instead
 - Lobbies live in memory, so they reset when everyone leaves.
 
 ## Run locally
@@ -28,8 +29,10 @@ Log: [Week 2 (due Wednesday, November 11)](../logs/week-2_due-wednesday-november
     npm install
     npm run dev
 
-Open http://localhost:1999 in two windows to act as two people.
+Open http://localhost:8787 in two windows to act as two people.
 
 ## Deploy
     cd app
-    npx partykit deploy
+    npm run deploy
+
+The first deploy asks you to log in to Cloudflare (free account).

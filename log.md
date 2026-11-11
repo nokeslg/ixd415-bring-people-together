@@ -12,7 +12,7 @@ Updated at least weekly. For each entry: what we tested, with whom, what happene
 
 ### Madi: multiplayer proof of concept
 
-- **What I made:** Tablemates, a live group lobby built with PartyKit where people who are open to each other get grouped for lunch or studying.
+- **What I made:** Tablemates, a live group lobby built with PartyServer on Cloudflare where people who are open to each other get grouped for lunch or studying.
 - Full log: [Madi/logs/week-2_due-wednesday-november-11.md](Madi/logs/week-2_due-wednesday-november-11.md)
 - Code: [Madi/tablemates](Madi/tablemates/)
 

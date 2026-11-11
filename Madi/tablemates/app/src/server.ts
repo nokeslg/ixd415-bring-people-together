@@ -1,6 +1,8 @@
-import type * as Party from "partykit/server";
+import { routePartykitRequest, Server, type Connection } from "partyserver";
 
-// Tablemates: one PartyKit room = one lobby ("lunch" or "study").
+type Env = { Lobby: DurableObjectNamespace<Lobby>; ASSETS: Fetcher };
+
+// Tablemates: one PartyServer room = one lobby ("lunch" or "study").
 // People wait together on a shared 120s countdown. Everyone says what they are
 // and who they're open to being grouped with; a group only forms between people
 // who are ALL open to each other. Once grouped, everyone sees each other's
@@ -37,21 +39,20 @@ function accepts(a: Person, b: Person) {
 }
 const compatible = (a: Person, b: Person) => accepts(a, b) && accepts(b, a);
 
-export default class Lobby implements Party.Server {
+export class Lobby extends Server<Env> {
   waiting = new Map<string, Person>(); // insertion order = join order
   deadline: number | null = null;
   timer: ReturnType<typeof setTimeout> | null = null;
   groups = new Map<string, Group>();
   groupOf = new Map<string, string>();
 
-  constructor(readonly room: Party.Room) {}
-
-  onConnect(conn: Party.Connection) {
+  onConnect(conn: Connection) {
     conn.send(JSON.stringify({ type: "hello", you: conn.id }));
     conn.send(JSON.stringify(this.lobbyState(conn.id)));
   }
 
-  onMessage(raw: string, sender: Party.Connection) {
+  onMessage(sender: Connection, raw: string | ArrayBuffer) {
+    if (typeof raw !== "string" || raw.length > 1000) return;
     let msg: any;
     try {
       msg = JSON.parse(raw);
@@ -97,7 +98,7 @@ export default class Lobby implements Party.Server {
     if (msg.type === "leaveGroup") this.leaveGroup(sender.id);
   }
 
-  onClose(conn: Party.Connection) {
+  onClose(conn: Connection) {
     this.removeFromLobby(conn.id);
     this.leaveGroup(conn.id);
   }
@@ -157,7 +158,7 @@ export default class Lobby implements Party.Server {
       }
     }
     for (const id of this.waiting.keys()) {
-      this.room.getConnection(id)?.send(JSON.stringify({ type: "timeout" }));
+      this.getConnection(id)?.send(JSON.stringify({ type: "timeout" }));
     }
     this.broadcastLobby();
   }
@@ -208,13 +209,13 @@ export default class Lobby implements Party.Server {
       deadline: this.deadline,
       serverNow: Date.now(),
       groupsFormed: this.groups.size,
-      online: [...this.room.getConnections()].length,
+      online: [...this.getConnections()].length,
     };
   }
 
   // each person gets their own copy, because "matches" is personal
   broadcastLobby() {
-    for (const conn of this.room.getConnections()) {
+    for (const conn of this.getConnections()) {
       conn.send(JSON.stringify(this.lobbyState(conn.id)));
     }
   }
@@ -222,7 +223,7 @@ export default class Lobby implements Party.Server {
   // ---- groups ----
   sendGroup(g: Group) {
     const payload = JSON.stringify({ type: "group", group: g });
-    for (const m of g.members) this.room.getConnection(m.id)?.send(payload);
+    for (const m of g.members) this.getConnection(m.id)?.send(payload);
   }
 
   leaveGroup(id: string) {
@@ -235,9 +236,14 @@ export default class Lobby implements Party.Server {
     g.here = g.here.filter((h) => h !== id);
     if (g.members.length === 0) this.groups.delete(gid);
     else this.sendGroup(g);
-    this.room.getConnection(id)?.send(JSON.stringify({ type: "ungrouped" }));
+    this.getConnection(id)?.send(JSON.stringify({ type: "ungrouped" }));
     this.broadcastLobby();
   }
 }
 
-Lobby satisfies Party.Worker;
+export default {
+  async fetch(request: Request, env: Env) {
+    // WebSockets go to /parties/lobby/<lunch|study>; everything else is the web page.
+    return (await routePartykitRequest(request, env)) || env.ASSETS.fetch(request);
+  },
+} satisfies ExportedHandler<Env>;

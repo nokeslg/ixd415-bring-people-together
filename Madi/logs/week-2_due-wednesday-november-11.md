@@ -4,7 +4,7 @@
 
 ## What I made
 
-**Tablemates**, a live group lobby for finding people to eat lunch or study with on campus. Built with PartyKit.
+**Tablemates**, a live group lobby for finding people to eat lunch or study with on campus. Built with PartyServer (PartyKit's successor) on Cloudflare.
 
 - **Live link:** _TBD_
 - **Code:** [Madi/tablemates](../tablemates/)
