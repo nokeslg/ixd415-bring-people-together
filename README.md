@@ -13,7 +13,7 @@ Upon getting the project brief, my immediate thought went to two different areas
 
 ### Cami
 
-_TBD_
+I think we’ll end up designing for college students and young adults who want to meet more people their age or feel part of a stronger community. Many already want more connection, but busy schedules and the awkwardness of approaching strangers get in the way. Our platform would lower that barrier by making it easy to meet new people spontaneously.
 
 ### Madi
 
@@ -58,7 +58,7 @@ Design something that gets real people working in a product together, online and
 
 | Name | GitHub | Role / what we own |
 | --- | --- | --- |
-| Cami | | TBD |
+| Cami | @Camipewe | TBD |
 | Loudon | @nokeslg | TBD |
 | Madi | @lock-madi | TBD |
 
