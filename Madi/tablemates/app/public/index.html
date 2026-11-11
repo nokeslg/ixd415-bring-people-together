@@ -93,9 +93,60 @@
       <section id="group" class="card hidden">
         <h2>🎉 You've got a group</h2>
         <p class="spot">Meet at: <strong id="spot"></strong></p>
-        <ul class="members" id="members"></ul>
-        <button id="here" class="primary big">📍 I'm here</button>
-        <p class="tiny">Tap when you arrive. Your group will see it right away.</p>
+
+        <div class="map">
+          <svg id="map" viewBox="0 0 320 200" aria-label="Mock map of your group heading to the meeting spot">
+            <rect class="block" x="8" y="8" width="88" height="54" rx="6" />
+            <rect class="block park" x="112" y="8" width="96" height="54" rx="6" />
+            <rect class="block" x="224" y="8" width="88" height="54" rx="6" />
+            <rect class="block" x="8" y="78" width="88" height="44" rx="6" />
+            <rect class="block" x="224" y="78" width="88" height="44" rx="6" />
+            <rect class="block water" x="8" y="138" width="88" height="54" rx="6" />
+            <rect class="block" x="112" y="138" width="96" height="54" rx="6" />
+            <rect class="block park" x="224" y="138" width="88" height="54" rx="6" />
+            <g id="trails"></g>
+            <g class="dest" transform="translate(160 100)">
+              <circle r="20" class="dest-ring" />
+              <text y="8" text-anchor="middle" font-size="24">📍</text>
+            </g>
+            <g id="pins"></g>
+          </svg>
+          <span class="map-tag">mock map · not real location</span>
+        </div>
+
+        <div class="tabs" id="tabs">
+          <button data-tab="crew" class="on">👥 Crew</button>
+          <button data-tab="chat">💬 Chat <b id="unread" class="hidden"></b></button>
+          <button data-tab="plans">🗓️ Weekend</button>
+        </div>
+
+        <div id="tab-crew" class="tab">
+          <ul class="members" id="members"></ul>
+          <button id="here" class="primary big">📍 I'm here</button>
+          <p class="tiny">Tap when you arrive. Your group will see it right away.</p>
+        </div>
+
+        <div id="tab-chat" class="tab hidden">
+          <div class="chat" id="chat"><p class="empty">Say hi 👋 and figure out how you'll find each other.</p></div>
+          <form id="chatForm" class="chat-form" autocomplete="off">
+            <input id="chatInput" maxlength="280" placeholder="Message your group…" />
+            <button type="submit" class="send">Send</button>
+          </form>
+          <p class="tiny">Keep personal info (address, phone) to yourself until you've met.</p>
+        </div>
+
+        <div id="tab-plans" class="tab hidden">
+          <div id="plans" class="plans"><p class="empty">No plans yet. Got a spare ticket or an idea for the weekend? Post it 👇</p></div>
+          <form id="planForm" class="plan-form" autocomplete="off">
+            <input id="planTitle" maxlength="80" placeholder="e.g. Concert at the Granada, 1 spare ticket" />
+            <div class="plan-row">
+              <input id="planWhen" maxlength="40" placeholder="When? e.g. Sat 8pm" />
+              <label class="spots">Spots <input id="planSpots" type="number" min="1" max="10" value="1" /></label>
+            </div>
+            <button type="submit" class="post">➕ Post plan</button>
+          </form>
+        </div>
+
         <button id="leaveGroup" class="ghost">Leave group</button>
       </section>
     </main>

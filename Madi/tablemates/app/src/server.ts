@@ -29,7 +29,20 @@ type Person = {
   wants: string[]; // subset of GENDERS
 };
 type PublicPerson = Pick<Person, "id" | "emoji" | "name" | "note">;
-type Group = { id: string; spot: string; members: PublicPerson[]; here: string[] };
+type ChatMsg = { id: string; from: string; text: string; at: number };
+type Plan = { id: string; by: string; title: string; when: string; spots: number; joined: string[] };
+type Group = {
+  id: string;
+  spot: string;
+  formedAt: number;
+  members: PublicPerson[];
+  here: string[];
+  chat: ChatMsg[];
+  plans: Plan[];
+};
+const MAX_CHAT = 200;
+const MAX_PLANS = 12;
+const clean = (v: unknown, max: number) => String(v ?? "").replace(/\s+/g, " ").trim().slice(0, max);
 
 // a accepts b if b's gender is one a checked.
 // "prefer not to say" is only matched with people open to everyone.
@@ -45,6 +58,7 @@ export class Lobby extends Server<Env> {
   timer: ReturnType<typeof setTimeout> | null = null;
   groups = new Map<string, Group>();
   groupOf = new Map<string, string>();
+  lastChat = new Map<string, number>(); // per-person rate limit
 
   onConnect(conn: Connection) {
     conn.send(JSON.stringify({ type: "hello", you: conn.id }));
@@ -96,6 +110,46 @@ export class Lobby extends Server<Env> {
     }
 
     if (msg.type === "leaveGroup") this.leaveGroup(sender.id);
+
+    // ---- group chat ----
+    if (msg.type === "chat") {
+      const g = this.groups.get(this.groupOf.get(sender.id) || "");
+      const text = clean(msg.text, 280);
+      const now = Date.now();
+      // guardrail: at most ~2 messages a second per person
+      if (!g || !text || now - (this.lastChat.get(sender.id) ?? 0) < 500) return;
+      this.lastChat.set(sender.id, now);
+      g.chat.push({ id: crypto.randomUUID().slice(0, 8), from: sender.id, text, at: now });
+      if (g.chat.length > MAX_CHAT) g.chat.shift();
+      this.sendGroup(g);
+    }
+
+    // ---- weekend plans ----
+    if (msg.type === "plan") {
+      const g = this.groups.get(this.groupOf.get(sender.id) || "");
+      const title = clean(msg.title, 80);
+      if (!g || !title || g.plans.length >= MAX_PLANS) return;
+      const spots = Math.max(1, Math.min(10, Math.floor(Number(msg.spots) || 1)));
+      g.plans.push({ id: crypto.randomUUID().slice(0, 8), by: sender.id, title, when: clean(msg.when, 40), spots, joined: [] });
+      this.sendGroup(g);
+    }
+
+    if (msg.type === "joinPlan") {
+      const g = this.groups.get(this.groupOf.get(sender.id) || "");
+      const plan = g?.plans.find((pl) => pl.id === msg.id);
+      if (!g || !plan || plan.by === sender.id) return;
+      if (plan.joined.includes(sender.id)) plan.joined = plan.joined.filter((j) => j !== sender.id); // tap again to drop out
+      else if (plan.joined.length < plan.spots) plan.joined.push(sender.id);
+      else return;
+      this.sendGroup(g);
+    }
+
+    if (msg.type === "deletePlan") {
+      const g = this.groups.get(this.groupOf.get(sender.id) || "");
+      if (!g) return;
+      g.plans = g.plans.filter((pl) => !(pl.id === msg.id && pl.by === sender.id));
+      this.sendGroup(g);
+    }
   }
 
   onClose(conn: Connection) {
@@ -170,6 +224,9 @@ export class Lobby extends Server<Env> {
       // gender/preferences are never sent to other people
       members: members.map(({ id, emoji, name, note }) => ({ id, emoji, name, note })),
       here: [],
+      formedAt: Date.now(),
+      chat: [],
+      plans: [],
     };
     this.groups.set(g.id, g);
     for (const m of members) {
@@ -234,6 +291,8 @@ export class Lobby extends Server<Env> {
     if (!g) return;
     g.members = g.members.filter((m) => m.id !== id);
     g.here = g.here.filter((h) => h !== id);
+    for (const pl of g.plans) pl.joined = pl.joined.filter((j) => j !== id);
+    this.lastChat.delete(id);
     if (g.members.length === 0) this.groups.delete(gid);
     else this.sendGroup(g);
     this.getConnection(id)?.send(JSON.stringify({ type: "ungrouped" }));

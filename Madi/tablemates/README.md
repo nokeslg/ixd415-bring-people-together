@@ -12,6 +12,10 @@ Log: [Week 2 (due Wednesday, November 11)](../logs/week-2_due-wednesday-november
 3. Join the lobby. Everyone sees the same 120-second countdown and who's waiting, plus how many of them could join *your* group.
 4. A group forms as soon as 4 people are all open to each other, or when the timer ends (2+ people). If nobody matches, you can keep waiting or leave.
 5. The group gets a meeting spot and sees each other's notes. Tap **📍 I'm here** when you arrive, and it turns green for everyone.
+6. Once you're grouped:
+   - **Mock map:** everyone's emoji pin walks toward the meeting spot and joins up when they tap "I'm here" (simulated, not real GPS).
+   - **💬 Chat:** talk to your group before you meet up.
+   - **🗓️ Weekend plans:** post a plan (like "Concert Sat 8pm, 1 spare ticket") with a number of spots. Others tap "I'm in" until it's full.
 
 ## Matching rules
 - Everyone in a group must be open to everyone else's answer.
