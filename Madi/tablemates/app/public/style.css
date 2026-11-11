@@ -1,0 +1,88 @@
+:root {
+  --bg: #f6f3ee;
+  --card: #fff;
+  --ink: #1d1b18;
+  --muted: #77706a;
+  --accent: #e2552d;
+  --ok: #2f9e5b;
+  --line: #e6e0d8;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+main { max-width: 440px; margin: 0 auto; padding: 24px 16px 48px; }
+header h1 { margin: 0; font-size: 26px; }
+header h1 span { color: var(--accent); }
+.sub { color: var(--muted); margin: 6px 0 18px; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.hidden { display: none !important; }
+.q { font-weight: 600; margin-top: 8px; }
+.q em { font-weight: 400; color: var(--muted); font-style: normal; }
+input {
+  font: inherit;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+button {
+  font: inherit;
+  cursor: pointer;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.primary { background: var(--accent); color: #fff; border: none; font-weight: 600; padding: 14px; margin-top: 8px; }
+.primary:disabled { opacity: 0.5; cursor: default; }
+.big { font-size: 20px; padding: 18px; }
+.ghost { background: none; border: none; color: var(--muted); text-decoration: underline; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.seg button { padding: 14px 8px; font-weight: 600; }
+.seg button.on { border: 2px solid var(--accent); background: #fdf0eb; }
+.emojis { display: flex; flex-wrap: wrap; gap: 6px; }
+.emojis button { font-size: 24px; padding: 6px 8px; }
+.emojis button.on { border: 2px solid var(--accent); background: #fdf0eb; }
+.room { margin: 0; text-align: center; color: var(--muted); font-size: 14px; }
+.ring { position: relative; width: 180px; height: 180px; margin: 4px auto; }
+.ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring circle { fill: none; stroke-width: 10; }
+.ring .track { stroke: var(--line); }
+.ring .bar { stroke: var(--accent); stroke-linecap: round; stroke-dasharray: 326.7; transition: stroke-dashoffset 0.25s linear; }
+.time { position: absolute; inset: 0; display: grid; place-items: center; font-size: 40px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.status { text-align: center; margin: 0; font-weight: 600; }
+.waiting { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; min-height: 52px; }
+.waiting span { font-size: 32px; animation: pop 0.3s ease; }
+.waiting span.me { outline: 2px solid var(--accent); border-radius: 50%; }
+@keyframes pop { from { transform: scale(0.3); } to { transform: scale(1); } }
+.tiny { color: var(--muted); font-size: 13px; text-align: center; margin: 0; }
+.notice { background: #fff6e5; border-radius: 12px; padding: 14px; text-align: center; }
+.row { display: flex; gap: 8px; justify-content: center; }
+h2 { margin: 0; }
+.spot { margin: 0; }
+.members { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.members li { display: flex; align-items: center; gap: 12px; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+.members .e { font-size: 30px; }
+.members .who { flex: 1; }
+.members .who small { display: block; color: var(--muted); }
+.members .badge { font-size: 13px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.members li.arrived { border-color: var(--ok); background: #effaf3; }
+.members li.arrived .badge { color: var(--ok); }
+.seg.four button { padding: 12px 8px; }
+.checks { display: flex; flex-direction: column; gap: 6px; }
+.checks label { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; font-weight: 500; }
+.checks label:has(input:checked) { border-color: var(--accent); background: #fdf0eb; }
+.checks input { width: 18px; height: 18px; accent-color: var(--accent); margin: 0; padding: 0; }
+.hint { color: var(--muted); font-size: 13px; margin: 0; }
+.hint.warn { color: var(--accent); font-weight: 600; }

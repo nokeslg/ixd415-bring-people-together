@@ -250,48 +250,48 @@ I had Claude build a working prototype so I could test it with real people on th
 ## Joining and roles
 
 <p>
-  <img src="images/madi/skim-join.png" width="260" alt="Phone join screen with a username field and a choice of mascots">
-  <img src="images/madi/skim-role-rat.png" width="260" alt="Rat role card listing a secret task for each job">
-  <img src="images/madi/skim-role-loyal.png" width="260" alt="Loyal role card listing what to do in each job">
+  <img src="images/skim-join.png" width="260" alt="Phone join screen with a username field and a choice of mascots">
+  <img src="images/skim-role-rat.png" width="260" alt="Rat role card listing a secret task for each job">
+  <img src="images/skim-role-loyal.png" width="260" alt="Loyal role card listing what to do in each job">
 </p>
 
 Players pick a username and a mascot, then hit Ready to play. When the game starts, each phone flashes the player's role. Rats get a secret task for every job (for example, "Spell DOLLARS with one L" on the money). Loyal players get tips on what to look out for.
 
 ## Job 1: Crime Scene Clean Up
 
-![Phone turned sideways, scrubbing blood off a checkered floor](images/madi/skim-cleanup-phone.png)
+![Phone turned sideways, scrubbing blood off a checkered floor](images/skim-cleanup-phone.png)
 
 Players turn their phones sideways and scrub the blood off the floor as fast as they can. Rats are supposed to leave at least a quarter of it behind.
 
-![Laptop showing each player's cleaning progress as a meter](images/madi/skim-cleanup-meters.png)
+![Laptop showing each player's cleaning progress as a meter](images/skim-cleanup-meters.png)
 
 The Boss screen shows everyone's progress as meters filling up, so the table can see who's slacking.
 
 ## Voting
 
-![Laptop vote screen with vote counts and a computer player accusing someone](images/madi/skim-vote.png)
+![Laptop vote screen with vote counts and a computer player accusing someone](images/skim-vote.png)
 
 After each job, everyone votes on their phone for who they think the rat is. Computer players can fill empty seats, and they chime in with their own accusations based on how people did.
 
 ## Job 2: Money Painting
 
-![Phone turned sideways, painting a bill with a smiley face in the middle](images/madi/skim-money.png)
+![Phone turned sideways, painting a bill with a smiley face in the middle](images/skim-money.png)
 
 Players paint a bill by hand from a prompt. Rats have to sneak a flaw onto theirs. Then every bill is shown side by side on the big screen.
 
 ## Job 3: Getaway Car Driving
 
-![Phone turned sideways showing a red car driving down a road toward a police car](images/madi/skim-getaway.png)
+![Phone turned sideways showing a red car driving down a road toward a police car](images/skim-getaway.png)
 
 Players tilt their phone to steer and race to the hideout while dodging cop cars. Rats are supposed to crash into at least three of them and make it look like an accident.
 
 ## Job 4: The Ransom Note
 
-![Laptop showing a ransom note with the players' words filled in](images/madi/skim-ransom-note.png)
+![Laptop showing a ransom note with the players' words filled in](images/skim-ransom-note.png)
 
 Players fill in Mad Libs-style blanks on their phones. The Boss reads every note out loud, and everyone votes for the best one. Rats have to slip a secret word into theirs.
 
-![Game over screen saying the family is safe, showing who was loyal and who was the rat](images/madi/skim-game-over.png)
+![Game over screen saying the family is safe, showing who was loyal and who was the rat](images/skim-game-over.png)
 
 At the end, the Boss reveals who was loyal and who was the rat.
 

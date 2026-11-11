@@ -10,6 +10,12 @@ Updated at least weekly. For each entry: what we tested, with whom, what happene
 - **What happened:** two windows on the live site synced right away. Next is getting 5+ people on it at once.
 - Details and code: [Cami/multiplayer-poc](Cami/multiplayer-poc/)
 
+### Madi: multiplayer proof of concept
+
+- **What I made:** Tablemates, a live group lobby built with PartyKit where people who are open to each other get grouped for lunch or studying.
+- Full log: [Madi/logs/week-2_due-wednesday-november-11.md](Madi/logs/week-2_due-wednesday-november-11.md)
+- Code: [Madi/tablemates](Madi/tablemates/)
+
 ### Loudon: user testing Open Seat V1
 
 - **What I tested:** the first working prototype of Open Seat ([Loudon/Open_Seat_V1](Loudon/Open_Seat_V1/)), a live app for finding someone to have lunch or study with on campus. You can open a seat, join a table, Spin into a random table, or get a random group.

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tablemates</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <main id="app">
+      <header>
+        <h1>Table<span>mates</span></h1>
+        <p class="sub">Wait together for up to 2 minutes and get matched with a small group.</p>
+      </header>
+
+      <!-- 1. setup -->
+      <section id="setup" class="card">
+        <label class="q">What are you looking for?</label>
+        <div class="seg" data-name="mode">
+          <button data-v="lunch" class="on">🍜 Lunch</button>
+          <button data-v="study">📚 Study</button>
+        </div>
+
+        <label class="q">I am a…</label>
+        <div class="seg four" data-name="gender">
+          <button data-v="woman">Woman</button>
+          <button data-v="man">Man</button>
+          <button data-v="nonbinary">Nonbinary</button>
+          <button data-v="unsaid" class="on">Prefer not to say</button>
+        </div>
+
+        <label class="q">I'm open to being grouped with… <em>(pick any)</em></label>
+        <div class="checks" id="wants">
+          <label><input type="checkbox" value="woman" checked /> Women</label>
+          <label><input type="checkbox" value="man" checked /> Men</label>
+          <label><input type="checkbox" value="nonbinary" checked /> Nonbinary people</label>
+        </div>
+        <p class="hint" id="prefHint">You'll only be grouped with people who are open to you too. Nobody else sees these answers.</p>
+
+        <label class="q">Pick your emoji</label>
+        <div class="emojis" id="emojis"></div>
+
+        <label class="q" for="name">First name or nickname <em>(optional)</em></label>
+        <input id="name" maxlength="24" placeholder="e.g. Sam" />
+
+        <label class="q" for="note">How will people spot you?</label>
+        <input id="note" maxlength="80" placeholder="e.g. green hoodie, red backpack" />
+
+        <button id="join" class="primary">Join the lobby</button>
+      </section>
+
+      <!-- 2. lobby -->
+      <section id="lobby" class="card hidden">
+        <p class="room" id="roomLabel"></p>
+        <div class="ring">
+          <svg viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="52" class="track" />
+            <circle cx="60" cy="60" r="52" class="bar" id="bar" />
+          </svg>
+          <div class="time" id="time">2:00</div>
+        </div>
+        <p class="status" id="status">Waiting for others…</p>
+        <div class="waiting" id="waiting"></div>
+        <p class="tiny" id="online"></p>
+
+        <div id="timeoutBox" class="hidden notice">
+          Nobody else showed up this round.
+          <div class="row">
+            <button id="keep" class="primary">Keep waiting 2 more min</button>
+            <button id="quit">Leave</button>
+          </div>
+        </div>
+        <button id="leave" class="ghost">Leave lobby</button>
+      </section>
+
+      <!-- 3. group -->
+      <section id="group" class="card hidden">
+        <h2>🎉 You've got a group</h2>
+        <p class="spot">Meet at: <strong id="spot"></strong></p>
+        <ul class="members" id="members"></ul>
+        <button id="here" class="primary big">📍 I'm here</button>
+        <p class="tiny">Tap when you arrive. Your group will see it right away.</p>
+        <button id="leaveGroup" class="ghost">Leave group</button>
+      </section>
+    </main>
+    <script type="module" src="/dist/client.js"></script>
+  </body>
+</html>
