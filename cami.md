@@ -125,3 +125,18 @@ This is a visual for how the real life one works. Each round you have to pass th
 - Players also didn't realize they were on a timer, so there was no urgency.
 - I think overall, the lack of urgency and the unclear purpose made users a bit confused or disengaged.
 - I think if we go in this direction, we will have to figure out a way to make the concept more clear, the UI less busy, and overall appeal more enticing.
+
+# Multiplayer proof of concept
+
+- **Date:** 11/11
+- **Live link:** https://group3-test-room.cami-ixd.workers.dev
+- **Code:** [Cami/multiplayer-poc](Cami/multiplayer-poc/)
+
+A shared live board, built to prove we can get real-time multiplayer deployed before class. It isn't our project. Everyone who opens the link types a name, then sees each other's cursors, taps to drop emoji stickers that show up for everyone instantly, and sees a live "people here" count. Adding `?room=anything` to the link makes a separate board.
+
+It runs on PartyServer (PartyKit's successor, now run by Cloudflare) on a free Cloudflare Workers account, so it needed no license key. I tried tldraw sync first, but tldraw needs a license key on a public site, and the key wouldn't have come through in time.
+
+![Two people on the live board, with cursors, stickers and the people-here count](images/Cami/cami-multiplayer-poc.png)
+
+First check: two windows on the live site at once, both showing "2 people here," with the other person's cursor and stickers appearing live.
+

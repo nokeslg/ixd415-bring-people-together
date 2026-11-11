@@ -4,6 +4,14 @@ Updated at least weekly. For each entry: what we tested, with whom, what happene
 
 ## Week 2
 
+### Cami: multiplayer proof of concept
+
+- **What I made:** a live shared board deployed at https://group3-test-room.cami-ixd.workers.dev ([code](Cami/multiplayer-poc/)). Everyone on the link sees each other's cursors and names, drops emoji stickers that appear for everyone, and sees a live "people here" count.
+- **How:** PartyServer (PartyKit's successor) on a free Cloudflare Workers account. tldraw sync was the other option, but it needs a license key on a public site, and that wouldn't have arrived before class.
+- **What happened:** two windows on the live site synced right away. Next is getting 5+ people on it at once.
+- **Useful for the group:** this setup can host any of our prototypes, so Loudon's Open Seat and Madi's The Skim could work beyond one Wi-Fi network the same way.
+- Notes and screenshot: [cami.md](cami.md#multiplayer-proof-of-concept)
+
 ### Loudon: user testing Open Seat V1
 
 - **What I tested:** the first working prototype of Open Seat ([Loudon/Open_Seat_V1](Loudon/Open_Seat_V1/)), a live app for finding someone to have lunch or study with on campus. You can open a seat, join a table, Spin into a random table, or get a random group.
