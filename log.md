@@ -10,7 +10,7 @@ Updated at least weekly. For each entry: what we tested, with whom, what happene
 - **How:** PartyServer (PartyKit's successor) on a free Cloudflare Workers account. tldraw sync was the other option, but it needs a license key on a public site, and that wouldn't have arrived before class.
 - **What happened:** two windows on the live site synced right away. Next is getting 5+ people on it at once.
 - **Useful for the group:** this setup can host any of our prototypes, so Loudon's Open Seat and Madi's The Skim could work beyond one Wi-Fi network the same way.
-- Notes and screenshot: [cami.md](cami.md#multiplayer-proof-of-concept)
+- Notes and screenshot: [Cami/cami.md](Cami/cami.md#multiplayer-proof-of-concept)
 
 ### Loudon: user testing Open Seat V1
 
