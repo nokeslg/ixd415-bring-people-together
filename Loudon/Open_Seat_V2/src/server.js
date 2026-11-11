@@ -36,11 +36,9 @@ const clip = (s, n) => String(s ?? "").trim().slice(0, n);
 
 export class OpenSeat extends Server {
   onStart() {
-    this.users = new Map(); // uid -> { id, name, emoji, tableId }
-    this.tables = new Map(); // id -> table
-    this.queues = { lunch: [], study: [] }; // [{ uid, spot, at }] waiting for a random group
     this.conns = new Map(); // connection id -> uid
-    this.stats = { uniqueUsers: new Set(), peakOnline: 0, peakTable: 0, tablesOpened: 0, meetups: 0, groupsFormed: 0 };
+    this.users = new Map(); // uid -> { id, name, emoji, tableId }
+    this.reset();
 
     // Close tables whose time is up, and start groups that waited long enough.
     setInterval(() => {
@@ -54,6 +52,15 @@ export class OpenSeat extends Server {
       }
       if (changed) this.sync();
     }, 5000);
+  }
+
+  // Empty every group and the waiting lines, and zero the stats.
+  // People who are online right now stay signed in.
+  reset() {
+    for (const u of this.users.values()) u.tableId = null;
+    this.tables = new Map(); // id -> table
+    this.queues = { lunch: [], study: [] }; // [{ uid, spot, at }] waiting for a random group
+    this.stats = { uniqueUsers: new Set(this.conns.values()), peakOnline: 0, peakTable: 0, tablesOpened: 0, meetups: 0, groupsFormed: 0 };
   }
 
   online() {
@@ -254,7 +261,16 @@ export class OpenSeat extends Server {
   }
 
   // GET /parties/open-seat/lobby: numbers for numbers.md.
-  onRequest() {
+  // POST with the right x-reset-key header: empty the lobby before a test.
+  onRequest(request) {
+    if (request.method === "POST") {
+      if (!this.env.RESET_KEY || request.headers.get("x-reset-key") !== this.env.RESET_KEY) {
+        return new Response("Not allowed", { status: 403 });
+      }
+      this.reset();
+      this.sync();
+      return Response.json({ reset: true });
+    }
     return Response.json({
       uniquePeople: this.stats.uniqueUsers.size,
       onlineNow: this.online().size,
