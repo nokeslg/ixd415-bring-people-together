@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open Seat</title>
+<style>
+  :root {
+    --bg: #f6f4ef; --card: #fff; --ink: #1d1d1b; --muted: #6d6a63; --line: #e3dfd6;
+    --lunch: #e8572a; --study: #2a6be8; --go: #1f9d55;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #161614; --card: #22211e; --ink: #f1efe9; --muted: #a29e95; --line: #35332e; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.4 system-ui, -apple-system, sans-serif; }
+  main { max-width: 440px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 28px; margin: 8px 0 4px; }
+  h2 { font-size: 18px; margin: 20px 0 8px; }
+  .muted { color: var(--muted); font-size: 14px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin: 10px 0; }
+  button { font: inherit; border: 0; border-radius: 12px; padding: 12px 14px; cursor: pointer; background: var(--ink); color: var(--bg); font-weight: 600; }
+  button.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+  button.go { background: var(--go); color: #fff; }
+  button:disabled { opacity: .4; cursor: default; }
+  .row { display: flex; gap: 8px; align-items: center; }
+  .row > * { flex: 1; }
+  input, select { font: inherit; width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--ink); }
+  label { display: block; font-size: 14px; color: var(--muted); margin: 12px 0 4px; }
+  .live { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--go); animation: pulse 1.6s infinite; }
+  @keyframes pulse { 50% { opacity: .3; } }
+  .tag { display: inline-block; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; padding: 2px 8px; border-radius: 99px; color: #fff; }
+  .tag.lunch { background: var(--lunch); } .tag.study { background: var(--study); }
+  .seg { display: flex; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .seg button { flex: 1; border-radius: 0; background: transparent; color: var(--ink); font-weight: 500; }
+  .seg button.on { background: var(--ink); color: var(--bg); }
+  .chairs { font-size: 22px; letter-spacing: 2px; }
+  a { color: inherit; }
+  .options { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .options button, .chips button { background: var(--card); color: var(--ink); border: 1px solid var(--line); text-align: left; font-weight: 500; }
+  .options button.on, .chips button.on { border: 2px solid var(--ink); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chips button { padding: 8px 12px; font-size: 14px; }
+  .chat { max-height: 180px; overflow-y: auto; font-size: 14px; }
+  .chat p { margin: 4px 0; }
+  .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; max-width: 90vw; }
+  .hidden { display: none; }
+  .group-btn { width: 100%; margin-top: 8px; background: #7b4ce0; color: #fff; display: flex; justify-content: center; gap: 8px; align-items: baseline; }
+  .muted-on { font-weight: 400; font-size: 13px; opacity: .8; }
+  .banner { color: #fff; font-size: 26px; font-weight: 800; text-align: center; padding: 22px 12px; border-radius: 16px; margin-bottom: 14px; }
+  .banner small { display: block; font-size: 13px; font-weight: 500; opacity: .9; margin-top: 4px; }
+</style>
+</head>
+<body>
+<main id="app"></main>
+<div id="toast" class="toast hidden"></div>
+
+<script>
+// Archetypes from the personality quiz. The emojis stand in for our own mascots later.
+const ARCHETYPES = {
+  sunshine: { emoji: "🌻", label: "The Sunshine", about: "You bring the conversation." },
+  quiet: { emoji: "🎧", label: "The Quiet One", about: "Good company, no pressure to talk." },
+  foodie: { emoji: "🍜", label: "The Foodie", about: "Here for a good meal and whoever's sharing it." },
+  studybuddy: { emoji: "🧠", label: "The Study Buddy", about: "You keep the group on track." },
+  easygoing: { emoji: "☕", label: "The Easygoing", about: "A little of everything, up for whatever." },
+};
+function archetypeFor(a) {
+  if (a.lunch === "food") return "foodie";
+  if (a.lunch === "talk" && a.study !== "silent") return "sunshine";
+  if (a.lunch === "chill" && a.study === "silent") return "quiet";
+  if (a.study === "quiz") return "studybuddy";
+  return "easygoing";
+}
+
+// The quiz: one question per screen. Single-choice questions move on as soon as you tap.
+const QUESTIONS = [
+  { key: "lunch", q: "Your ideal lunch vibe?", options: [["talk", "🗣️ Talk the whole time"], ["chill", "🎧 Chill, low-key"], ["food", "🍜 Just here for the food"]] },
+  { key: "study", q: "Pick a study style.", options: [["silent", "🤫 Silent co-working"], ["quiz", "💬 Quiz each other"], ["half", "☕ Half studying, half chatting"]] },
+  { key: "gender", q: "I am a…", note: "Private. It only makes everyone's comfort settings work.", options: [["woman", "Woman"], ["man", "Man"], ["nonbinary", "Nonbinary"], ["unsaid", "Prefer not to say"]] },
+  { key: "comfort", q: "Who are you comfortable sitting with?", note: "Private. You'll only be matched with groups that fit, and they'll only see you if you fit theirs.", options: [["anyone", "Anyone"], ["wnb", "Women and nonbinary people only"], ["1", "Mixed, up to 1 man"], ["2", "Mixed, up to 2 men"], ["3", "Mixed, up to 3 men"]] },
+  { key: "minutes", q: "How long do you usually have?", options: [["15", "15 min"], ["30", "30 min"], ["45", "45 min"], ["60", "1 hour"]] },
+  { key: "extras", q: "Anything we should know?", note: "Optional. Shown to your group so plans work for everyone." },
+  { key: "agree", q: "Open Seat is for everyone." },
+];
+const DIETS = [["vegetarian", "🥦 Vegetarian"], ["vegan", "🌱 Vegan"], ["glutenfree", "🌾 Gluten-free"], ["allergies", "⚠️ Allergies"]];
+const BUDGETS = [["cheap", "$"], ["mid", "$$"]];
+// sessionStorage, so each browser tab can be a different person while testing.
+const store = { get: (k) => { try { return sessionStorage.getItem(k); } catch { return null; } },
+                set: (k, v) => { try { sessionStorage.setItem(k, v); } catch {} } };
+
+let uid = store.get("uid");
+let state = null;
+let view = "board";          // board | open
+let filter = "lunch";        // lunch | study
+let profile = (() => { try { return JSON.parse(store.get("profile")); } catch { return null; } })();
+let quiz = { step: 0, name: store.get("name") || "", answers: { diet: [], budget: null, access: false } };
+let draft = { mode: "lunch", spot: "", minutes: Number(profile?.minutes) || 30, topic: "", hint: "", chairs: 5 };
+let socket = null;
+
+const $ = (html) => { const t = document.createElement("template"); t.innerHTML = html.trim(); return t.content; };
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const minsLeft = (t) => Math.max(0, Math.ceil((t.endsAt - Date.now()) / 60000));
+
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg; el.classList.remove("hidden");
+  clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.add("hidden"), 2500);
+}
+
+function api(action, body = {}) {
+  if (socket?.readyState !== WebSocket.OPEN) return toast("Reconnecting…");
+  socket.send(JSON.stringify({ type: action, ...body }));
+}
+
+// One live PartyServer room ("lobby") for everyone. Reconnects on its own,
+// and says hello again so the room knows who this is.
+function connect() {
+  socket = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/parties/open-seat/lobby`);
+  socket.onopen = hello;
+  socket.onmessage = (e) => {
+    const msg = JSON.parse(e.data);
+    if (msg.type === "error") return toast(msg.error);
+    state = msg;
+    liveRender();
+  };
+  socket.onclose = () => setTimeout(connect, 1000);
+}
+
+function hello() {
+  socket.send(JSON.stringify({ type: "hello", uid, name: store.get("name"), profile }));
+}
+
+function myTable() { return state?.tables.find((t) => t.members.some((m) => m.id === uid)); }
+function myQueue() { return state && Object.keys(state.queues).find((m) => state.queues[m].some((e) => e.uid === uid)); }
+
+function render() {
+  const app = document.getElementById("app");
+  app.replaceChildren();
+  if (!uid || !profile) return app.append(quizView());
+  if (!state) return app.append($(`<p class="muted">Connecting…</p>`));
+  const t = myTable();
+  if (t) return app.append(tableView(t));
+  const q = myQueue();
+  if (q) return app.append(waitingView(q));
+  app.append(view === "open" ? openView() : view === "group" ? groupView() : boardView());
+}
+
+// ---------- Personality quiz (replaces the old emoji picker) ----------
+function quizView() {
+  const step = quiz.step;
+  const a = quiz.answers;
+  const progress = step >= 1 && step <= QUESTIONS.length ? `<p class="muted">Question ${step} of ${QUESTIONS.length}</p>` : "";
+
+  // Step 0: first name.
+  if (step === 0) {
+    const f = $(`
+      <h1>Open Seat</h1>
+      <p class="muted">Lunch or study with someone new, right now, somewhere public on campus. First, a quick personality quiz (about 30 seconds).</p>
+      <div class="card">
+        <label for="name">First name</label>
+        <input id="name" maxlength="20" placeholder="Loudon" autocomplete="off" value="${esc(quiz.name)}">
+        <p></p>
+        <button id="next" style="width:100%">Start the quiz</button>
+      </div>`);
+    f.getElementById("next").onclick = () => {
+      quiz.name = document.getElementById("name").value.trim();
+      if (!quiz.name) return toast("Add your first name");
+      quiz.step++; render();
+    };
+    return f;
+  }
+
+  // Last step: your archetype.
+  if (step > QUESTIONS.length) {
+    const type = ARCHETYPES[archetypeFor(a)];
+    const f = $(`
+      <h1>You're…</h1>
+      <div class="card" style="text-align:center">
+        <div style="font-size:72px">${type.emoji}</div>
+        <h2 style="margin:4px 0">${type.label}</h2>
+        <p class="muted">${type.about}</p>
+      </div>
+      <p class="muted">This is what your group sees next to your name. You can retake the quiz anytime.</p>
+      <button class="go" id="go" style="width:100%">Let's go</button>`);
+    f.getElementById("go").onclick = () => {
+      profile = { archetype: archetypeFor(a), lunch: a.lunch, study: a.study, gender: a.gender, comfort: a.comfort, minutes: a.minutes, diet: a.diet, budget: a.budget, access: a.access };
+      store.set("profile", JSON.stringify(profile)); store.set("name", quiz.name);
+      draft.minutes = Number(a.minutes) || 30;
+      if (!uid) { uid = crypto.randomUUID().slice(0, 8); store.set("uid", uid); connect(); }
+      else if (socket?.readyState === WebSocket.OPEN) hello(); // retook the quiz
+      quiz.step = 0;
+      render();
+    };
+    return f;
+  }
+
+  const Q = QUESTIONS[step - 1];
+  const back = `<button class="ghost" id="back">← Back</button>`;
+
+  // Optional extras: dietary needs, budget, accessible spot.
+  if (Q.key === "extras") {
+    const f = $(`
+      ${back}${progress}
+      <h1>${Q.q}</h1>
+      <p class="muted">${Q.note}</p>
+      <div class="card">
+        <label>Food</label>
+        <div class="chips">${DIETS.map(([k, l]) => `<button data-diet="${k}" class="${a.diet.includes(k) ? "on" : ""}">${l}</button>`).join("")}</div>
+        <label>Budget</label>
+        <div class="chips">${BUDGETS.map(([k, l]) => `<button data-budget="${k}" class="${a.budget === k ? "on" : ""}">${l}</button>`).join("")}</div>
+        <label>Getting there</label>
+        <div class="chips"><button data-access class="${a.access ? "on" : ""}">♿ I need an accessible spot</button></div>
+      </div>
+      <button id="next" style="width:100%">${a.diet.length || a.budget || a.access ? "Next" : "Skip"}</button>`);
+    f.querySelectorAll("[data-diet]").forEach((b) => b.onclick = () => {
+      const k = b.dataset.diet;
+      a.diet = a.diet.includes(k) ? a.diet.filter((d) => d !== k) : [...a.diet, k];
+      render();
+    });
+    f.querySelectorAll("[data-budget]").forEach((b) => b.onclick = () => { a.budget = a.budget === b.dataset.budget ? null : b.dataset.budget; render(); });
+    f.querySelector("[data-access]").onclick = () => { a.access = !a.access; render(); };
+    f.getElementById("next").onclick = () => { quiz.step++; render(); };
+    f.getElementById("back").onclick = () => { quiz.step--; render(); };
+    return f;
+  }
+
+  // The rules everyone agrees to.
+  if (Q.key === "agree") {
+    const f = $(`
+      ${back}${progress}
+      <h1>${Q.q}</h1>
+      <div class="card">
+        <p>People of every gender, sexuality, race, religion and background are welcome at every table.</p>
+        <p>Be kind. Disrespect, hate or harassment gets you removed from Open Seat.</p>
+        <p class="muted">Always meet in public, and you can leave any table at any time, no explanation needed.</p>
+      </div>
+      <button class="go" id="next" style="width:100%">I'm in</button>`);
+    f.getElementById("next").onclick = () => { quiz.step++; render(); };
+    f.getElementById("back").onclick = () => { quiz.step--; render(); };
+    return f;
+  }
+
+  // Single-choice question: tap an answer to move on.
+  const f = $(`
+    ${back}${progress}
+    <h1>${Q.q}</h1>
+    ${Q.note ? `<p class="muted">${Q.note}</p>` : ""}
+    <div class="options">${Q.options.map(([k, l]) => `<button data-a="${k}" class="${a[Q.key] === k ? "on" : ""}">${l}</button>`).join("")}</div>`);
+  f.querySelectorAll("[data-a]").forEach((b) => b.onclick = () => { a[Q.key] = b.dataset.a; quiz.step++; render(); });
+  f.getElementById("back").onclick = () => { quiz.step--; render(); };
+  return f;
+}
+
+// ---------- Board ----------
+function boardView() {
+  // Only groups whose comfort settings fit yours (and yours theirs).
+  const open = state.tables.filter((t) => t.mode === filter && !t.group && state.fits.includes(t.id));
+  const me = state.online.find((p) => p.id === uid);
+  const seated = state.tables.reduce((n, t) => n + t.members.length, 0);
+  const waitingNow = state.queues[filter].length;
+  const f = $(`
+    <h1>Open Seat</h1>
+    <p class="muted" style="margin:0 0 8px">You're ${esc(me?.emoji || "")} ${esc(me?.archetype || "")} · <a href="#" id="retake">Retake quiz</a></p>
+    <p class="live"><span class="dot"></span>${state.online.length} online · ${seated} in groups</p>
+    <p class="muted" style="margin:4px 0 0">Here now: ${state.online.map((p) => `${esc(p.emoji)} ${esc(p.name)}${p.id === uid ? " (you)" : ""}`).join(", ")}</p>
+    <div class="seg" style="margin:12px 0">
+      <button data-f="lunch" class="${filter === "lunch" ? "on" : ""}">🍕 Lunch</button>
+      <button data-f="study" class="${filter === "study" ? "on" : ""}">📚 Study</button>
+    </div>
+    <div class="row">
+      <button class="go" id="spin">🎲 Spin</button>
+      <button class="ghost" id="open">＋ Start a group</button>
+    </div>
+    <button class="group-btn" id="group">👥 Get a random group <span class="muted-on">${waitingNow} waiting</span></button>
+    <h2>Open ${filter} groups to join</h2>
+    <div id="list"></div>`);
+  f.querySelectorAll("[data-f]").forEach((b) => b.onclick = () => { filter = b.dataset.f; render(); });
+  f.getElementById("retake").onclick = (e) => {
+    e.preventDefault();
+    quiz = { step: 1, name: store.get("name") || "", answers: { ...profile, diet: [...(profile.diet || [])] } };
+    profile = null;
+    render();
+  };
+  f.getElementById("spin").onclick = () => api("spin", { mode: filter });
+  f.getElementById("open").onclick = () => { draft.mode = filter; view = "open"; render(); };
+  f.getElementById("group").onclick = () => { draft.mode = filter; view = "group"; render(); };
+  const list = f.getElementById("list");
+  if (!open.length) list.append($(`<p class="muted">No open ${filter} groups that fit your settings yet. Start one!</p>`));
+  for (const t of open) {
+    const full = t.members.length >= t.chairs;
+    const host = t.members.find((m) => m.id === t.hostId) || t.members[0];
+    const card = $(`
+      <div class="card">
+        <div class="row" style="justify-content:space-between">
+          <div style="flex:0"><span class="tag ${t.mode}">${t.mode}</span></div>
+          <div class="muted" style="text-align:right">${minsLeft(t)} min left</div>
+        </div>
+        <h2 style="margin:8px 0 2px">${esc(t.spot)}</h2>
+        <div class="muted">${esc(host.emoji)} ${esc(host.name)}'s group · ${esc(t.topic)}</div>
+        <div class="chairs" style="margin:8px 0">${t.members.map((m) => esc(m.emoji)).join("")}${"🪑".repeat(t.chairs - t.members.length)}</div>
+        <button ${full ? "disabled" : ""} style="width:100%">${full ? "Full" : "Join"}</button>
+      </div>`);
+    card.querySelector("button").onclick = () => api("join", { tableId: t.id });
+    list.append(card);
+  }
+  return f;
+}
+
+// ---------- Open a seat ----------
+function openView() {
+  if (!draft.spot) draft.spot = state.spots[0];
+  const f = $(`
+    <button class="ghost" id="back">← Back</button>
+    <h1>Start a ${draft.mode} group</h1>
+    <div class="card">
+      <label>What for?</label>
+      <div class="seg">
+        <button data-m="lunch" class="${draft.mode === "lunch" ? "on" : ""}">🍕 Lunch</button>
+        <button data-m="study" class="${draft.mode === "study" ? "on" : ""}">📚 Study</button>
+      </div>
+      <label>Where? (public spots only)</label>
+      <select id="spot">${state.spots.map((s) => `<option ${s === draft.spot ? "selected" : ""}>${esc(s)}</option>`).join("")}</select>
+      <label>How to find you</label>
+      <input id="hint" maxlength="80" placeholder="By the windows, green backpack" value="${esc(draft.hint)}">
+      <label>${draft.mode === "study" ? "Studying" : "Topic"} (optional)</label>
+      <input id="topic" maxlength="40" placeholder="${draft.mode === "study" ? "BIO 150, anything quiet…" : "anything, music, cats…"}" value="${esc(draft.topic)}">
+      <div class="row">
+        <div><label>For how long?</label>
+          <select id="minutes">${[15, 30, 45, 60].map((m) => `<option value="${m}" ${m == draft.minutes ? "selected" : ""}>${m} min</option>`).join("")}</select></div>
+        <div><label>Group size</label>
+          <select id="chairs">${[2, 3, 4, 5].map((c) => `<option value="${c}" ${c == draft.chairs ? "selected" : ""}>${c} people</option>`).join("")}</select></div>
+      </div>
+      <p></p>
+      <button class="go" id="post" style="width:100%">Start my group</button>
+    </div>`);
+  const save = () => ["spot", "hint", "topic", "minutes", "chairs"].forEach((k) => draft[k] = document.getElementById(k).value);
+  f.getElementById("back").onclick = () => { view = "board"; render(); };
+  f.querySelectorAll("[data-m]").forEach((b) => b.onclick = () => { save(); draft.mode = b.dataset.m; render(); });
+  f.getElementById("post").onclick = async () => { save(); await api("open", draft); view = "board"; filter = draft.mode; render(); };
+  return f;
+}
+
+// ---------- Random group: setup ----------
+function groupView() {
+  const f = $(`
+    <button class="ghost" id="back">← Back</button>
+    <h1>Get a random group</h1>
+    <p class="muted">We'll put you with up to ${state.groupSize - 1} other people and pick a spot. Once ${state.groupMin}+ people have waited ${Math.round(state.groupWaitMs / 60000)} min, we start with whoever's there.</p>
+    <div class="card">
+      <label>What for?</label>
+      <div class="seg">
+        <button data-m="lunch" class="${draft.mode === "lunch" ? "on" : ""}">🍕 Lunch</button>
+        <button data-m="study" class="${draft.mode === "study" ? "on" : ""}">📚 Study</button>
+      </div>
+      <label for="gspot">Where would you like to meet?</label>
+      <select id="gspot"><option value="">Anywhere, surprise me</option>${state.spots.map((s) => `<option ${s === draft.gspot ? "selected" : ""}>${esc(s)}</option>`).join("")}</select>
+      <p></p>
+      <button class="go" id="find" style="width:100%">Find my group</button>
+    </div>`);
+  f.getElementById("back").onclick = () => { view = "board"; render(); };
+  f.querySelectorAll("[data-m]").forEach((b) => b.onclick = () => { draft.gspot = document.getElementById("gspot").value; draft.mode = b.dataset.m; render(); });
+  f.getElementById("find").onclick = async () => {
+    draft.gspot = document.getElementById("gspot").value;
+    view = "board";
+    await api("queue", { mode: draft.mode, spot: draft.gspot });
+    render();
+  };
+  return f;
+}
+
+// ---------- Random group: waiting ----------
+function waitingView(mode) {
+  const q = state.queues[mode];
+  const found = Math.min(state.myLine, state.groupSize); // people in line who fit with you, you included
+  const waitedMin = Math.floor((Date.now() - q[0].at) / 60000);
+  const myEmoji = state.online.find((p) => p.id === uid)?.emoji || "🙂";
+  const slots = Array.from({ length: state.groupSize }, (_, i) => i === 0 ? esc(myEmoji) : i < found ? "👤" : "⬜").join(" ");
+  const f = $(`
+    <span class="tag ${mode}">${mode}</span>
+    <h1>Finding your group…</h1>
+    <p class="live"><span class="dot"></span>${found} of ${state.groupSize} people found</p>
+    <div class="card" style="text-align:center">
+      <div class="chairs" style="font-size:32px">${slots}</div>
+      <p class="muted">${found >= state.groupMin
+        ? `Starting in under ${Math.max(1, Math.ceil(state.groupWaitMs / 60000) - waitedMin)} min, even if the group isn't full.`
+        : `Need ${state.groupMin - found} more to start. We only match you with people whose settings fit yours. Names stay hidden until your group forms.`}</p>
+    </div>
+    <button class="ghost" id="cancel" style="width:100%">Cancel</button>`);
+  f.getElementById("cancel").onclick = () => api("unqueue");
+  return f;
+}
+
+// ---------- Table ----------
+function tableView(t) {
+  const meHere = t.members.find((m) => m.id === uid)?.here;
+  const waiting = t.members.length === 1 && !t.group;
+  const f = $(`
+    ${t.group ? `<div class="banner" style="background:${t.group.hex}">👥 ${esc(t.group.name)} group<small>Hold up your screen so your group can spot you</small></div>` : ""}
+    <span class="tag ${t.mode}">${t.mode}</span>
+    <h1>${esc(t.spot)}</h1>
+    <p class="muted">${t.hint ? "📍 " + esc(t.hint) + " · " : ""}${esc(t.topic)} · <b id="left">${minsLeft(t)}</b> min left</p>
+    <div class="card">
+      <b>${waiting ? "Waiting for someone to sit down…" : "At this table"}</b>
+      ${t.members.map((m) => `<div class="row" style="margin-top:8px"><span style="flex:0;font-size:24px">${esc(m.emoji)}</span><span>${esc(m.name)}${m.id === t.hostId && !t.group ? " <span class='muted'>(host)</span>" : ""}${m.id === uid ? " <span class='muted'>(you)</span>" : ""}<br><span class="muted">${esc(m.archetype)}${m.tags.length ? " · " + m.tags.map(esc).join(" · ") : ""}</span></span><span style="flex:0;white-space:nowrap" class="muted">${m.here ? "✅ here" : "on the way"}</span></div>`).join("")}
+      <div class="chairs" style="margin-top:8px">${"🪑".repeat(t.chairs - t.members.length)}</div>
+    </div>
+    <div class="row">
+      <button class="go" id="here" ${meHere ? "disabled" : ""}>${meHere ? "✅ You're here" : "I'm here"}</button>
+      <button class="ghost" id="leave">Leave</button>
+    </div>
+    <h2>Table chat</h2>
+    <div class="card">
+      <div class="chat" id="chat">${t.chat.length ? t.chat.map((c) => `<p><b>${esc(c.emoji)} ${esc(c.name)}:</b> ${esc(c.text)}</p>`).join("") : `<p class="muted">"Running 5 min late," "I'm in the red hoodie"…</p>`}</div>
+      <form class="row" id="send" style="margin-top:8px"><input id="msg" maxlength="200" placeholder="Say something" autocomplete="off"><button style="flex:0">Send</button></form>
+    </div>`);
+  f.getElementById("here").onclick = () => api("checkin");
+  f.getElementById("leave").onclick = () => api("leave");
+  f.getElementById("send").onsubmit = (e) => { e.preventDefault(); const i = document.getElementById("msg"); if (i.value.trim()) api("chat", { text: i.value }); i.value = ""; };
+  requestAnimationFrame(() => { const c = document.getElementById("chat"); if (c) c.scrollTop = c.scrollHeight; });
+  return f;
+}
+
+// Live updates re-render the page, so don't wipe the Open a seat form,
+// and keep a half-typed chat message.
+function liveRender() {
+  if (!profile) return; // mid-quiz
+  if ((view === "open" || view === "group") && !myTable() && !myQueue()) return;
+  const msg = document.getElementById("msg");
+  const typed = msg && msg.value, focused = msg && document.activeElement === msg;
+  render();
+  const m2 = document.getElementById("msg");
+  if (m2 && typed) m2.value = typed;
+  if (m2 && focused) m2.focus();
+}
+
+setInterval(() => { if (uid && state) liveRender(); }, 15000);
+if (uid) connect();
+render();
+</script>
+</body>
+</html>
