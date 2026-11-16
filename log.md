@@ -2,6 +2,26 @@
 
 Updated at least weekly. For each entry: what we tested, with whom, what happened, what surprised us. Newest at the top.
 
+## Week 3
+
+### Loudon: user testing Open Seat V3
+
+- **What I tested:** [Open Seat V3](Loudon/Open_Seat_V3/), with the new personality quiz and comfort settings (who you're OK sitting with), live at https://open-seat-v3.loudonnokes.workers.dev
+- **With whom:** 5 people. Users 1 and 2 were screen recorded (user 1 on my phone, user 2 on my laptop).
+- **Biggest thing that came out of this: a bug.** The recording caught a group disappearing. User 2 joined user 1's group and sent "Coming." in the chat, and about 3 seconds later the group was just gone. Nobody left, there were still 44 minutes on the timer, and both people were still online. A real user would think they got kicked out. This has to be fixed before the next test.
+- **What each user did:**
+  - **User 1:** created her profile and clicked through the quiz, and chose up to 3 men if I remember right. She came out as ☕ The Easygoing (vegetarian, $), started a lunch group at DeBruce ("Braids, blue glasses," topic "Anything!", 45 min, 5 people) and tapped I'm here. It took her about a minute and a half from opening the link to hosting a group.
+  - **User 2:** went through the quiz, saw user 1's group on the board, joined it and sent "Coming." in the table chat. That's when the group disappeared (the bug above).
+  - **User 3:** went through her account process as normal and was tasked with joining the existing group. However, she clicked "women and nonbinary only" so she couldn't find the group. This exposed one big part of the app and a hurdle to figure out in terms of how to actually get people into specific groups and what groups are visible.
+  - **User 4:** was told to try to join a group that had been created. This user was genderfluid and chose the "nonbinary" label. This user WAS actually able to see both the new group and user 1's existing group, and joined user 1's group since it was bigger.
+  - **User 5:** a man who was confused about being offered the "up to 3 men" option. This pointed out a problem in the questionnaire that needs to be fixed. This user chose "anyone" and was only able to see and join user 1's group. There were 4 whole members in the group by then, and they were all able to chat and see the chat.
+- **What surprised me:**
+  - The comfort matching worked exactly how it was built, but it's invisible. User 3 had no idea why the group wasn't there, and user 5 had no idea a second group existed.
+  - The quiz asks everyone the same comfort question, even men, so "up to 3 men" didn't make sense to user 5.
+  - I didn't realize you can't tell what's being clicked in the recordings, because quiz answers and buttons have no selected state.
+- **Next:** fix the disappearing group bug, show people why a group is hidden (or let them see it but not join), change the comfort question based on gender, and add selected states.
+- Full write-up: [Loudon/2026-11-16_Open_Seat_V3_Testing.md](Loudon/2026-11-16_Open_Seat_V3_Testing.md)
+
 ## Week 2
 
 ### Cami: multiplayer proof of concept
