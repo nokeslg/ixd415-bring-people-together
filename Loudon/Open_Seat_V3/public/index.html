@@ -140,10 +140,23 @@ function render() {
   if (!uid || !profile) return app.append(quizView());
   if (!state) return app.append($(`<p class="muted">Connecting…</p>`));
   const t = myTable();
-  if (t) return app.append(tableView(t));
   const q = myQueue();
-  if (q) return app.append(waitingView(q));
-  app.append(view === "open" ? openView() : view === "group" ? groupView() : boardView());
+  app.append(t ? tableView(t) : q ? waitingView(q) : view === "open" ? openView() : view === "group" ? groupView() : boardView());
+  app.append(resetButton());
+}
+
+// Testing only: start over as a brand-new person in this tab. Groups, chats
+// and stats stay on the server; the old you just goes offline (still seated
+// in any group until it times out), like closing the tab.
+function resetButton() {
+  const f = $(`<p style="text-align:center;margin-top:28px"><button class="ghost" id="resetProfile" style="width:auto;padding:6px 14px;font-size:13px">↺ Reset profile (testing)</button></p>`);
+  f.getElementById("resetProfile").onclick = () => {
+    if (!confirm("Start over as a new person? Open groups stay open.")) return;
+    try { sessionStorage.clear(); } catch {}
+    if (socket) { socket.onclose = null; socket.close(); }
+    location.reload();
+  };
+  return f;
 }
 
 // ---------- Personality quiz (replaces the old emoji picker) ----------
