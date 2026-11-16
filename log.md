@@ -7,7 +7,7 @@ Updated at least weekly. For each entry: what we tested, with whom, what happene
 ### Loudon: user testing Open Seat V3
 
 - **What I tested:** [Open Seat V3](Loudon/Open_Seat_V3/), with the new personality quiz and comfort settings (who you're OK sitting with), live at https://open-seat-v3.loudonnokes.workers.dev
-- **With whom:** 5 people. Users 1 and 2 were screen recorded (user 1 on my phone, user 2 on my laptop).
+- **With whom:** 5 people. Users 1 and 2 were screen recorded: [user 1 on my phone](Loudon/recordings/2026-11-16_user1_phone.mp4), [user 2 on my laptop](Loudon/recordings/2026-11-16_user2_laptop.mov).
 - **Biggest thing that came out of this: a bug.** The recording caught a group disappearing. User 2 joined user 1's group and sent "Coming." in the chat, and about 3 seconds later the group was just gone. Nobody left, there were still 44 minutes on the timer, and both people were still online. A real user would think they got kicked out. This has to be fixed before the next test.
 - **What each user did:**
   - **User 1:** created her profile and clicked through the quiz, and chose up to 3 men if I remember right. She came out as ☕ The Easygoing (vegetarian, $), started a lunch group at DeBruce ("Braids, blue glasses," topic "Anything!", 45 min, 5 people) and tapped I'm here. It took her about a minute and a half from opening the link to hosting a group.

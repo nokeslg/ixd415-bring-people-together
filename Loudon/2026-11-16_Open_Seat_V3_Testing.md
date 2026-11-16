@@ -2,7 +2,9 @@
 
 - **What I tested:** [Open Seat V3](Open_Seat_V3/), with the new personality quiz and comfort settings, live at https://open-seat-v3.loudonnokes.workers.dev
 - **With whom:** 5 people
-- **Recordings:** users 1 and 2 (user 1 on my phone, user 2 on my laptop)
+- **Recordings:**
+  - [User 1, on my phone](recordings/2026-11-16_user1_phone.mp4): making a profile and starting a group (1:35)
+  - [User 2, on my laptop](recordings/2026-11-16_user2_laptop.mov): joining user 1's group and chatting, and the group disappearing at about 0:55 (1:14)
 - **What each user did:** in the [log](../log.md#loudon-user-testing-open-seat-v3)
 
 ## Summary
@@ -13,7 +15,7 @@ The quiz itself went smoothly. User 1 went from opening the link to hosting a gr
 
 ## The biggest finding: groups can disappear
 
-**The recording caught a bug.** User 2 joined user 1's lunch group and sent "Coming." in the table chat. About 3 seconds later the group was gone for everyone:
+**The recording caught a bug** ([user 2's recording](recordings/2026-11-16_user2_laptop.mov), around 0:52–0:56). User 2 joined user 1's lunch group and sent "Coming." in the table chat. About 3 seconds later the group was gone for everyone:
 
 - Nobody tapped Leave.
 - There were still 44 minutes left on the timer.

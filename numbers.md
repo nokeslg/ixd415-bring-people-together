@@ -35,7 +35,7 @@ Week 1 was interviews only, so it doesn't count toward the total.
 Video, screen recordings, chat logs and photos of live sessions. Link them here with the week, who ran it, and the head count.
 
 - Week 2, Loudon, 5 people: [notes](notes/Loudon_V1_User_Testing_Notes.md)
-- Week 3, Loudon, 5 people (4 in one group at once): [write-up](Loudon/2026-11-16_Open_Seat_V3_Testing.md), 2 screen recordings (kept by Loudon)
+- Week 3, Loudon, 5 people (4 in one group at once): [write-up](Loudon/2026-11-16_Open_Seat_V3_Testing.md), screen recordings of [user 1](Loudon/recordings/2026-11-16_user1_phone.mp4) and [user 2](Loudon/recordings/2026-11-16_user2_laptop.mov)
 
 ## Rules so the count stays honest
 
