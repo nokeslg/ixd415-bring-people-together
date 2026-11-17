@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Open Seat Looks</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Caveat+Brush&family=Rubik:wght@400;600;800&family=Gloock&family=Silkscreen&family=DM+Sans:wght@400;600;700&family=Unbounded:wght@500;800&family=Archivo:wght@400;600;800&family=Big+Shoulders+Display:wght@800;900&family=Archivo+Narrow:wght@500;700&family=Newsreader:ital,opsz,wght@0,6..72,500;1,6..72,500&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap">
+<style>
+/* Layout: a neutral shell with five full-width bands; each band is its own visual world with 3 phone screens. */
+:root {
+  --bg: #f2f0f6; --fg: #17151d; --muted: #5d586a; --line: #d8d3e3; --chip: #ffffff;
+  --shell: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #100f14; --fg: #f2eff8; --muted: #a49eb4; --line: #2c2937; --chip: #1c1a25; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #100f14; --fg: #f2eff8; --muted: #a49eb4; --line: #2c2937; --chip: #1c1a25; color-scheme: dark }
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--shell); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* Shell header */
+.intro { padding-block: 48px 28px; display: grid; gap: 14px; }
+.intro .eyebrow { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.intro h1 { font-size: clamp(36px, 6vw, 64px); line-height: 1; margin: 0; font-weight: 800; letter-spacing: -.02em; text-wrap: balance; }
+.intro p { margin: 0; max-width: 64ch; color: var(--muted); }
+.intro p b { color: var(--fg); }
+.jump { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.jump a { text-decoration: none; color: var(--fg); background: var(--chip); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 700; font-size: 14px; }
+.jump a:hover, .jump a:focus-visible { border-color: var(--fg); outline: none; }
+
+/* Direction bands */
+.dir { background: var(--band-bg); color: var(--band-ink); padding-block: 56px; position: relative; overflow: hidden; }
+.dir-head { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 32px; align-items: start; position: relative; z-index: 1; }
+@media (max-width: 860px) { .dir-head { grid-template-columns: minmax(0, 1fr); } }
+.num { font-family: var(--shell); font-weight: 800; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--band-muted); }
+.dir h2 { margin: 6px 0 14px; font-family: var(--h2-font); font-size: var(--h2-size, 56px); line-height: .95; letter-spacing: var(--h2-track, 0); text-transform: var(--h2-case, none); font-weight: var(--h2-weight, 400); text-wrap: balance; color: var(--h2-color, var(--band-ink)); }
+.notes { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; max-width: 58ch; }
+.notes li { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 10px; }
+.notes b { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--band-muted); padding-top: 2px; }
+.kit { display: grid; gap: 16px; }
+.swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+.sw { display: grid; gap: 4px; font-size: 11px; font-variant-numeric: tabular-nums; color: var(--band-muted); }
+.sw i { display: block; width: 52px; height: 52px; border-radius: var(--sw-radius, 10px); border: 1px solid var(--sw-edge, rgba(0,0,0,.15)); }
+.type-sample { font-size: 13px; color: var(--band-muted); }
+.type-sample span { display: block; color: var(--band-ink); font-family: var(--h2-font); font-size: 26px; line-height: 1.1; text-transform: var(--h2-case, none); font-weight: var(--h2-weight, 400); }
+.lineup { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.lineup figure { margin: 0; display: grid; justify-items: center; gap: 2px; width: 84px; }
+.lineup figure svg, .lineup figure canvas { width: 72px; height: 72px; }
+.lineup figcaption { font-size: 11px; text-align: center; line-height: 1.2; color: var(--band-muted); }
+
+.phones { display: flex; flex-wrap: wrap; gap: 28px; margin-top: 40px; position: relative; z-index: 1; }
+.shot { display: grid; gap: 10px; width: 264px; max-width: 100%; }
+.shot > p { margin: 0; font-size: 13px; color: var(--band-muted); }
+.shot > p b { color: var(--band-ink); }
+
+/* Phone shell (shared); every direction fills these tokens */
+.phone {
+  --p-surface-ink: var(--p-ink);
+  width: 264px; max-width: 100%; aspect-ratio: 9 / 19.5; border-radius: 34px; overflow: hidden; position: relative;
+  background: var(--p-bg); color: var(--p-ink); font-family: var(--p-body); font-size: 12.5px; line-height: 1.35;
+  border: 7px solid #0d0d10; box-shadow: 0 18px 40px -18px rgba(0,0,0,.55);
+}
+.decor { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+.decor > * { position: absolute; }
+.scr { position: relative; z-index: 1; height: 100%; padding: 26px 14px 14px; display: flex; flex-direction: column; gap: 9px; }
+.p-top { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--p-muted); }
+.p-back { font-weight: 600; }
+.p-kicker { font-size: 11px; color: var(--p-muted); }
+.p-progress { height: 5px; background: var(--p-line); border-radius: var(--p-btn-radius); overflow: hidden; }
+.p-progress i { display: block; height: 100%; width: 14%; background: var(--p-accent); }
+.p-h1 { margin: 2px 0; font-family: var(--p-display); font-size: var(--p-h1-size, 26px); line-height: 1.02; text-transform: var(--p-h1-case, none); letter-spacing: var(--p-h1-track, 0); color: var(--p-display-color, var(--p-ink)); font-weight: var(--p-h1-weight, 400); }
+.p-brand { font-family: var(--p-display); font-size: var(--p-brand-size, 30px); line-height: 1; text-transform: var(--p-h1-case, none); letter-spacing: var(--p-h1-track, 0); color: var(--p-display-color, var(--p-ink)); font-weight: var(--p-h1-weight, 400); }
+.opts { display: grid; gap: 7px; }
+.opt { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 11px 12px; border-radius: var(--p-radius); background: var(--p-surface); color: var(--p-surface-ink); border: var(--p-border, 1px) solid var(--p-line); font-weight: 600; }
+.opt.sel { background: var(--p-sel); color: var(--p-sel-ink); border-color: var(--p-sel-edge, var(--p-sel)); box-shadow: var(--p-sel-shadow, none); }
+.chk { display: grid; place-items: center; width: 20px; height: 20px; border-radius: var(--p-btn-radius); background: var(--p-sel-ink); color: var(--p-sel); font-size: 12px; }
+.peek { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--p-muted); }
+.peek svg, .peek canvas { width: 40px; height: 40px; flex: none; }
+.peek b { color: var(--p-ink); }
+.btn { display: flex; justify-content: center; align-items: center; gap: 6px; padding: 10px 12px; border-radius: var(--p-btn-radius); background: var(--p-accent); color: var(--p-accent-ink); font-weight: 700; text-transform: var(--p-btn-case, none); letter-spacing: var(--p-btn-track, 0); border: var(--p-btn-border, 0px) solid var(--p-btn-edge, transparent); box-shadow: var(--p-btn-shadow, none); font-size: 12.5px; text-align: center; }
+.btn.alt { background: var(--p-accent2); color: var(--p-accent2-ink); }
+.btn.ghost { background: transparent; color: var(--p-ink); border: var(--p-border, 1px) solid var(--p-ghost-edge, var(--p-line)); box-shadow: none; }
+.btn small { font-weight: 500; opacity: .8; font-size: 11px; }
+.btn.small { padding: 7px 10px; }
+.push { margin-top: auto; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.me { display: flex; align-items: center; gap: 8px; }
+.me svg, .me canvas { width: 38px; height: 38px; flex: none; }
+.me b { display: block; font-size: 13px; }
+.me small { color: var(--p-muted); font-size: 11px; }
+.me small u { text-underline-offset: 2px; }
+.live { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; }
+.live i { width: 8px; height: 8px; border-radius: 50%; background: var(--p-live, #3ad16b); box-shadow: 0 0 0 3px color-mix(in srgb, var(--p-live, #3ad16b) 30%, transparent); }
+.seg { display: grid; grid-template-columns: 1fr 1fr; border: var(--p-border, 1px) solid var(--p-line); border-radius: var(--p-btn-radius); overflow: hidden; }
+.seg span { text-align: center; padding: 7px; font-weight: 700; color: var(--p-muted); }
+.seg .on { background: var(--p-sel); color: var(--p-sel-ink); }
+.p-sec { font-weight: 700; font-size: 12px; text-transform: var(--p-sec-case, none); letter-spacing: var(--p-sec-track, 0); font-family: var(--p-sec-font, inherit); margin-top: 2px; }
+.card { background: var(--p-surface); color: var(--p-surface-ink); border-radius: var(--p-radius); border: var(--p-border, 1px) solid var(--p-line); padding: 10px; display: grid; gap: 6px; box-shadow: var(--p-card-shadow, none); }
+.card-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+.card-top b { font-size: 13.5px; }
+.card small { color: var(--p-surface-muted, var(--p-muted)); font-size: 11px; }
+.pill { font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--p-pill, var(--p-accent2)); color: var(--p-pill-ink, var(--p-accent2-ink)); white-space: nowrap; }
+.seats { display: flex; gap: 3px; align-items: center; }
+.seats svg, .seats canvas { width: 30px; height: 30px; }
+.seats .empty { width: 24px; height: 24px; margin: 3px; border-radius: 50%; border: 2px dashed var(--p-seat, var(--p-line)); }
+.tag { align-self: flex-start; font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; background: var(--p-accent2); color: var(--p-accent2-ink); }
+.member { display: flex; align-items: center; gap: 7px; }
+.member svg, .member canvas { width: 32px; height: 32px; flex: none; }
+.member div { flex: 1; min-width: 0; }
+.member b { font-size: 12.5px; }
+.member small { display: block; }
+.member em { font-style: normal; font-size: 10.5px; font-weight: 700; white-space: nowrap; }
+.member em.here { color: var(--p-here, #2fa65a); }
+.chat { display: grid; gap: 5px; }
+.msg { justify-self: start; max-width: 88%; padding: 6px 9px; border-radius: var(--p-radius); background: var(--p-surface); color: var(--p-surface-ink); border: var(--p-border, 1px) solid var(--p-line); font-size: 11.5px; }
+.msg b { display: block; font-size: 10.5px; color: var(--p-surface-muted, var(--p-muted)); }
+.msg.mine { justify-self: end; background: var(--p-accent); color: var(--p-accent-ink); border-color: var(--p-accent); }
+.input { display: flex; gap: 6px; align-items: center; }
+.input span { flex: 1; padding: 8px 10px; border-radius: var(--p-btn-radius); border: var(--p-border, 1px) solid var(--p-line); color: var(--p-muted); background: var(--p-input, transparent); font-size: 11.5px; }
+.input b { padding: 8px 12px; border-radius: var(--p-btn-radius); background: var(--p-accent); color: var(--p-accent-ink); font-size: 11.5px; text-transform: var(--p-btn-case, none); }
+canvas.px { image-rendering: pixelated; image-rendering: crisp-edges; }
+
+/* 1 · Late-Night Poster */
+#late-night { --band-bg: #ffe14a; --band-ink: #121212; --band-muted: #4d4314; --h2-font: "Bagel Fat One", "Arial Black", sans-serif; --h2-size: clamp(48px, 8vw, 92px); --h2-case: uppercase; }
+#late-night .phone { --p-bg: #121212; --p-ink: #ffffff; --p-muted: #c4c4c4; --p-surface: #1f1f1f; --p-line: #3a3a3a; --p-accent: #2e6bff; --p-accent-ink: #fff; --p-accent2: #f57be6; --p-accent2-ink: #121212; --p-sel: #f57be6; --p-sel-ink: #121212; --p-radius: 16px; --p-btn-radius: 999px; --p-display: "Bagel Fat One", "Arial Black", sans-serif; --p-body: "Rubik", system-ui, sans-serif; --p-h1-size: 28px; --p-h1-case: uppercase; --p-sel-shadow: 3px 3px 0 #7ee04a; --p-btn-shadow: 3px 3px 0 #ffe14a; --p-pill: #7ee04a; --p-pill-ink: #121212; --p-here: #7ee04a; --p-live: #7ee04a; --p-sec-font: "Caveat Brush", cursive; --p-sec-case: none; }
+#late-night .p-sec { font-size: 18px; font-weight: 400; color: #ffe14a; }
+#late-night .tag { transform: rotate(-4deg); }
+#late-night h2 span { display: inline-block; }
+
+/* 2 · Pixel Dream */
+#pixel-dream { --band-bg: #0b0b0e; --band-ink: #fff6de; --band-muted: #b9b0c9; --h2-font: "Gloock", Georgia, serif; --h2-size: clamp(52px, 8.5vw, 104px); --h2-track: -.02em; --sw-radius: 0; --sw-edge: rgba(255,255,255,.15); }
+#pixel-dream .phone { --p-bg: #0b0b0e; --p-ink: #fff6de; --p-muted: #b4abc6; --p-surface: #1a1726; --p-line: #3a3350; --p-accent: #e86be0; --p-accent-ink: #0b0b0e; --p-accent2: #8c7cf0; --p-accent2-ink: #0b0b0e; --p-sel: #8c7cf0; --p-sel-ink: #0b0b0e; --p-radius: 0px; --p-btn-radius: 0px; --p-display: "Gloock", Georgia, serif; --p-body: "DM Sans", system-ui, sans-serif; --p-h1-size: 29px; --p-sel-shadow: 4px 4px 0 #ffb21e; --p-btn-shadow: 4px 4px 0 #19a9e6; --p-pill: #ffb21e; --p-pill-ink: #0b0b0e; --p-here: #39c64a; --p-live: #39c64a; --p-sec-font: "Silkscreen", monospace; --p-sec-case: uppercase; --p-btn-case: uppercase; }
+#pixel-dream .phone .btn, #pixel-dream .phone .p-kicker, #pixel-dream .phone .tag, #pixel-dream .phone .pill, #pixel-dream .phone .input b { font-family: "Silkscreen", monospace; font-weight: 400; }
+#pixel-dream .phone .seats .empty { border-radius: 0; }
+#pixel-dream .phone .live i { border-radius: 0; }
+
+/* 3 · Better Together */
+#better-together { --band-bg: #121826; --band-ink: #ffffff; --band-muted: #aab3c7; --h2-font: "Unbounded", "Arial Black", sans-serif; --h2-size: clamp(40px, 6.5vw, 76px); --h2-weight: 800; --h2-case: lowercase; --h2-track: -.03em; --sw-radius: 50%; --sw-edge: rgba(255,255,255,.12); }
+#better-together .phone { --p-bg: #121826; --p-ink: #ffffff; --p-muted: #aab3c7; --p-surface: #1c2437; --p-line: #2f3a56; --p-accent: #ff6a2b; --p-accent-ink: #121826; --p-accent2: #1f6bff; --p-accent2-ink: #ffffff; --p-sel: #2fe3b2; --p-sel-ink: #121826; --p-radius: 6px; --p-btn-radius: 999px; --p-display: "Unbounded", "Arial Black", sans-serif; --p-body: "Archivo", system-ui, sans-serif; --p-h1-size: 22px; --p-h1-weight: 800; --p-h1-case: lowercase; --p-h1-track: -.03em; --p-brand-size: 24px; --p-pill: #c7f25a; --p-pill-ink: #121826; --p-here: #2fe3b2; --p-live: #2fe3b2; --p-sec-case: uppercase; --p-sec-track: .12em; }
+#better-together .phone .opt.sel { border-radius: 999px; }
+
+/* 4 · Brunch Club */
+#brunch-club { --band-bg: #ff6fd8; --band-ink: #12332b; --band-muted: #4a1f3e; --h2-font: "Big Shoulders Display", "Arial Narrow", sans-serif; --h2-size: clamp(56px, 10vw, 120px); --h2-weight: 900; --h2-case: uppercase; --h2-color: #1e2bff; --sw-radius: 4px; }
+#brunch-club .phone { --p-ink: #ffffff; --p-muted: rgba(255,255,255,.82); --p-surface: #fff8ec; --p-surface-ink: #12332b; --p-surface-muted: #4f5f58; --p-line: rgba(255,255,255,.55); --p-accent: #ffe600; --p-accent-ink: #12332b; --p-accent2: #12332b; --p-accent2-ink: #ffe600; --p-sel: #ffe600; --p-sel-ink: #12332b; --p-radius: 14px; --p-btn-radius: 10px; --p-display: "Big Shoulders Display", "Arial Narrow", sans-serif; --p-body: "Archivo Narrow", "Arial Narrow", sans-serif; --p-h1-size: 38px; --p-h1-weight: 900; --p-h1-case: uppercase; --p-brand-size: 44px; --p-display-color: #ffe600; --p-btn-case: uppercase; --p-btn-track: .04em; --p-border: 2px; --p-sec-case: uppercase; --p-sec-track: .08em; --p-pill: #ff3b1f; --p-pill-ink: #fff; --p-here: #0f8a5f; --p-seat: #b9b0a0; --p-ghost-edge: rgba(255,255,255,.8); --p-input: #fff8ec; }
+#brunch-club .shot:nth-child(1) .phone { --p-bg: #ff3b1f; }
+#brunch-club .shot:nth-child(2) .phone { --p-bg: #1e2bff; --p-display-color: #ff6fd8; }
+#brunch-club .shot:nth-child(3) .phone { --p-bg: #12332b; --p-display-color: #ff6fd8; }
+#brunch-club .phone .opt { color: #12332b; border-color: #12332b; }
+#brunch-club .phone .opt.sel { border-color: #12332b; box-shadow: 4px 4px 0 #12332b; }
+#brunch-club .phone .input span { color: #4f5f58; }
+#brunch-club .phone .msg.mine { border-color: #12332b; }
+#brunch-club .phone .tag { background: #ffe600; color: #12332b; }
+
+/* 5 · Soft Hello */
+#soft-hello { --band-bg: #faf3e9; --band-ink: #141414; --band-muted: #5c564c; --h2-font: "Newsreader", Georgia, serif; --h2-size: clamp(48px, 7.5vw, 90px); --h2-weight: 500; --h2-track: -.03em; --sw-edge: #141414; }
+#soft-hello h2 em { font-style: italic; }
+#soft-hello .phone { --p-ink: #141414; --p-muted: #3f3a36; --p-surface: rgba(255,255,255,.72); --p-line: #141414; --p-accent: #141414; --p-accent-ink: #ffffff; --p-accent2: #ff8a3d; --p-accent2-ink: #141414; --p-sel: #141414; --p-sel-ink: #ffffff; --p-radius: 14px; --p-btn-radius: 999px; --p-display: "Newsreader", Georgia, serif; --p-body: "Archivo", system-ui, sans-serif; --p-h1-size: 30px; --p-h1-weight: 500; --p-h1-track: -.02em; --p-btn-case: uppercase; --p-btn-track: .06em; --p-pill: #141414; --p-pill-ink: #fff; --p-here: #141414; --p-live: #ff8a3d; --p-seat: #141414; --p-sec-font: "Newsreader", Georgia, serif; }
+#soft-hello .shot:nth-child(1) .phone { --p-bg: #ffc8e8; }
+#soft-hello .shot:nth-child(2) .phone { --p-bg: #b8f25e; }
+#soft-hello .shot:nth-child(3) .phone { --p-bg: #cfc0ff; }
+#soft-hello .phone .p-sec { font-size: 16px; font-weight: 500; font-style: italic; }
+#soft-hello .phone .member em.here::before { content: "● "; color: #ff8a3d; }
+
+.foot { padding-block: 36px 56px; color: var(--muted); font-size: 13px; }
+.foot p { margin: 0; max-width: 70ch; }
+
+body.solo .intro, body.solo .foot { display: none; }
+@media (prefers-reduced-motion: no-preference) { .jump a { transition: border-color .15s; } }
+</style>
+
+<header class="wrap intro">
+  <div class="eyebrow">IXD415 · Group 3 · Loudon</div>
+  <h1>Open Seat, five ways</h1>
+  <p>Five visual directions for Open Seat, pulled from my mood board. Each one shows the same three screens: a quiz question, the board, and a group. <b>Every quiz screen shows the picked answer staying highlighted</b>, since V3 testing showed nobody could tell what they'd tapped.</p>
+  <p>The archetype mascots are rough placeholders I drew to show how characters could work in each style. They're not final branding.</p>
+  <nav class="jump" aria-label="Directions" id="jump"></nav>
+</header>
+
+<main id="dirs"></main>
+
+<footer class="wrap foot">
+  <p>Proof of concept for picking a direction as a group. Nothing here is wired to the live app yet. Pick one (or mix: one direction's type with another's color) and we'll restyle V3 to match.</p>
+</footer>
+
+<script>
+// ---------- Mascots (placeholders, one per archetype) ----------
+const ARCH = [
+  ["sun", "The Sunshine"], ["quiet", "The Quiet One"], ["food", "The Foodie"], ["study", "The Study Buddy"], ["easy", "The Easygoing"],
+];
+const NAMES = Object.fromEntries(ARCH);
+
+function mascot(type, m) {
+  const s = `stroke="${m.stroke}" stroke-width="${m.sw}" stroke-linecap="round" stroke-linejoin="round"`;
+  const f = m.f;
+  const legs = `<path d="M42 74 L40 90 M58 74 L60 90" fill="none" ${s}/><ellipse cx="37" cy="91" rx="6" ry="3.2" fill="${m.stroke}"/><ellipse cx="63" cy="91" rx="6" ry="3.2" fill="${m.stroke}"/>`;
+  const happy = (a, b, y) => `<path d="M${a - 5} ${y} q5 -6 10 0 M${b - 5} ${y} q5 -6 10 0" fill="none" ${s}/>`;
+  const cheeks = (a, b, y) => `<ellipse cx="${a}" cy="${y}" rx="4.5" ry="3" fill="${m.cheek}"/><ellipse cx="${b}" cy="${y}" rx="4.5" ry="3" fill="${m.cheek}"/>`;
+  let body = "";
+  if (type === "sun") {
+    let petals = "";
+    for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3 - Math.PI / 2; petals += `<circle cx="${(50 + 21 * Math.cos(a)).toFixed(1)}" cy="${(44 + 21 * Math.sin(a)).toFixed(1)}" r="14" fill="${f.sun}" ${s}/>`; }
+    body = legs + petals + `<circle cx="50" cy="44" r="20" fill="${f.sunC}" ${s}/>` + happy(43, 57, 42) + `<path d="M41 49 q9 12 18 0 z" fill="${m.stroke}"/>` + cheeks(37, 63, 49)
+      + `<path d="M72 52 q12 -4 15 -20" fill="none" ${s}/><circle cx="87" cy="30" r="4.5" fill="${m.hand}" ${s}/>`;
+  } else if (type === "quiet") {
+    body = legs + `<path d="M26 58 q-8 8 -3 15 M74 58 q8 8 3 15" fill="none" ${s}/><circle cx="50" cy="47" r="27" fill="${f.quiet}" ${s}/>`
+      + `<path d="M23 46 a27 27 0 0 1 54 0" fill="none" stroke="${m.stroke}" stroke-width="${m.sw * 1.7}" stroke-linecap="round"/>`
+      + `<rect x="15" y="38" width="11" height="19" rx="4" fill="${f.cups}" ${s}/><rect x="74" y="38" width="11" height="19" rx="4" fill="${f.cups}" ${s}/>`
+      + `<path d="M38 47 h8 M54 47 h8 M45 56 q5 4 10 0" fill="none" ${s}/>` + cheeks(38, 62, 53)
+      + `<path d="M86 8 v14" ${s}/><circle cx="83" cy="23" r="3.6" fill="${m.stroke}"/><path d="M86 8 l7 3" ${s}/>`;
+  } else if (type === "food") {
+    body = legs + `<circle cx="50" cy="42" r="26" fill="${f.food}" ${s}/>` + happy(42, 58, 39) + `<path d="M44 48 q6 6 12 0" fill="none" ${s}/>` + cheeks(36, 64, 46)
+      + `<path d="M60 58 L79 22 M66 60 L87 27" fill="none" ${s}/>`
+      + `<path d="M25 59 h50 a25 19 0 0 1 -50 0 z" fill="${f.bowl}" ${s}/>`
+      + `<path d="M33 59 q4 -8 8 0 q4 -8 8 0 q4 -8 8 0 q4 -8 8 0" fill="none" ${s}/>`
+      + `<circle cx="24" cy="62" r="4.5" fill="${m.hand}" ${s}/><circle cx="76" cy="62" r="4.5" fill="${m.hand}" ${s}/>`;
+  } else if (type === "study") {
+    body = legs + `<rect x="24" y="18" width="52" height="56" rx="9" transform="rotate(-6 50 46)" fill="${f.study}" ${s}/>`
+      + `<circle cx="40" cy="40" r="7.5" fill="${m.lens}" ${s}/><circle cx="60" cy="38" r="7.5" fill="${m.lens}" ${s}/><path d="M47.5 39 l5 -0.6" ${s}/>`
+      + `<circle cx="41" cy="41" r="2.4" fill="${m.stroke}"/><circle cx="61" cy="39" r="2.4" fill="${m.stroke}"/>`
+      + `<path d="M43 53 q7 5 13 -1" fill="none" ${s}/>`
+      + `<rect x="33" y="60" width="34" height="19" rx="2" fill="${f.book}" ${s}/><path d="M50 60 v19" ${s}/>`
+      + `<circle cx="31" cy="68" r="4.5" fill="${m.hand}" ${s}/><circle cx="69" cy="68" r="4.5" fill="${m.hand}" ${s}/>`;
+  } else {
+    const cs = [[33, 50, 16], [50, 38, 20], [67, 50, 16], [50, 57, 18]];
+    body = legs + cs.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${f.easy}" ${s}/>`).join("")
+      + cs.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r - m.sw / 2}" fill="${f.easy}"/>`).join("")
+      + `<path d="M40 47 q4 3 8 0 M53 47 q4 3 8 0 M45 56 q5 4 10 0" fill="none" ${s}/>` + cheeks(37, 64, 53)
+      + `<path d="M64 63 q7 4 11 1" fill="none" ${s}/>`
+      + `<rect x="74" y="57" width="14" height="16" rx="3" fill="${f.mug}" ${s}/><path d="M88 61 q6 0 6 4.5 t-6 4.5" fill="none" ${s}/>`
+      + `<path d="M79 51 q-3 -4 0 -8 q3 -4 0 -8" fill="none" ${s}/>`;
+  }
+  return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${NAMES[type]} mascot">${body}</svg>`;
+}
+
+// ---------- Small decorative helpers ----------
+function burst(size, fill, spikes = 14, inner = 0.72, stroke = "none") {
+  let p = [];
+  for (let i = 0; i < spikes * 2; i++) {
+    const r = i % 2 ? size / 2 * inner : size / 2, a = Math.PI * i / spikes;
+    p.push(`${(size / 2 + r * Math.cos(a)).toFixed(1)},${(size / 2 + r * Math.sin(a)).toFixed(1)}`);
+  }
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true"><polygon points="${p.join(" ")}" fill="${fill}" stroke="${stroke}" stroke-width="3"/></svg>`;
+}
+function pixels(rows, colors, cell) {
+  const w = rows[0].length * cell, h = rows.length * cell;
+  let r = "";
+  rows.forEach((row, y) => [...row].forEach((ch, x) => { if (colors[ch]) r += `<rect x="${x * cell}" y="${y * cell}" width="${cell}" height="${cell}" fill="${colors[ch]}"/>`; }));
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
+}
+const SPARK = ["...x...", "...x...", "..xxx..", "xxxxxxx", "..xxx..", "...x...", "...x..."];
+const BLOB = [
+  "....pppppp....",
+  "..pppppppppp..",
+  ".ppppllllpppp.",
+  "pppllllllllppp",
+  "ppllllllllllpp",
+  ".pplllllllllp.",
+  "..ppppllllppp.",
+  "....gggggpp...",
+  "....ggggg.....",
+  ".....ggg......",
+];
+const squiggle = (c, w = 120, sw = 5) => `<svg width="${w}" height="${w * 0.5}" viewBox="0 0 120 60" aria-hidden="true"><path d="M5 40 q15 -35 30 0 t30 0 t30 0 q10 -20 20 -10" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round"/></svg>`;
+const loop = (c, w = 90) => `<svg width="${w}" height="${w}" viewBox="0 0 90 90" aria-hidden="true"><path d="M8 70 C 30 70, 30 30, 50 30 C 70 30, 70 55, 52 55 C 36 55, 40 20, 82 12" fill="none" stroke="${c}" stroke-width="3.5" stroke-linecap="round"/></svg>`;
+const dots = (c) => `<div style="width:130px;height:130px;background-image:radial-gradient(${c} 2.2px, transparent 2.6px);background-size:10px 10px;-webkit-mask-image:radial-gradient(circle, #000 35%, transparent 70%);mask-image:radial-gradient(circle, #000 35%, transparent 70%)"></div>`;
+const tape = (bg, fg, text) => `<div style="width:420px;transform:rotate(-28deg);background:${bg};color:${fg};font:800 10px/1 Unbounded, sans-serif;letter-spacing:.08em;padding:5px 0;white-space:nowrap;overflow:hidden">${(text + " ✱ ").repeat(14)}</div>`;
+
+// ---------- The five directions ----------
+const D = [
+  {
+    id: "late-night", name: "Late-Night Poster", title: "Open Seat",
+    from: "The event posters with the blue cat.",
+    feel: "Loud, hand-lettered, sticker-bomb energy on black. Every screen looks like a flyer for something you don't want to miss.",
+    fits: "Makes a lunch meetup feel like an event, and the mascots can act like stickers.",
+    watch: "Busy backgrounds can bury the main button, so decoration stays out of the way of actions.",
+    type: "Bagel Fat One for headlines, Rubik for everything else, Caveat Brush for little handwritten notes.",
+    swatches: ["#121212", "#f57be6", "#2e6bff", "#7ee04a", "#ff5a1f", "#ffe14a"],
+    m: { stroke: "#121212", sw: 3.4, cheek: "#ff5a1f", hand: "#ffffff", lens: "#ffffff", f: { sun: "#f57be6", sunC: "#ffe14a", quiet: "#2e6bff", cups: "#f57be6", food: "#ff5a1f", bowl: "#7ee04a", study: "#7ee04a", book: "#2e6bff", easy: "#ffffff", mug: "#ff5a1f" } },
+    decor: [
+      () => `<div style="top:330px;right:-70px">${burst(170, "#f57be6", 12, 0.62)}</div><div style="bottom:70px;left:-26px">${squiggle("#7ee04a", 130, 7)}</div>`,
+      () => `<div style="top:-62px;right:-62px">${burst(120, "#2e6bff", 10, 0.6)}</div>`,
+      () => `<div style="top:-58px;right:-58px">${burst(120, "#7ee04a", 11, 0.6)}</div><div style="top:300px;right:-40px">${burst(80, "#ff5a1f", 8, 0.55)}</div>`,
+    ],
+    lineupBand: () => `<div style="bottom:-90px;right:-90px;position:absolute">${burst(380, "#f57be6", 14, 0.66)}</div><div style="bottom:330px;right:120px;position:absolute">${squiggle("#2e6bff", 200, 10)}</div>`,
+    h2: (t) => [...t].map((c, i) => c === " " ? " " : `<span style="transform:rotate(${[-6, 4, -3, 7, -5, 3, -8, 5, -2][i % 9]}deg)">${c}</span>`).join(""),
+  },
+  {
+    id: "pixel-dream", name: "Pixel Dream", title: "open seat",
+    from: "The pixel art “out of office” post.",
+    feel: "A dreamy serif sitting on chunky pixel shapes and sparkles. Feels like a cozy game.",
+    fits: "Leans into the “game of sorts” feeling one of my V1 testers described.",
+    watch: "Pixel mascots get muddy when they're small, so names and text have to stay crisp and large.",
+    type: "Gloock serif for headlines, DM Sans for reading, Silkscreen pixel font for buttons and labels.",
+    swatches: ["#0b0b0e", "#e86be0", "#8c7cf0", "#39c64a", "#ffb21e", "#19a9e6"],
+    pixel: true,
+    m: { stroke: "#0b0b0e", sw: 4.5, cheek: "#e86be0", hand: "#fff6de", lens: "#fff6de", f: { sun: "#e86be0", sunC: "#ffb21e", quiet: "#8c7cf0", cups: "#19a9e6", food: "#39c64a", bowl: "#ffb21e", study: "#ffb21e", book: "#e86be0", easy: "#fff6de", mug: "#19a9e6" } },
+    decor: [
+      () => `<div style="bottom:80px;right:-44px;opacity:.9">${pixels(BLOB, { p: "#e86be0", l: "#8c7cf0", g: "#39c64a" }, 10)}</div><div style="top:330px;left:30px">${pixels(SPARK, { x: "#ffb21e" }, 4)}</div><div style="bottom:96px;left:10px">${pixels(SPARK, { x: "#19a9e6" }, 3)}</div>`,
+      () => `<div style="top:12px;right:14px">${pixels(SPARK, { x: "#ffb21e" }, 4)}</div><div style="top:48px;right:46px">${pixels(SPARK, { x: "#19a9e6" }, 3)}</div>`,
+      () => `<div style="top:-34px;right:-56px;opacity:.85">${pixels(BLOB, { p: "#8c7cf0", l: "#e86be0", g: "#39c64a" }, 6)}</div><div style="bottom:150px;right:10px">${pixels(SPARK, { x: "#ffb21e" }, 3)}</div>`,
+    ],
+    lineupBand: () => `<div style="bottom:-30px;right:-60px;position:absolute;opacity:.95">${pixels(BLOB, { p: "#e86be0", l: "#8c7cf0", g: "#39c64a" }, 24)}</div><div style="bottom:330px;right:300px;position:absolute">${pixels(SPARK, { x: "#ffb21e" }, 8)}</div><div style="bottom:60px;left:30px;position:absolute">${pixels(SPARK, { x: "#19a9e6" }, 7)}</div>`,
+  },
+  {
+    id: "better-together", name: "Better Together", title: "better together",
+    from: "The Verint “2022 Wrapped” posts.",
+    feel: "Big geometric shapes, wide type, tape strips and halftone dots layered like a collage.",
+    fits: "“Better together” is basically our pitch, and the overlapping shapes read as people coming together.",
+    watch: "It can tip into looking corporate if the shapes get too neat. Keep it a little messy.",
+    type: "Unbounded (extra wide) for headlines, Archivo for everything else.",
+    swatches: ["#121826", "#ff6a2b", "#f07cf0", "#1f6bff", "#2fe3b2", "#c7f25a"],
+    m: { stroke: "#121826", sw: 3, cheek: "#f07cf0", hand: "#ffffff", lens: "#ffffff", f: { sun: "#f07cf0", sunC: "#c7f25a", quiet: "#1f6bff", cups: "#ff6a2b", food: "#ff6a2b", bowl: "#2fe3b2", study: "#2fe3b2", book: "#f07cf0", easy: "#c7f25a", mug: "#1f6bff" } },
+    decor: [
+      () => `<div style="top:300px;right:-90px">${burst(190, "#ff6a2b", 22, 0.86)}</div><div style="bottom:40px;left:-30px">${dots("#f07cf0")}</div>`,
+      () => `<div style="top:470px;left:-60px">${tape("#c7f25a", "#121826", "TOGETHER")}</div><div style="bottom:-60px;right:-60px;width:180px;height:180px;border-radius:50%;background:#f07cf0;opacity:.9"></div>`,
+      () => `<div style="top:-90px;right:-80px;width:150px;height:150px;border-radius:50%;background:#1f6bff"></div><div style="top:-46px;right:-46px">${burst(84, "#2fe3b2", 16, 0.8)}</div><div style="bottom:130px;left:-40px">${dots("#c7f25a")}</div>`,
+    ],
+    lineupBand: () => `<div style="position:absolute;bottom:-110px;right:-90px">${burst(380, "#ff6a2b", 26, 0.86)}</div><div style="position:absolute;bottom:240px;right:220px;width:150px;height:150px;border-radius:50%;background:#f07cf0"></div><div style="position:absolute;bottom:-40px;left:-60px">${tape("#c7f25a", "#121826", "BETTER TOGETHER")}</div>`,
+  },
+  {
+    id: "brunch-club", name: "Brunch Club", title: "Open Seat",
+    from: "The Madrid drag brunch posters.",
+    feel: "One loud color per screen, tall condensed caps, framed panels and price-tag stamps.",
+    fits: "Pulls from queer brunch and nightlife posters, which matches our “Open Seat is for everyone” rule. Every screen is easy to tell apart.",
+    watch: "Strong color fields need careful contrast, especially small text on red.",
+    type: "Big Shoulders Display (condensed, heavy) for headlines, Archivo Narrow for text.",
+    swatches: ["#ff3b1f", "#ff6fd8", "#ffe600", "#1e2bff", "#12332b", "#fff8ec"],
+    m: { stroke: "#12332b", sw: 3.4, cheek: "#ff6fd8", hand: "#fff8ec", lens: "#fff8ec", f: { sun: "#ffe600", sunC: "#ff6fd8", quiet: "#3fd0c9", cups: "#ffe600", food: "#ff6fd8", bowl: "#ff3b1f", study: "#3fd0c9", book: "#ffe600", easy: "#fff8ec", mug: "#ff3b1f" } },
+    decor: [
+      () => `<div style="top:16px;right:16px;font:900 20px/1 'Big Shoulders Display';color:#ffe600">✦</div>`,
+      () => `<div style="top:18px;right:18px;font:900 18px/1 'Big Shoulders Display';color:#ff6fd8">✦</div>`,
+      () => `<div style="top:18px;right:18px;font:900 18px/1 'Big Shoulders Display';color:#ffe600">✦ ✦</div>`,
+    ],
+    lineupBand: () => `<div style="position:absolute;bottom:200px;right:60px;font:900 60px/1 'Big Shoulders Display';color:#ffe600">✦</div><div style="position:absolute;bottom:90px;right:120px;font:900 26px/1 'Big Shoulders Display';color:#1e2bff">✦</div>`,
+  },
+  {
+    id: "soft-hello", name: "Soft Hello", title: "Pull up a <em>chair.</em>",
+    from: "The Underline ads and the two character sheets.",
+    feel: "Soft color fields, a friendly serif, black pill buttons and line-drawn characters with personality.",
+    fits: "Calm and welcoming for people who are nervous about meeting strangers, which came up in every round of testing.",
+    watch: "It's the quietest option, so live stuff (who's online, chat) has to stand out on its own.",
+    type: "Newsreader serif for headlines, Archivo for text and all-caps buttons.",
+    swatches: ["#ffc8e8", "#b8f25e", "#cfc0ff", "#ff8a3d", "#faf3e9", "#141414"],
+    m: { stroke: "#141414", sw: 3, cheek: "#ff8a3d", hand: "#ffffff", lens: "#ffffff", f: { sun: "#ffc8e8", sunC: "#ffffff", quiet: "#cfc0ff", cups: "#ff8a3d", food: "#ff8a3d", bowl: "#b8f25e", study: "#b8f25e", book: "#cfc0ff", easy: "#ffffff", mug: "#ffc8e8" } },
+    decor: [
+      () => `<div style="top:330px;right:4px">${loop("#141414", 96)}</div>`,
+      () => `<div style="top:14px;right:10px">${loop("#141414", 70)}</div>`,
+      () => `<div style="top:345px;right:4px">${loop("#141414", 70)}</div>`,
+    ],
+    lineupBand: () => `<div style="position:absolute;bottom:200px;right:60px">${loop("#141414", 200)}</div>`,
+  },
+];
+
+// ---------- Screens (same content in every direction) ----------
+function screens(d) {
+  const M = (t) => d.pixel ? `<canvas class="px" data-t="${t}" width="100" height="100" role="img" aria-label="${NAMES[t]} mascot"></canvas>` : mascot(t, d.m);
+  const empty = (n) => '<span class="empty"></span>'.repeat(n);
+  const quiz = `
+    <div class="p-top"><span class="p-back">← Back</span><span class="p-kicker">Question 1 of 7</span></div>
+    <div class="p-progress"><i></i></div>
+    <h3 class="p-h1">Your ideal lunch vibe?</h3>
+    <div class="opts">
+      <div class="opt sel"><span>Talk the whole time</span><span class="chk">✓</span></div>
+      <div class="opt">Chill, low-key</div>
+      <div class="opt">Just here for the food</div>
+    </div>
+    <div class="peek">${M("sun")}<span>So far you're leaning<br><b>The Sunshine</b></span></div>
+    <div class="btn push">Next</div>`;
+  const board = `
+    <div class="p-brand">Open Seat</div>
+    <div class="me">${M("sun")}<div><b>Avery</b><small>The Sunshine · <u>Retake quiz</u></small></div></div>
+    <div class="live"><i></i>6 online · 3 in groups</div>
+    <div class="seg"><span class="on">Lunch</span><span>Study</span></div>
+    <div class="row2"><div class="btn">Spin</div><div class="btn ghost">+ Start a group</div></div>
+    <div class="btn alt">Get a random group <small>2 waiting</small></div>
+    <div class="p-sec">Open lunch groups</div>
+    <div class="card">
+      <div class="card-top"><b>DeBruce Center</b><span class="pill">38 min</span></div>
+      <small>Jordan's group · music, cats</small>
+      <div class="seats">${M("food")}${M("quiet")}${empty(3)}</div>
+      <div class="btn small">Join</div>
+    </div>
+    <div class="card">
+      <div class="card-top"><b>Kansas Union</b><span class="pill">12 min</span></div>
+      <small>Sam's group · anything</small>
+      <div class="seats">${M("easy")}${M("study")}${empty(3)}</div>
+    </div>`;
+  const group = `
+    <span class="tag">Lunch</span>
+    <h3 class="p-h1">DeBruce Center</h3>
+    <span class="p-kicker">By the windows, green backpack · 38 min left</span>
+    <div class="card">
+      <div class="member">${M("food")}<div><b>Jordan</b> <small>The Foodie · vegetarian · $</small></div><em class="here">here</em></div>
+      <div class="member">${M("quiet")}<div><b>Riley</b> <small>The Quiet One · $$</small></div><em class="here">here</em></div>
+      <div class="member">${M("sun")}<div><b>Avery (you)</b> <small>The Sunshine</small></div><em>on the way</em></div>
+    </div>
+    <div class="row2"><div class="btn">I'm here</div><div class="btn ghost">Leave</div></div>
+    <div class="p-sec">Table chat</div>
+    <div class="chat">
+      <div class="msg"><b>Jordan</b>got the big table by the windows</div>
+      <div class="msg"><b>Riley</b>2 min away</div>
+      <div class="msg mine">Coming!</div>
+    </div>
+    <div class="input push"><span>Say something</span><b>Send</b></div>`;
+  const caps = [
+    ["Quiz", "the picked answer stays highlighted, and your mascot starts to show up."],
+    ["Board", "your mascot up top, and a face for everyone already sitting in each group."],
+    ["Group", "who's at the table, who's arrived, and the chat."],
+  ];
+  return [quiz, board, group].map((html, i) => `
+    <figure class="shot" style="margin:0">
+      <div class="phone"><div class="decor">${d.decor[i]()}</div><div class="scr">${html}</div></div>
+      <p><b>${caps[i][0]}:</b> ${caps[i][1]}</p>
+    </figure>`).join("");
+}
+
+function section(d, n) {
+  const M = (t) => d.pixel ? `<canvas class="px" data-t="${t}" width="100" height="100" role="img" aria-label="${NAMES[t]} mascot"></canvas>` : mascot(t, d.m);
+  const title = d.h2 ? d.h2(d.title) : d.title;
+  return `
+  <section class="dir" id="${d.id}" data-i="${n}" aria-labelledby="${d.id}-h">
+    <div aria-hidden="true">${d.lineupBand()}</div>
+    <div class="wrap">
+      <div class="dir-head">
+        <div>
+          <div class="num">Direction ${n + 1} of 5 · ${d.name}</div>
+          <h2 id="${d.id}-h">${title}</h2>
+          <ul class="notes">
+            <li><b>From</b><span>${d.from}</span></li>
+            <li><b>Feels like</b><span>${d.feel}</span></li>
+            <li><b>Why it fits</b><span>${d.fits}</span></li>
+            <li><b>Watch out</b><span>${d.watch}</span></li>
+          </ul>
+        </div>
+        <div class="kit">
+          <div class="swatches">${d.swatches.map((c) => `<div class="sw"><i style="background:${c}"></i>${c.toUpperCase()}</div>`).join("")}</div>
+          <div class="type-sample"><span>Lunch at DeBruce?</span>${d.type}</div>
+          <div class="lineup">${ARCH.map(([t, label]) => `<figure>${M(t)}<figcaption>${label}</figcaption></figure>`).join("")}</div>
+        </div>
+      </div>
+      <div class="phones">${screens(d)}</div>
+    </div>
+  </section>`;
+}
+
+document.getElementById("dirs").innerHTML = D.map(section).join("");
+document.getElementById("jump").innerHTML = D.map((d, i) => `<a href="#${d.id}">${i + 1}. ${d.name}</a>`).join("");
+
+// Pixel Dream: draw each mascot tiny, then scale it up so it turns into pixels.
+const pixelDir = D.find((d) => d.pixel);
+const pixelCache = {};
+document.querySelectorAll("canvas.px").forEach((c) => {
+  const t = c.dataset.t;
+  const draw = (img) => {
+    const small = 26;
+    c.width = small; c.height = small;
+    const ctx = c.getContext("2d");
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(img, 0, 0, small, small);
+  };
+  if (!pixelCache[t]) {
+    pixelCache[t] = new Promise((res) => {
+      const img = new Image();
+      img.onload = () => res(img);
+      img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(mascot(t, pixelDir.m).replace("<svg ", '<svg width="200" height="200" '));
+    });
+  }
+  pixelCache[t].then(draw);
+});
+
+// #only-<id> shows a single direction (used for screenshots).
+function solo() {
+  const m = location.hash.match(/^#only-(.+)$/);
+  document.body.classList.toggle("solo", !!m);
+  document.querySelectorAll(".dir").forEach((s) => { s.hidden = !!m && s.id !== m[1]; });
+}
+window.addEventListener("hashchange", solo);
+solo();
+</script>
