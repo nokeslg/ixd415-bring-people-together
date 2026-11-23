@@ -2,6 +2,18 @@
 
 Updated at least weekly. For each entry: what we tested, with whom, what happened, what surprised us. Newest at the top.
 
+## Week 4
+
+### Loudon: analytics hooked up (Mon 11/23)
+
+- **What:** added [Plausible](https://plausible.io) analytics to Open Seat V3 to count the number of users.
+- **Where:** the app now has a short link, https://sqku.pages.dev, and that's the site Plausible tracks. The tracking snippet is in [Loudon/Open_Seat_V3/public/index.html](Loudon/Open_Seat_V3/public/index.html).
+- **Proof:** the first pageview landed today. Plausible shows 1 unique visitor (my own test visit).
+
+![Plausible dashboard for sqku.pages.dev showing the first visitor on Nov 23](Loudon/images/2026-11-23_plausible_analytics.webp)
+
+- **Next:** share sqku.pages.dev with testers so every visit counts toward our numbers.
+
 ## Week 3
 
 ### Loudon: user testing Open Seat V3
