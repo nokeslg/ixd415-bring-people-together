@@ -115,8 +115,12 @@ function api(action, body = {}) {
 
 // One live PartyServer room ("lobby") for everyone. Reconnects on its own,
 // and says hello again so the room knows who this is.
+// The page can live on openseat.pages.dev (short link), but the live lobby
+// always runs on the worker. Locally and on workers.dev, it's the same host.
+const SERVER_HOST = location.hostname.endsWith(".pages.dev") ? "open-seat-v3.loudonnokes.workers.dev" : location.host;
+
 function connect() {
-  socket = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/parties/open-seat/lobby`);
+  socket = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${SERVER_HOST}/parties/open-seat/lobby`);
   socket.onopen = hello;
   socket.onmessage = (e) => {
     const msg = JSON.parse(e.data);

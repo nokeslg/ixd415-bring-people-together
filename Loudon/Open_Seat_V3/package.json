@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "wrangler dev --port 8788",
-    "deploy": "wrangler deploy",
+    "deploy": "wrangler deploy && wrangler pages deploy public --project-name sqku --branch main --commit-dirty=true",
     "reset": "curl -s -X POST -H \"x-reset-key: $(cat .reset-key)\" https://open-seat-v3.loudonnokes.workers.dev/parties/open-seat/lobby"
   },
   "dependencies": {

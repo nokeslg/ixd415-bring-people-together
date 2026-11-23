@@ -22,7 +22,12 @@ Then open http://localhost:8788. Each browser tab is a separate person, so you c
 
 ## Deploy
 
-`npm run deploy` publishes it as its own site (`open-seat-v3`), so V2's link keeps working.
+**Live link: https://sqku.pages.dev**
+
+`npm run deploy` does two things:
+
+1. Deploys the server (lobby, groups, chat) as its own worker, `open-seat-v3` at https://open-seat-v3.loudonnokes.workers.dev, so V2's link keeps working.
+2. Publishes the page to Cloudflare Pages at https://sqku.pages.dev, the short link we share and track in Plausible. The page connects back to the worker for the live lobby, so both links share the same groups and chat.
 
 ## Files
 
