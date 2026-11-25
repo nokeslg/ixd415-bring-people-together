@@ -7,5 +7,10 @@
   "durable_objects": {
     "bindings": [{ "name": "OpenSeat", "class_name": "OpenSeat" }]
   },
-  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["OpenSeat"] }]
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["OpenSeat"] }],
+  // Each piece of feedback also becomes a row in the team's Google Sheet
+  // (the sheet's Extensions → Apps Script → Deploy → Web app URL).
+  "vars": {
+    "FEEDBACK_SHEET_URL": "https://script.google.com/macros/s/AKfycbyEo9GOor7YdE3n6mA_6S05EFs3iQYqFE3gJK06iw2k7aKpWd8aY13BPXA__Nw7ZGPcvg/exec"
+  }
 }

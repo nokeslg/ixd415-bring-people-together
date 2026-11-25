@@ -584,6 +584,15 @@ OpenSeat.prototype.feedback = async function (request) {
     };
     if (!entry.feeling && !entry.text) return Response.json({ error: "Empty" }, { status: 400 });
     await this.ctx.storage.put(`fb:${entry.at}:${id()}`, entry);
+    // Also add it as a row in the team's Google Sheet, if one is set up
+    // (FEEDBACK_SHEET_URL in wrangler.jsonc: the sheet's Apps Script web app address).
+    if (this.env.FEEDBACK_SHEET_URL) {
+      const FEEL = { love: "Love it", okay: "It's okay", confused: "A bit confusing", no: "Not for me" };
+      this.ctx.waitUntil(fetch(this.env.FEEDBACK_SHEET_URL, {
+        method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ ...entry, feeling: FEEL[entry.feeling] || "", when: new Date(entry.at).toLocaleString("en-US", { timeZone: "America/Chicago" }) }),
+      }).catch(() => {}));
+    }
     return Response.json({ ok: true });
   }
   if (this.env.FEEDBACK_KEY && url.searchParams.get("key") !== this.env.FEEDBACK_KEY) return new Response("Not allowed", { status: 403 });

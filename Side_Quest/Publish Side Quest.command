@@ -19,11 +19,52 @@ if ! npx wrangler whoami 2>/dev/null | grep -qi "associated with the email"; the
   echo "  Sign in to Cloudflare in the browser window that opens, then come back here."
   npx wrangler login || { read -n 1 -s -r -p "  Sign-in didn't finish. Press any key to close."; exit 1; }
 fi
-echo "  Step 1 of 2: publishing the live server..."
-npx wrangler deploy || { echo ""; echo "  The server didn't publish. Copy the message above and send it to Claude."; read -n 1 -s -r -p "  Press any key to close."; exit 1; }
+# You may be a member of more than one Cloudflare account (Madi's has the server,
+# Loudon's has the sqku page). Find the right account for each step, so wrangler
+# never puts something in the wrong place.
+echo "  Checking your Cloudflare accounts..."
+rm -f node_modules/.cache/wrangler/wrangler-account.json
+scan() {
+  WHO="$(npx wrangler whoami 2>/dev/null)"
+  ACCOUNTS=$(echo "$WHO" | grep -Eo '[0-9a-f]{32}' | sort -u)
+  PAGES_ACCT=""; SERVER_ACCT=""
+  for A in $ACCOUNTS; do
+    CLOUDFLARE_ACCOUNT_ID=$A npx wrangler pages project list 2>/dev/null | grep -qw "sqku" && PAGES_ACCT=$A
+    CLOUDFLARE_ACCOUNT_ID=$A npx wrangler deployments list >/dev/null 2>&1 && SERVER_ACCT=$A
+  done
+  echo "  Cloudflare accounts you can use:"
+  echo "$WHO" | grep -E '[0-9a-f]{32}' | sed 's/^/    /'
+}
+scan
+# Joined an account after signing in here? The old sign-in doesn't know about it yet.
+if [ -z "$PAGES_ACCT" ]; then
+  echo ""
+  echo "  None of these has the sqku project. If Loudon added you after you last signed in,"
+  echo "  signing in again picks up his account."
+  read -r -p "  Sign in to Cloudflare again now? (y/n) " YN
+  if [ "$YN" = "y" ] || [ "$YN" = "Y" ]; then
+    npx wrangler logout >/dev/null 2>&1
+    echo "  Sign in in the browser window that opens. If it asks which accounts to allow, include Loudon's."
+    npx wrangler login && scan
+  fi
+fi
+if [ -n "$SERVER_ACCT" ]; then
+  echo "  Step 1 of 2: publishing the live server..."
+  CLOUDFLARE_ACCOUNT_ID=$SERVER_ACCT npx wrangler deploy || { echo ""; echo "  The server didn't publish. Copy the message above and send it to Claude."; read -n 1 -s -r -p "  Press any key to close."; exit 1; }
+else
+  echo "  Step 1 of 2: skipped. The server is in Madi's Cloudflare account, and you're not a member of it,"
+  echo "  so only the page will update. (Madi can add you, or run this herself.)"
+fi
 echo ""
 echo "  Step 2 of 2: publishing the page to https://sqku.pages.dev ..."
-if npx wrangler pages deploy public --project-name sqku --branch main --commit-dirty=true; then
+if [ -z "$PAGES_ACCT" ]; then
+  echo ""
+  echo "  The sqku project is in Loudon's Cloudflare account, and your login can't see it."
+  echo "  Accept his invite email (logged in with the same email) and make sure your role"
+  echo "  includes Pages, like Administrator. Or he runs this from the Side_Quest folder:   npm run deploy:page"
+  echo ""; read -n 1 -s -r -p "  Press any key to close."; exit 1
+fi
+if CLOUDFLARE_ACCOUNT_ID=$PAGES_ACCT npx wrangler pages deploy public --project-name sqku --branch main --commit-dirty=true; then
   printf "%s" "https://sqku.pages.dev" | pbcopy
   echo ""
   echo "  ✅ Side Quest is online:"
