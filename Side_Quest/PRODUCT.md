@@ -31,7 +31,7 @@ What neighboring products can't truthfully claim, all together:
 
 - Used on a phone, in the moment: between classes, at lunch, deciding whether to go to something tonight.
 - It's a group project for IXD 415 (Bring People Together), tested with real people every week. The class goal is reaching 100 users, including 5 people live at once.
-- Earlier versions: Open Seat V1–V3 by Loudon (repo `Loudon/Open_Seat_V*`); this is Madi's V4.
+- Earlier versions: Open Seat V1–V3 by Loudon (repo `Loudon/Open_Seat_V*`); Side Quest started as Madi's V4 and is now the team's app, in `Side_Quest/`.
 
 ## Capabilities and Constraints
 

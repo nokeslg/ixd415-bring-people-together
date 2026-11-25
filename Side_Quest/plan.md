@@ -1,6 +1,6 @@
 # Open Seat V3: plan
 
-V3 builds on [V2](../Open_Seat_V2/) using what we heard from my 5 user tests ([notes](../../notes/Loudon_V1_User_Testing_Notes.md)) and the ideas from class crit.
+V3 builds on [V2](../Loudon/Open_Seat_V2/) using what we heard from my 5 user tests ([notes](../notes/Loudon_V1_User_Testing_Notes.md)) and the ideas from class crit.
 
 ## Big idea: a personality quiz instead of a profile
 

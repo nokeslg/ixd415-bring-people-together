@@ -53,6 +53,7 @@ Design something that gets real people working in a product together, online and
 | `notes/` | One file per interview. Copy `notes/_template.md`. Doesn't need to be polished. |
 | `numbers.md` | Running tally toward 100 people reached and 5 live at once. Updated weekly. |
 | `audit.md` | Week 1: three multiplayer things each, and what told us others were there. |
+| `Side_Quest/` | Side Quest, our app (formerly Open Seat). Anyone can update it: see its README. Live at https://sqku.pages.dev. |
 | `analytics/` | Plausible analytics: which site we track, where the snippet lives, dashboard screenshots. |
 
 ## Team

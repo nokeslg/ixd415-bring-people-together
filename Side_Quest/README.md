@@ -1,6 +1,6 @@
 # Side Quest
 
-Side Quest is the new name for Open Seat. It's the same base app: my copy of [Loudon's Open Seat V3](../../Loudon/Open_Seat_V3/), made on 11/16 as Madi V4 so I could try changes without touching his version. Changes from V3 are listed below.
+Our team's app (Cami, Loudon, Madi). Side Quest is the new name for Open Seat: same base app. It started as Madi's V4, a copy of [Loudon's Open Seat V3](../Loudon/Open_Seat_V3/) made on 11/16. It lives here at the top of the repo so anyone on the team can update it. Changes from V3 are listed below.
 
 **Live link: https://sqku.pages.dev** (the short link Plausible tracks). Or run it locally (below).
 
@@ -36,6 +36,26 @@ Side Quest is the new name for Open Seat. It's the same base app: my copy of [Lo
 - **Madi's mascots** for The Sunshine and The Quiet One (`public/mascots/`) replace their emojis everywhere: quiz result, profile, the profile button, group lists, seats and chat. Their cards switch to a dark glow so the mascots stand out. Other friend types keep emojis until their mascots are drawn.
 - **Coming up lines up** with the rest of the home screen.
 
+## Updating it (anyone on the team)
+
+1. `git pull` so you have everyone's latest changes.
+2. Edit the app. Almost everything is in two files:
+   - `public/index.html`: every screen, the quiz, the text people see, colors and fonts.
+   - `src/server.js`: groups, chat, matching rules (`fitsTogether`) and feedback.
+   - Mascot art goes in `public/mascots/`.
+3. Double-click `Start Side Quest.command` to try it on your laptop. Each browser tab is a different person.
+4. Commit and push, and add a line to `log.md` if you tested it with people.
+5. Publish (below) when you want testers to see the change.
+
+Who can publish what:
+
+| Step | Where it goes | Cloudflare account | Who can run it |
+| --- | --- | --- | --- |
+| 1. Server | open-seat-madi-v4.madi-ixd-bpt.workers.dev | Madi's | Madi, or anyone she adds as a member |
+| 2. Page | sqku.pages.dev | Loudon's | Loudon, or anyone he adds as a member |
+
+If you're a member of more than one Cloudflare account, wrangler asks which one to use. Pick Madi's for step 1 and Loudon's for step 2.
+
 ## Run it locally
 
 Needs [Node.js](https://nodejs.org) 18 or newer. From this folder:
@@ -54,7 +74,7 @@ Then open http://localhost:8788. Each browser tab is a separate person, so you c
 Double-click `Publish Side Quest.command`, or run the two steps yourself:
 
 1. `npm run deploy` publishes the live server (groups, chat, feedback) to Madi's Cloudflare account at https://open-seat-madi-v4.madi-ixd-bpt.workers.dev. The server keeps its old name on purpose: nobody sees it, and renaming it would start a new, empty server.
-2. `npm run deploy:page` publishes the page to Cloudflare Pages at https://sqku.pages.dev, the short link we share and track in [Plausible](../../analytics/). The `sqku` project is in Loudon's Cloudflare account, so he runs this step, or adds Madi to his account.
+2. `npm run deploy:page` publishes the page to Cloudflare Pages at https://sqku.pages.dev, the short link we share and track in [Plausible](../analytics/). The `sqku` project is in Loudon's Cloudflare account, so he runs this step, or adds Madi to his account.
 
 The page on sqku.pages.dev connects back to the server (`SERVER_HOST` in `public/index.html`), so both links share the same groups and chat. Publishing this replaces Loudon's V3 at sqku.pages.dev.
 

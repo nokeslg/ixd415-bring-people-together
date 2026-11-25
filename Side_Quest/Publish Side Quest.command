@@ -37,7 +37,7 @@ else
   echo ""
   echo "  The server is updated, but the page didn't publish."
   echo "  The sqku project is in Loudon's Cloudflare account. Either he adds you to it,"
-  echo "  or he runs this from Madi/Side_Quest:   npm run deploy:page"
+  echo "  or he runs this from the Side_Quest folder:   npm run deploy:page"
 fi
 echo ""
 read -n 1 -s -r -p "  Press any key to close."
