@@ -10,7 +10,7 @@ Updated at least weekly. For each entry: what we tested, with whom, what happene
 - **Where:** the app now has a short link, https://sqku.pages.dev, and that's the site Plausible tracks. The tracking snippet is in [Loudon/Open_Seat_V3/public/index.html](Loudon/Open_Seat_V3/public/index.html).
 - **Proof:** the first pageview landed today. Plausible shows 1 unique visitor (my own test visit).
 
-![Plausible dashboard for sqku.pages.dev showing the first visitor on Nov 23](Loudon/images/2026-11-23_plausible_analytics.webp)
+![Plausible dashboard for sqku.pages.dev showing the first visitor on Nov 23](analytics/2026-11-23_plausible_analytics.webp)
 
 - **Next:** share sqku.pages.dev with testers so every visit counts toward our numbers.
 

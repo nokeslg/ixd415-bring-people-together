@@ -1,0 +1,16 @@
+{
+  "name": "open-seat-madi-v4",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev --port 8788",
+    "deploy": "wrangler deploy",
+    "deploy:page": "wrangler pages deploy public --project-name sqku --branch main --commit-dirty=true",
+    "reset": "curl -s -X POST -H \"x-reset-key: $(cat .reset-key)\" http://localhost:8788/parties/open-seat/lobby"
+  },
+  "dependencies": {
+    "partyserver": "0.5.10"
+  },
+  "devDependencies": {
+    "wrangler": "4.152.0"
+  }
+}

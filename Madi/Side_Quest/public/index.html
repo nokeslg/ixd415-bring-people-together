@@ -1,0 +1,1642 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#09080b">
+<title>Side Quest</title>
+<!-- Privacy-friendly analytics by Plausible -->
+<script async src="https://plausible.io/js/pa-dBo2qx9vcF7kHhms8wQ9-.js"></script>
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
+</script>
+<style>
+  /* Fonts are bundled with the app, so it works without internet too. */
+  @font-face { font-family: "Instrument Serif"; src: url(fonts/instrument-serif-latin-400-normal.woff2) format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Instrument Serif"; src: url(fonts/instrument-serif-latin-400-italic.woff2) format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+  @font-face { font-family: "DM Sans"; src: url(fonts/dm-sans-latin-wght-normal.woff2) format("woff2"); font-weight: 100 1000; font-style: normal; font-display: swap; }
+  :root {
+    --paper: #09080b; --card: #16141a; --ink: #f6f0e6; --muted: #a49dae; --line: #2a2730; --soft: #221f28; --dark: #17121f;
+    --pink: #ff4f9a; --orange: #ff7a29; --yellow: #ffd23f; --lime: #c9f03d; --blue: #3d5afe; --violet: #8b5cf6; --teal: #12b39a;
+    --go: #17a35a; --danger: #e0372c;
+    --food: #ff7a29; --study: #3d5afe; --hangout: #12b39a; --event: #7442e8;
+    --display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+    --body: "DM Sans", -apple-system, system-ui, sans-serif;
+    /* Film grain, laid over gradients so they feel printed */
+    --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; }
+  body { color: var(--ink); font: 16px/1.4 var(--body); background: #000; }
+  button { font: inherit; border: 0; cursor: pointer; color: inherit; background: none; padding: 0; }
+  input, select { font: inherit; width: 100%; min-width: 0; padding: 13px 15px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--card); color: var(--ink); }
+  input:focus, select:focus { outline: none; border-color: var(--ink); }
+  input::placeholder { color: #8d8697; opacity: 1; }
+  input, textarea { caret-color: var(--pink); }
+  ::selection { background: var(--pink); color: var(--dark); }
+  :focus-visible { outline: 2.5px solid var(--lime); outline-offset: 3px; }
+  input:focus-visible, select:focus-visible { outline: none; border-color: var(--lime); box-shadow: 0 0 0 3px color-mix(in srgb, var(--lime) 35%, transparent); }
+  button { transition: filter .15s ease-out, transform .15s ease-out; }
+  @media (hover: hover) { button:not(:disabled):hover { filter: brightness(1.08); } }
+  button:not(:disabled):active { transform: scale(.98); }
+  /* The ID photo picker, styled like the app instead of the browser default */
+  input[type=file] { padding: 10px; color: var(--muted); }
+  input[type=file]::file-selector-button { font: 700 14px var(--body); border: 0; border-radius: 99px; padding: 9px 15px; margin-right: 12px; background: var(--ink); color: var(--paper); cursor: pointer; }
+  /* Sideways-scrolling chips fade out at the edge so it's clear there's more */
+  .chips.scrollx { mask-image: linear-gradient(90deg, #000 85%, transparent); -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent); }
+  .hidden { display: none !important; }
+
+  /* Gradients with grain on top */
+  .tex { position: relative; isolation: isolate; overflow: hidden; }
+  .tex::after { content: ""; position: absolute; inset: 0; background: var(--grain); opacity: .45; mix-blend-mode: overlay; pointer-events: none; z-index: -1; border-radius: inherit; }
+  .avbtn.tex { overflow: visible; }
+  .g-pink { background: radial-gradient(circle at 85% 15%, var(--yellow) 0 18%, transparent 55%), linear-gradient(140deg, var(--pink), var(--orange)); color: var(--dark); }
+  .g-blue { background: radial-gradient(circle at 88% 12%, color-mix(in srgb, var(--pink) 40%, transparent) 0 8%, transparent 38%), linear-gradient(150deg, #2f45e6, #5a2fd0); color: #fff; }
+  .g-lime { background: radial-gradient(circle at 90% 90%, var(--teal) 0 12%, transparent 55%), linear-gradient(150deg, var(--lime), #8ee07a); color: var(--dark); }
+  .g-night { background: radial-gradient(circle at 80% 20%, color-mix(in srgb, var(--violet) 50%, transparent) 0 15%, transparent 55%), radial-gradient(circle at 10% 90%, color-mix(in srgb, var(--pink) 45%, transparent) 0 10%, transparent 45%), linear-gradient(160deg, #241b3a, #17121f); color: #fff; }
+  .g-food { background: radial-gradient(circle at 90% 10%, var(--yellow) 0 15%, transparent 55%), linear-gradient(140deg, var(--orange), var(--pink)); color: var(--dark); }
+  .g-study { background: radial-gradient(circle at 90% 10%, color-mix(in srgb, var(--lime) 45%, transparent) 0 8%, transparent 40%), linear-gradient(140deg, var(--blue), #2b2f9e); color: #fff; }
+  .g-hangout { background: radial-gradient(circle at 90% 10%, var(--yellow) 0 12%, transparent 50%), linear-gradient(140deg, var(--teal), #5fd8b9); color: var(--dark); }
+  .g-event { background: radial-gradient(circle at 90% 10%, color-mix(in srgb, var(--pink) 38%, transparent) 0 10%, transparent 40%), linear-gradient(140deg, #6431db, #3b158c); color: #fff; }
+
+  /* ---------- The phone, on a laptop ---------- */
+  .stage { min-height: 100%; display: flex; align-items: center; justify-content: center; gap: 56px; padding: 0; position: relative; isolation: isolate; overflow: hidden; }
+  /* The phone is drawn at 375 × 730 and scaled up to fill the screen's height. */
+  .device { position: relative; width: 375px; height: 730px; background: var(--paper); border-radius: 52px; outline: 11px solid #1d1b22; box-shadow: 0 0 0 12px #34313b, 0 0 0 13px #4a4652; overflow: hidden; display: flex; flex-direction: column; flex: none; margin: 14px; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 112px; height: 32px; background: #000; border-radius: 20px; z-index: 50; }
+  .statusbar { height: 50px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 6px 28px 0 32px; font-weight: 700; font-size: 15px; }
+  .statusbar svg { height: 12px; }
+  .homeind { position: absolute; bottom: 7px; left: 50%; transform: translateX(-50%); width: 128px; height: 5px; border-radius: 3px; background: var(--ink); z-index: 40; }
+  .screen { flex: 1; min-height: 0; display: flex; flex-direction: column; position: relative; }
+
+  /* Real phones: the app fills the screen */
+  @media (max-width: 600px) {
+    body { background: var(--paper); }
+    .stage { padding: 0; display: block; }
+    .device { position: fixed; inset: 0; width: 100vw; height: 100dvh; zoom: 1 !important; border-radius: 0; outline: 0; box-shadow: none; margin: 0; }
+    .island, .statusbar, .homeind { display: none; }
+    .screen { padding-top: env(safe-area-inset-top); }
+  }
+
+  /* ---------- App chrome ---------- */
+  .hdr { flex: none; height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; position: relative; }
+  .hdr .ctitle { position: absolute; left: 50%; transform: translateX(-50%); font: 400 24px/1 var(--display); white-space: nowrap; }
+  .back { width: 44px; height: 44px; border-radius: 50%; background: var(--card); border: 1.5px solid var(--line); display: grid; place-items: center; }
+  .back svg { width: 20px; height: 20px; }
+  .avbtn { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-size: 19px; position: relative; }
+  .avbtn .tick { position: absolute; right: -3px; bottom: -3px; width: 17px; height: 17px; border-radius: 50%; background: var(--lime); color: var(--dark); font-size: 10px; font-weight: 800; display: grid; place-items: center; border: 2px solid var(--paper); }
+  .scroll { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; padding: 4px 18px 24px; scrollbar-width: none; }
+  .scroll::-webkit-scrollbar { display: none; }
+  .display { font-family: var(--display); font-weight: 400; letter-spacing: -.01em; }
+  .largetitle { font: 400 46px/.95 var(--display); letter-spacing: -.015em; margin: 4px 0 8px; }
+  .largetitle em, .ob h1 em, .display em { font-style: italic; color: var(--pink); }
+  .sub { color: var(--muted); font-size: 15px; margin: 0 0 14px; }
+  .tabbar { flex: none; display: flex; align-items: center; justify-content: space-around; margin: 0 14px 26px; padding: 8px 6px; border-radius: 30px; background: #1c1a21; color: #8f889a; border: 1px solid #2e2b35; box-shadow: 0 10px 30px rgba(0,0,0,.5); }
+  .tabbar button { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; font-weight: 700; position: relative; padding: 4px 0; }
+  .tabbar button svg { width: 23px; height: 23px; }
+  .tabbar button.on { color: var(--lime); }
+  .tabbar .plus { width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; margin: -18px 0 -4px; box-shadow: 0 0 0 5px var(--paper); }
+  .tabbar .plus svg { width: 24px; height: 24px; }
+  .tabbar .bdg { position: absolute; top: -2px; left: calc(50% + 6px); background: var(--pink); color: var(--dark); font-size: 10px; font-weight: 800; min-width: 17px; height: 17px; border-radius: 9px; display: grid; place-items: center; padding: 0 4px; }
+  @media (max-width: 600px) { .tabbar { margin-bottom: max(12px, env(safe-area-inset-bottom)); } }
+
+  /* ---------- Building blocks ---------- */
+  .card { background: var(--card); border-radius: 24px; padding: 16px; margin: 12px 0; border: 1.5px solid var(--line); }
+  .sec { font: 400 27px/1 var(--display); margin: 28px 2px 10px; display: flex; justify-content: space-between; align-items: baseline; }
+  .sec button { font: 700 14px var(--body); text-decoration: underline; text-underline-offset: 3px; }
+  .btn { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 16px 18px; border-radius: 99px; font-weight: 700; font-size: 16px; background: var(--ink); color: var(--paper); }
+  .btn.pink { background: var(--pink); color: var(--dark); }
+  .btn.go { background: var(--go); color: var(--dark); }
+  .btn.lime { background: var(--lime); color: var(--dark); }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
+  .btn.plain { background: none; color: var(--muted); font-weight: 600; }
+  .btn.sm { width: auto; padding: 9px 15px; font-size: 14px; }
+  .btn:disabled { opacity: .35; cursor: default; }
+  .row { display: flex; gap: 10px; align-items: center; }
+  .row > * { flex: 1; min-width: 0; }
+  .muted { color: var(--muted); font-size: 14px; }
+  .tag { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; padding: 5px 10px; border-radius: 99px; color: #fff; }
+  .tag.food { background: var(--food); color: var(--dark); } .tag.study { background: var(--study); } .tag.hangout { background: var(--hangout); color: var(--dark); } .tag.event { background: var(--event); }
+  .tag.light { background: rgba(10,8,12,.52); color: #fff; }
+  .pill { display: inline-block; font-size: 13px; padding: 4px 10px; border-radius: 99px; background: var(--soft); margin: 2px 2px 2px 0; }
+  .badge { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 800; color: var(--go); }
+  .common { display: inline-block; font-size: 12.5px; font-weight: 700; background: var(--lime); color: var(--dark); padding: 3px 9px; border-radius: 99px; margin-top: 6px; }
+  .status { flex: 1; display: flex; align-items: center; justify-content: center; border-radius: 99px; padding: 15px; font-weight: 800; background: var(--lime); color: var(--dark); white-space: nowrap; }
+  .chairs { display: flex; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; }
+  .seat { width: 28px; height: 28px; border-radius: 50%; border: 1.5px dashed currentColor; opacity: .45; flex: none; }
+  .sat { width: 28px; height: 28px; border-radius: 50%; background: var(--soft); display: grid; place-items: center; font-size: 16px; flex: none; overflow: hidden; }
+  .ico { display: inline-block; vertical-align: -3px; flex: none; }
+  .tag .ico { vertical-align: -2px; }
+  .slots { display: flex; justify-content: center; gap: 8px; margin: 4px 0 2px; }
+  .slot { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; }
+  .slot.me { background: rgba(255,255,255,.14); }
+  .slot.found { background: var(--lime); color: var(--dark); }
+  .slot.empty { border: 2px dashed rgba(255,255,255,.4); }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chips.scrollx { flex-wrap: nowrap; overflow-x: auto; margin: 0 -18px; padding: 2px 18px; scrollbar-width: none; }
+  .chips.scrollx::-webkit-scrollbar { display: none; }
+  .chip { flex: none; padding: 11px 15px; border-radius: 99px; background: var(--card); border: 1.5px solid var(--line); font-size: 14.5px; font-weight: 600; white-space: nowrap; }
+  .chip.on { background: var(--lime); color: var(--dark); border-color: var(--lime); }
+  /* Activity picker: a 2 × 2 grid so nothing overlaps or scrolls sideways */
+  .actgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .actgrid button { padding: 13px 12px; min-height: 48px; border-radius: 16px; border: 1.5px solid var(--line); background: var(--card); font-weight: 700; font-size: 14.5px; text-align: left; display: flex; gap: 8px; align-items: center; }
+  .actgrid button.on { border-color: var(--lime); background: var(--lime); color: var(--dark); }
+  .options { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+  .opt { text-align: left; padding: 17px 18px; border-radius: 20px; background: var(--card); border: 1.5px solid var(--line); font-weight: 600; font-size: 16px; display: flex; justify-content: space-between; align-items: center; gap: 8px; transition: transform .12s; }
+  .opt:active { transform: scale(.98); }
+  .opt.on { border-color: var(--pink); background: color-mix(in srgb, var(--pink) 18%, var(--card)); color: var(--ink); }
+  .opt .check { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--line); flex: none; display: grid; place-items: center; font-size: 12px; font-weight: 800; color: transparent; }
+  .opt.on .check { background: var(--pink); border-color: var(--pink); color: var(--dark); }
+  label.lbl { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin: 18px 0 7px; }
+  .two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 10px; }
+  .list { background: var(--card); border-radius: 22px; border: 1.5px solid var(--line); overflow: hidden; }
+  .li { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-top: 1.5px solid var(--line); width: 100%; text-align: left; }
+  .li:first-child { border-top: 0; }
+  .li .ic { width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; flex: none; }
+  .li .tx { flex: 1; min-width: 0; }
+  .li .tx b { display: block; }
+  .li .chev { color: var(--muted); font-size: 22px; }
+
+  /* Typed-in place, checked against verified public places */
+  .place { position: relative; }
+  .place input { padding-right: 44px; }
+  .place .pstate { position: absolute; right: 14px; top: 13px; width: 20px; height: 20px; display: grid; place-items: center; font-weight: 800; }
+  .spinner { width: 20px; height: 20px; border-radius: 50%; border: 3px solid var(--line); border-top-color: var(--pink); animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .sugg { position: absolute; left: 0; right: 0; top: calc(100% + 4px); background: var(--card); border: 1.5px solid var(--ink); border-radius: 16px; z-index: 10; overflow-y: auto; max-height: 250px; box-shadow: 0 12px 24px rgba(23,18,31,.15); }
+  .sugg button { display: block; width: 100%; text-align: left; padding: 11px 14px; border-top: 1px solid var(--line); font-size: 15px; }
+  .sugg button:first-child { border-top: 0; }
+  .pmsg { font-size: 13.5px; margin: 7px 2px 0; font-weight: 600; }
+  .pmsg.ok { color: var(--go); }
+  .pmsg.bad { color: var(--danger); }
+  .pmsg.wait { color: var(--muted); }
+
+  /* Home */
+  .hero { display: block; position: relative; width: 100%; text-align: left; padding: 20px; border-radius: 28px; margin-top: 16px; min-height: 140px; }
+  .hero .big { position: absolute; right: 18px; bottom: 14px; transform: rotate(-12deg); line-height: 0; }
+  .hero b { display: block; font: 400 52px/.9 var(--display); }
+  .hero span.s { display: block; font-size: 15px; font-weight: 700; margin-top: 8px; max-width: 70%; }
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .tile { position: relative; text-align: left; padding: 16px; border-radius: 24px; min-height: 150px; display: flex; flex-direction: column; justify-content: flex-end; gap: 4px; }
+  .tile .big { position: absolute; top: 14px; right: 14px; line-height: 0; }
+  .tile b { font: 400 30px/.95 var(--display); }
+  .tile span.s { font-size: 13px; font-weight: 700; }
+  .carousel { display: flex; gap: 12px; overflow-x: auto; margin: 0 -18px; padding: 0 18px 4px; scroll-snap-type: x mandatory; scroll-padding: 0 18px; scrollbar-width: none; }
+  .carousel::-webkit-scrollbar { display: none; }
+  .carousel > .pcard { flex: none; width: 84%; margin: 0; scroll-snap-align: start; }
+  .inbanner { font-weight: 600; display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 14px 16px; border-radius: 22px; margin: 6px 0 12px; }
+  .inbanner .dot { background: var(--lime); }
+
+  /* Group and plan cards */
+  .gcard { background: var(--card); border-radius: 24px; border: 1.5px solid var(--line); padding: 16px; margin: 0 0 12px; }
+  .gcard h3 { font: 400 28px/1 var(--display); margin: 10px 0 4px; }
+  .pcard { border-radius: 26px; overflow: hidden; background: var(--card); border: 1.5px solid var(--line); margin: 0 0 12px; cursor: pointer; display: flex; flex-direction: column; }
+  .pcard .top { padding: 16px 16px 18px; position: relative; }
+  .pcard .top h3 { font: 400 30px/.95 var(--display); margin: 12px 0 0; }
+  .pcard .bot { padding: 12px 16px 14px; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .when { font-weight: 800; }
+  .nomatch { opacity: .55; }
+  .nomatch .why { font-size: 13px; color: var(--muted); margin-top: 8px; }
+  .dupe { position: absolute; left: 12px; right: 12px; top: 56px; z-index: 70; background: var(--yellow); color: var(--dark); border-radius: 20px; padding: 14px 16px; font-size: 14px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+  .dupe button { margin-top: 10px; background: var(--dark); color: #fff; border-radius: 99px; padding: 9px 14px; font-weight: 700; font-size: 13px; }
+
+  .person { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-top: 1.5px solid var(--line); }
+  .person:first-of-type { border-top: 0; }
+  .mascot { display: inline-block; vertical-align: middle; object-fit: contain; }
+  .person .em { width: 46px; height: 46px; border-radius: 50%; background: var(--soft); display: grid; place-items: center; font-size: 24px; flex: none; }
+  .live { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; margin: 0; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--go); animation: pulse 1.6s infinite; flex: none; }
+  @keyframes pulse { 50% { opacity: .3; } }
+  .banner { color: #fff; text-align: center; padding: 22px 12px; border-radius: 26px; margin-bottom: 14px; font: 400 36px/1 var(--display); }
+  .banner small { display: block; font: 700 14px var(--body); margin-top: 6px; }
+
+  /* Chat bubbles */
+  .chat { max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding: 2px; }
+  .bub { max-width: 78%; padding: 9px 14px; border-radius: 20px; background: var(--soft); align-self: flex-start; font-size: 15px; }
+  .bub small { display: block; font-size: 11.5px; color: var(--muted); font-weight: 700; margin-bottom: 1px; }
+  .bub.me { align-self: flex-end; background: var(--pink); color: var(--dark); }
+  .send { display: flex; gap: 8px; margin-top: 10px; }
+  .send input { border-radius: 99px; padding: 11px 16px; }
+  .send button { flex: none; width: 46px; height: 46px; border-radius: 50%; background: var(--pink); color: var(--dark); display: grid; place-items: center; }
+
+  /* Bottom sheet for the + button */
+  .backdrop { position: absolute; inset: 0; background: rgba(23,18,31,.45); z-index: 20; animation: fade .2s; }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 21; background: var(--paper); border-radius: 30px 30px 0 0; padding: 10px 16px 34px; animation: up .25s cubic-bezier(.2,.9,.3,1); }
+  .sheet .grab { width: 40px; height: 5px; border-radius: 3px; background: var(--line); margin: 0 auto 10px; }
+  .sheet h3 { margin: 0 4px 12px; font: 400 36px/1 var(--display); }
+  @keyframes fade { from { opacity: 0; } }
+  @keyframes up { from { transform: translateY(100%); } }
+
+  /* Onboarding */
+  .ob { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 8px 22px 30px; overflow-y: auto; overflow-x: hidden; }
+  .ob > * { flex-shrink: 0; }
+  .ob .grow { flex: 1 1 auto; min-height: 16px; }
+  .progress { display: flex; gap: 4px; margin: 6px 0 22px; }
+  .progress i { flex: 1; height: 5px; border-radius: 3px; background: var(--line); }
+  .progress i.on { background: var(--pink); }
+  .ob h1 { font: 400 44px/.95 var(--display); letter-spacing: -.015em; margin: 0 0 10px; }
+  .poster { border-radius: 30px; padding: 26px 22px 24px; margin: 4px 0 18px; position: relative; }
+  .poster .huge { font: 400 78px/.82 var(--display); letter-spacing: -.02em; margin: 0; }
+  .poster p { margin: 12px 0 0; font-weight: 600; font-size: 15px; max-width: 85%; }
+  .qnav { display: flex; gap: 10px; margin-top: 18px; }
+  .idprev { max-width: 100%; max-height: 150px; border-radius: 14px; margin-top: 10px; border: 1.5px solid var(--line); }
+
+  .toast { position: absolute; left: 50%; bottom: 110px; transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 11px 18px; border-radius: 99px; font-size: 14px; font-weight: 700; z-index: 60; width: max-content; max-width: 86%; text-align: center; }
+
+  /* Countdown ring while a random group forms */
+  .ring { position: relative; width: 160px; height: 160px; margin: 6px auto 12px; }
+  .ring svg { transform: rotate(-90deg); }
+  .ring circle { fill: none; stroke-width: 12; }
+  .ring .track { stroke: rgba(255,255,255,.18); }
+  .ring .fill { stroke: var(--lime); stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+  .ring .clock { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font: 400 48px/1 var(--display); font-variant-numeric: tabular-nums; }
+  .ring .clock small { font: 700 13px var(--body); }
+  .slot.empty { animation: breathe 1.6s ease-in-out infinite; }
+  .slot.pop { animation: pop .5s cubic-bezier(.3,1.6,.5,1); }
+  @keyframes breathe { 50% { opacity: .35; transform: scale(.9); } }
+  @keyframes pop { 0% { transform: scale(.2); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .slot.empty, .slot.pop, .dot, .sheet, .backdrop, .spinner { animation: none; } .ring .fill { transition: none; } }
+
+  /* ---------- Handmade: borrowed from Madi's mascots ----------
+     Spray-paint speckle instead of smooth gradients, a second pen line drawn just inside
+     each edge (like the mascots' outlines), shapes that are never perfectly round, and
+     a pen circle around whatever you've picked. */
+  :root {
+    --speck: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='s'><feTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2' seed='7' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 -4 2.62'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 .9'/></feComponentTransfer></filter><rect width='100%' height='100%' filter='url(%23s)'/></svg>"), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='s'><feTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2' seed='19' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -4 2.62'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 .55'/></feComponentTransfer></filter><rect width='100%' height='100%' filter='url(%23s)'/></svg>");
+    --r-card: 28px 22px 30px 24px / 24px 30px 22px 28px;
+    --r-card2: 22px 30px 24px 28px / 30px 22px 28px 24px;
+    --r-pill: 34px 28px 30px 26px / 26px 24px 26px 24px;
+    --r-pill2: 26px 32px 28px 34px / 24px 26px 24px 26px;
+    --r-blob: 52% 48% 50% 46% / 48% 52% 46% 50%;
+    --r-blob2: 46% 54% 48% 52% / 54% 46% 52% 48%;
+    --r-field: 16px 12px 15px 13px / 13px 16px 12px 15px;
+    --pen-dark: rgba(10, 8, 12, .42);
+    --pen-light: rgba(246, 240, 230, .1);
+  }
+  .tex::after { background: var(--speck); mix-blend-mode: soft-light; opacity: .55; }
+
+  /* Shapes */
+  .card, .gcard, .list, .poster, .hero, .sugg, .inbanner, .banner, .dupe { border-radius: var(--r-card); }
+  .pcard, .tile:nth-child(2), .opt:nth-child(even) { border-radius: var(--r-card2); }
+  .tile, .opt { border-radius: var(--r-card); }
+  .btn, .status, .toast, .chip, .tabbar, .bub, .send input, .dupe button, input[type=file]::file-selector-button { border-radius: var(--r-pill); }
+  .chip:nth-child(even), .btn.ghost, .bub.me { border-radius: var(--r-pill2); }
+  input, select, .actgrid button, .idprev { border-radius: var(--r-field); }
+  .back, .avbtn, .plus, .send button, .person .em, .sat, .slot, .seat, .opt .check, .avbtn .tick { border-radius: var(--r-blob); }
+  .sat:nth-child(even), .seat:nth-child(even), .slot:nth-child(even) { border-radius: var(--r-blob2); }
+  .seat:nth-child(3n) { transform: rotate(14deg); }
+  .sheet { border-radius: 34px 26px 0 0 / 28px 22px 0 0; }
+  .li .ic { border-radius: 15px 11px 14px 12px / 12px 15px 11px 14px; }
+  .pill { border-radius: 12px 9px 11px 10px / 10px 12px 9px 11px; }
+  .progress i { border-radius: 3px 2px 3px 2px; height: 5px; }
+  .progress i:nth-child(odd) { transform: rotate(-1.4deg); }
+  .progress i:nth-child(3n) { transform: rotate(1.2deg) translateY(1px); }
+
+  /* The second pen line, just inside the edge */
+  .card, .gcard, .pcard, .list, .tabbar, .btn, .opt, .actgrid button, .status, .sugg { position: relative; }
+  .poster::before, .hero::before, .tile::before, .inbanner::before, .banner::before,
+  .btn:not(.ghost):not(.plain):not(.sm)::before, .status::before, .actgrid button.on::before {
+    content: ""; position: absolute; inset: 4px; border: 1.5px solid var(--pen-dark); border-radius: inherit; transform: rotate(-.45deg); pointer-events: none;
+  }
+  .tile:nth-child(2)::before, .hero::before { transform: rotate(.5deg); }
+  .card::before, .gcard::before, .pcard::before, .list::before, .tabbar::before {
+    content: ""; position: absolute; inset: 4px; border: 1.2px solid var(--pen-light); border-radius: inherit; transform: rotate(-.3deg); pointer-events: none; z-index: 1;
+  }
+  .gcard:nth-child(even)::before, .list:nth-of-type(even)::before { transform: rotate(.35deg); }
+  /* Outline buttons are drawn twice, a little off, like a quick sketch */
+  .btn.ghost::before { content: ""; position: absolute; inset: -1px 1px 1px -1px; border: 1.5px solid var(--ink); opacity: .35; border-radius: var(--r-pill); transform: rotate(.7deg); pointer-events: none; }
+
+  /* Picked = circled in pen */
+  .chip { position: relative; }
+  .chip.on::before, .opt.on::before {
+    content: ""; position: absolute; inset: -4px -3px -3px -4px; border: 2px solid var(--lime); border-radius: var(--r-pill2); transform: rotate(-1.6deg); pointer-events: none;
+  }
+  .chip.on:nth-child(even)::before { transform: rotate(1.4deg); border-radius: var(--r-pill); }
+  .opt.on::before { border-color: var(--pink); inset: -4px -3px -4px -3px; border-radius: var(--r-card2); transform: rotate(-.7deg); }
+  .chips.scrollx { padding: 6px 18px; }
+  .chips { row-gap: 10px; }
+
+  /* Speckle on the filled controls too */
+  /* (Only on controls without text, so words stay easy to read) */
+  .send button, .opt.on .check, .progress i.on, .slot.found {
+    background-image: var(--speck); background-blend-mode: soft-light;
+  }
+
+  /* Little things stuck on at an angle, like stickers */
+  .tag { transform: rotate(-2deg); border-radius: 10px 7px 9px 8px / 8px 10px 7px 9px; }
+  .tag.light { transform: rotate(1.5deg); }
+  .common { transform: rotate(-1deg); border-radius: 10px 7px 9px 8px / 8px 10px 7px 9px; }
+  .toast { transform: translateX(-50%) rotate(-1.2deg); }
+  .avbtn .tick { transform: rotate(-8deg); }
+  .hero .big { transform: rotate(-14deg); }
+
+  /* A quick pen underline under the word that matters */
+  .largetitle em:last-child { background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 10' preserveAspectRatio='none'><path d='M3 6.5 C 22 3, 40 8.5, 62 5 S 98 3.5, 117 6' fill='none' stroke='%23f6f0e6' stroke-opacity='.8' stroke-width='2.2' stroke-linecap='round'/></svg>") no-repeat 0 100% / 100% 7px; padding: 0 2px 3px; margin: 0 -2px; }
+  .largetitle { margin-bottom: 12px; }
+
+  /* Hand-drawn dividers in lists */
+  .li, .person { border-top: 0; background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 4' preserveAspectRatio='none'><path d='M0 2.2 Q 30 .8 60 2 T 120 2.3 T 180 1.7 T 240 2.4 T 300 1.9' fill='none' stroke='%232a2730' stroke-width='1.6'/></svg>") no-repeat 0 0 / 100% 4px; }
+  .li:first-child, .person:first-of-type { background: none; }
+  .sugg button { border-top: 0; background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 4' preserveAspectRatio='none'><path d='M0 2.2 Q 30 .8 60 2 T 120 2.3 T 180 1.7 T 240 2.4 T 300 1.9' fill='none' stroke='%232a2730' stroke-width='1.6'/></svg>") no-repeat 0 0 / 100% 3px; }
+  .sugg button:first-child { background: none; }
+
+  /* Selects get a drawn arrow instead of the browser's */
+  select { appearance: none; -webkit-appearance: none; background: var(--card) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='18' height='18'><path d='M6.5 9.5c2 1.8 3.6 3.5 5.6 5.4 1.8-2 3.6-3.6 5.5-5.6' fill='none' stroke='%23a49dae' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat right 12px center / 18px; padding-right: 40px; }
+
+  /* A tiny wobble when you point at something */
+  @media (hover: hover) {
+    .btn:not(:disabled):hover, .tile:hover, .hero:hover, .chip:hover, .actgrid button:hover, .opt:hover { transform: rotate(-.7deg); }
+    .tile:nth-child(2):hover, .chip:nth-child(even):hover { transform: rotate(.7deg); }
+  }
+
+  /* Start: trying it with people, or on your own */
+  .choice { display: flex; flex-direction: column; gap: 12px; margin-top: 6px; }
+  .choice .opt { flex-direction: row; align-items: center; gap: 14px; padding: 16px; }
+  .choice .opt .ic { width: 48px; height: 48px; border-radius: var(--r-blob); display: grid; place-items: center; flex: none; }
+  .choice .opt b { display: block; font-size: 17px; }
+  .choice .opt .muted { display: block; font-weight: 500; margin-top: 2px; }
+  .ob h2 { font: 400 32px/1 var(--display); margin: 6px 0 4px; }
+
+  /* Quiz intro: cards you swipe through */
+  .swipe { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; margin: 4px -22px 0; padding: 4px 22px 8px; scroll-padding: 0 22px; scrollbar-width: none; flex: 1 0 auto; }
+  .swipe::-webkit-scrollbar { display: none; }
+  .scard { flex: none; width: 100%; scroll-snap-align: center; min-height: 430px; display: flex; flex-direction: column; justify-content: space-between; padding: 24px 22px 26px; }
+  .scard h1 { font: 400 54px/.88 var(--display); letter-spacing: -.02em; margin: 0; }
+  .scard p { font-size: 17px; font-weight: 600; margin: 14px 0 0; line-height: 1.35; }
+  .scard .sart { line-height: 0; }
+  .crew { display: flex; justify-content: center; margin: -6px -8px 0; }
+  .crew img { margin: 0 -14px; }
+  .crew img:nth-child(odd) { transform: rotate(-6deg); }
+  .crew img:nth-child(even) { transform: rotate(5deg) translateY(10px); }
+  .dots { display: flex; justify-content: center; gap: 4px; margin: 12px 0 0; }
+  .dots button { width: 24px; height: 24px; display: grid; place-items: center; }
+  .dots button i { width: 8px; height: 8px; border-radius: var(--r-blob); background: var(--line); transition: width .2s ease-out, background .2s; }
+  .dots button.on i { width: 22px; border-radius: 99px; background: var(--lime); }
+
+  /* Feedback */
+  textarea { font: inherit; width: 100%; min-height: 130px; resize: vertical; padding: 13px 15px; border-radius: var(--r-field); border: 1.5px solid var(--line); background: var(--card); color: var(--ink); }
+  textarea::placeholder { color: #8d8697; opacity: 1; }
+  textarea:focus-visible { outline: none; border-color: var(--lime); box-shadow: 0 0 0 3px color-mix(in srgb, var(--lime) 35%, transparent); }
+  .fbcard h3 { font: 400 30px/1 var(--display); margin: 0 0 6px; }
+  .fbcard p { margin: 0 0 14px; }
+
+  /* Your friend type hops in when you get your result */
+  .hop { display: inline-block; animation: hop .75s cubic-bezier(.2, .9, .3, 1.2) both; transform-origin: 50% 100%; }
+  @keyframes hop {
+    0% { transform: translateY(18px) scale(.92, 1.06); opacity: 0; }
+    45% { transform: translateY(-12px) scale(1.04, .96); opacity: 1; }
+    72% { transform: translateY(0) scale(.98, 1.02); }
+    100% { transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .hop { animation: none; } }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="device" id="device">
+    <div class="island"></div>
+    <div class="statusbar"><span id="clock">9:41</span>
+      <svg viewBox="0 0 70 12" fill="currentColor" aria-hidden="true"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/><path d="M30 3.2a10 10 0 0 1 13 0l-1.4 1.5a8 8 0 0 0-10.2 0zM32.5 6a6 6 0 0 1 8 0l-1.5 1.5a4 4 0 0 0-5 0zM35 8.7a2.2 2.2 0 0 1 3 0L36.5 10.3z"/><rect x="47" y="1" width="20" height="10" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".5"/><rect x="49" y="3" width="14" height="6" rx="1.5"/><rect x="68" y="4" width="1.6" height="4" rx=".8" opacity=".5"/></svg>
+    </div>
+    <div id="screen" class="screen"></div>
+    <div id="toast" class="toast hidden"></div>
+    <div class="homeind"></div>
+  </div>
+</div>
+
+<script>
+// ---------- Content ----------
+// Archetypes from the personality quiz: what kind of friend you are, and who you click with.
+// Madi draws a mascot for each one; the emoji stands in until it's drawn.
+const ARCHETYPES = {
+  sunshine: { emoji: "🌻", label: "The Sunshine", about: "The friend who gets everyone talking.", meets: "Quiet Ones and Easygoings who love a good conversation.", g: "g-pink" },
+  quiet: { emoji: "🎧", label: "The Quiet One", about: "Calm company and a really good listener.", meets: "Sunshines who carry the chat, and Study Buddies.", g: "g-blue" },
+  foodie: { emoji: "🍜", label: "The Foodie", about: "The one who always knows where to eat.", meets: "Adventurers and Easygoings up for trying somewhere new.", g: "g-food" },
+  studybuddy: { emoji: "🧠", label: "The Study Buddy", about: "The one who keeps the group on track.", meets: "Quiet Ones and other Study Buddies.", g: "g-study" },
+  adventurer: { emoji: "🧭", label: "The Adventurer", about: "Always up for an outing.", meets: "Foodies and Sunshines who say yes to plans.", g: "g-event" },
+  easygoing: { emoji: "☕", label: "The Easygoing", about: "Up for whatever, easy to be around.", meets: "Pretty much everyone.", g: "g-lime" },
+};
+// Madi's mascots. Friend types without one yet keep their emoji.
+const MASCOTS = { "🌻": "mascots/sunshine.webp", "🎧": "mascots/quiet.webp", "🍜": "mascots/foodie.webp", "🧠": "mascots/study.webp" };
+function face(emoji, px, extra = "") {
+  const src = MASCOTS[emoji];
+  return src ? `<img class="mascot" src="${src}" alt="" style="width:${px}px;height:${px}px;${extra}">` : esc(emoji);
+}
+// Mascots are drawn for a dark background, so their cards are dark with a soft glow.
+const cardFor = (type) => (MASCOTS[type.emoji] ? "g-night" : type.g);
+function archetypeFor(a) {
+  if (a.free === "food") return "foodie";
+  if (a.free === "event") return "adventurer";
+  if (a.free === "study") return a.vibe === "listen" ? "quiet" : "studybuddy";
+  if (a.vibe === "talk") return "sunshine";
+  if (a.vibe === "listen") return "quiet";
+  return "easygoing";
+}
+
+// Who you'd like to meet. The same three choices for every gender.
+const COMFORT = [
+  ["anyone", "Anyone"],
+  ["buddy", "A mix, as long as I'm not the only one of my gender"],
+  ["same", "Only people of my gender"],
+];
+// "Prefer not to say" can only meet anyone, since matching needs a gender to compare.
+const comfortOptions = (gender) => (gender === "unsaid" ? COMFORT.slice(0, 1) : COMFORT);
+const GENDERS = [["woman", "Woman"], ["man", "Man"], ["nonbinary", "Nonbinary"], ["unsaid", "Prefer not to say"]];
+const TIMES = [["15", "A quick 15 min"], ["30", "About 30 min"], ["45", "45 min or so"], ["60", "An hour or more"]];
+const INTERESTS = [["music", "🎵 Music"], ["sports", "🏀 Sports"], ["gaming", "🎮 Gaming"], ["art", "🎨 Art & design"], ["movies", "🎬 Movies & TV"], ["books", "📖 Books"], ["outdoors", "🌲 Outdoors"], ["fitness", "💪 Fitness"], ["food", "🍳 Cooking & food"], ["fashion", "👗 Fashion"], ["tech", "💻 Tech"], ["theater", "🎭 Theater"]];
+const interestLabel = (k) => (INTERESTS.find(([i]) => i === k) || [k, k])[1];
+const DIETS = [["vegetarian", "🥦 Vegetarian"], ["vegan", "🌱 Vegan"], ["glutenfree", "🌾 Gluten-free"], ["allergies", "⚠️ Allergies"]];
+const BUDGETS = [["cheap", "$"], ["mid", "$$"]];
+const MAX_INTERESTS = 6;
+
+// The personality quiz: one question per screen.
+const QUESTIONS = [
+  { key: "vibe", q: "In a new group, you're usually…", options: [["talk", "🗣️ Getting everyone talking"], ["listen", "🎧 Listening and easing in"], ["plan", "🗺️ Suggesting what to do next"]] },
+  { key: "free", q: "Your perfect free afternoon?", options: [["food", "🍜 Trying a new food spot"], ["event", "🎟️ Going to an event or a game"], ["study", "📚 Getting work done with company"], ["coffee", "☕ Coffee and a long talk"]] },
+  { key: "interests", q: "What are you into?", note: `Pick up to ${MAX_INTERESTS}. We'll lean toward people who like the same things.` },
+  { key: "gender", q: "I am a…", note: "Private. It's only used so everyone's comfort settings work.", options: GENDERS },
+  { key: "comfort", q: "Who would you like to meet?", note: "Private, and everyone gets the same choices. You'll only see groups that fit you, and they'll only see you if you fit them." },
+  { key: "minutes", q: "How long do you like to hang out with new people?", note: "We'll suggest groups that fit your time.", options: TIMES },
+  { key: "extras", q: "Anything we should know?", note: "Optional. Shown to your group so plans work for everyone." },
+  { key: "agree", q: "Side Quest is for <em>everyone.</em>" },
+];
+// Onboarding steps: 0 with people or on your own, 1 sign up, 2 about the quiz
+// (cards you swipe), then the questions, then your result.
+const Q0 = 3;
+const RESULT = Q0 + QUESTIONS.length;
+const answered = (Q, a) => Q.key === "interests" || Q.key === "extras" || Q.key === "agree" ? true : a[Q.key] != null && a[Q.key] !== "";
+
+const ICONS = {
+  home: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M3.5 10.5 12 3.5l8.5 7V20a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z"/></svg>`,
+  plans: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>`,
+  plus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>`,
+  groups: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.8 14.6c2.4.3 4.1 2.1 4.7 5.4"/></svg>`,
+  profile: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.2 4.2-6.5 8-6.5s7 2.3 8 6.5"/></svg>`,
+  back: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>`,
+  send: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>`,
+};
+// One drawn icon family (24px grid, 2px round strokes) for everything that isn't a mascot or content.
+const GLYPHS = {
+  food: '<path d="M7 3v8M4.5 3v5a2.5 2.5 0 0 0 5 0V3M7 11v10M17.5 3C15.5 4.5 14.5 7 14.5 10h3v11"/>',
+  study: '<path d="M3 5.5c2.7-1 5.7-1 9 1 3.3-2 6.3-2 9-1v13c-2.7-1-5.7-1-9 1-3.3-2-6.3-2-9-1z"/><path d="M12 6.5v13"/>',
+  hangout: '<path d="M4 9h13v4.5A5.5 5.5 0 0 1 11.5 19h-2A5.5 5.5 0 0 1 4 13.5z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H16.5"/><path d="M8.5 3.5c0 1.5 1 1.5 1 3M12.5 3.5c0 1.5 1 1.5 1 3"/>',
+  event: '<path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4z"/><path d="M14.5 7.5v9" stroke-dasharray="1.5 2.5"/>',
+  dice: '<rect x="4" y="4" width="16" height="16" rx="4.5"/><circle cx="9" cy="9" r="1.3" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="15" r="1.3" fill="currentColor" stroke="none"/>',
+  seat: '<path d="M7.5 3.5h9v8.5h-9z"/><path d="M5 12h14v3H5zM7 15v5.5M17 15v5.5"/>',
+  groups: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.8 14.6c2.4.3 4.1 2.1 4.7 5.4"/>',
+  calendar: '<rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+  pin: '<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M4.5 7.5 12 13l7.5-5.5"/>',
+  id: '<rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="11" r="2.2"/><path d="M5.5 16.5c.6-1.6 1.9-2.5 3.5-2.5s2.9.9 3.5 2.5M14.5 10h4M14.5 13.5h3"/>',
+  retake: '<path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/>',
+  reset: '<path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4v5h5"/>',
+  smile: '<circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1.9 2 5.1 2 7 0"/><path d="M9 9.5h.01M15 9.5h.01" stroke-width="3"/>',
+  lock: '<rect x="5" y="10.5" width="14" height="10" rx="3"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>',
+  heart: '<path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.3a4.3 4.3 0 0 1 7.5 2.5C19.5 15.4 12 20 12 20z"/>',
+  person: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.2 4.2-6.5 8-6.5s7 2.3 8 6.5"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  alert: '<path d="M12 3.5 21.5 20h-19z"/><path d="M12 10v4.5M12 17.2h.01"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+};
+const ic = (name, px = 20, w = 2) => `<svg class="ico" viewBox="0 0 24 24" width="${px}" height="${px}" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${GLYPHS[name]}</svg>`;
+// Empty seats, and people in seats, for group cards and the countdown.
+const seats = (n, cls = "") => Array.from({ length: Math.max(0, n) }, () => `<span class="seat ${cls}" aria-hidden="true"></span>`).join("");
+const inSeat = (emoji) => `<span class="sat">${face(emoji, 24)}</span>`;
+
+// sessionStorage, so each browser tab can be a different person while testing.
+const store = { get: (k) => { try { return sessionStorage.getItem(k); } catch { return null; } },
+                set: (k, v) => { try { sessionStorage.setItem(k, v); } catch {} } };
+
+// ---------- State ----------
+let uid = store.get("uid");
+// "live": with other people, in the shared room. "solo": on your own, in a private
+// practice room where pretend people fill in.
+let mode = store.get("mode") || (uid ? "live" : null);
+let state = null;
+let profile = (() => { try { return JSON.parse(store.get("profile")); } catch { return null; } })();
+let quiz = { step: 0, name: store.get("name") || "", email: "", answers: { interests: [], diet: [], budget: null, access: false } };
+let tab = "home";            // home | plans | groups | profile
+let sub = null;              // open | plan | group | verify | detail: a page pushed on top of the tab
+let sheet = false;           // the + menu
+let detailId = null;         // the plan being viewed
+let filter = "all";          // all | food | study | hangout | event
+let draft = { mode: "food", floor: "", spot: "", place: "", placeOk: false, minutes: 30, topic: "", hint: "", chairs: 5, size: 5, title: "", day: 0, time: "" };
+let edits = null;            // unsaved changes on the profile page
+let verify = { photo: null, checking: false };
+let afterVerify = null;      // where to go after verifying
+let foundBefore = 0;         // for the "someone joined" pop while waiting
+let wasBusy = false;         // were you in a group or line at the last update?
+let keepScroll = false;      // keep the scroll spot on the next render
+let socket = null;
+
+const $ = (html) => { const t = document.createElement("template"); t.innerHTML = html.trim(); return t.content; };
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const minsLeft = (t) => Math.max(0, Math.ceil((t.endsAt - Date.now()) / 60000));
+const act = (m) => state.activities[m];
+const modes = () => Object.keys(state.activities);
+
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg; el.classList.remove("hidden");
+  clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.add("hidden"), 2600);
+}
+function api(action, body = {}) {
+  if (socket?.readyState !== WebSocket.OPEN) return toast("Reconnecting…");
+  socket.send(JSON.stringify({ type: action, ...body }));
+}
+
+// The page is published at sqku.pages.dev (the short link Plausible tracks), but the
+// live server runs on the worker. Locally and on workers.dev, it's the same host.
+const SERVER_HOST = location.hostname.endsWith(".pages.dev") ? "open-seat-madi-v4.madi-ixd-bpt.workers.dev" : location.host;
+const SERVER = `${location.protocol}//${SERVER_HOST}`;
+
+// One live PartyServer room ("lobby") for everyone. Reconnects on its own,
+// and says hello again so the room knows who this is.
+function connect() {
+  const room = mode === "solo" ? `solo-${uid}` : "lobby";
+  socket = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${SERVER_HOST}/parties/open-seat/${room}`);
+  socket.onopen = hello;
+  socket.onmessage = (e) => {
+    const msg = JSON.parse(e.data);
+    if (msg.type === "error") return toast(msg.error);
+    state = msg;
+    // Just got into a group or a line? Show it.
+    const busy = !!(myTable() || myQueue());
+    if (busy && !wasBusy) { tab = "groups"; sub = null; sheet = false; }
+    wasBusy = busy;
+    liveRender();
+  };
+  socket.onclose = () => setTimeout(connect, 1000);
+}
+// Switch between trying it with people and on your own.
+function setMode(m) {
+  mode = m; store.set("mode", m);
+  if (!uid) return;
+  if (socket) { socket.onclose = null; socket.close(); }
+  state = null; wasBusy = false; sub = null; tab = "home";
+  connect(); render();
+  toast(m === "solo" ? "Practice mode: everyone else is pretend" : "You're with real people now");
+}
+function hello() {
+  socket.send(JSON.stringify({ type: "hello", uid, name: store.get("name"), profile }));
+}
+function saveProfile(p) {
+  profile = p;
+  store.set("profile", JSON.stringify(profile));
+  if (socket?.readyState === WebSocket.OPEN) hello();
+}
+
+// ---------- Helpers ----------
+function myTable() { return state?.tables.find((t) => !t.planned && t.members.some((m) => m.id === uid)); }
+function myQueue() { return state && Object.keys(state.queues).find((m) => state.queues[m].some((e) => e.uid === uid)); }
+function myPlans() { return state ? state.tables.filter((t) => t.planned && t.members.some((m) => m.id === uid)).sort((a, b) => a.startsAt - b.startsAt) : []; }
+function me() { return state?.online.find((p) => p.id === uid); }
+const common = (person) => (profile.interests || []).filter((i) => person.interests.includes(i));
+// Open groups and plans that aren't a match: your comfort settings, or someone
+// else's in the group, rule it out. Shown dimmed so it's clear why you can't join.
+const notMatch = (t) => !t.group && !state.fits.includes(t.id) && t.members.length < t.chairs && !t.members.some((m) => m.id === uid);
+const WHY = "Not a match for your settings, or for someone's in this group.";
+const sharedIn = (t) => [...new Set(t.members.filter((m) => m.id !== uid).flatMap(common))];
+function whenText(t) {
+  const d = new Date(t.startsAt);
+  const day = new Date(d); day.setHours(0, 0, 0, 0);
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const diff = Math.round((day - today) / 86400000);
+  const time = d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  const name = diff === 0 ? "Today" : diff === 1 ? "Tomorrow" : d.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
+  return `${name} · ${time}`;
+}
+function startsIn(t) {
+  const ms = t.startsAt - Date.now();
+  if (ms <= 0) return "Happening now";
+  const h = Math.round(ms / 3600000);
+  return h < 1 ? `In ${Math.max(1, Math.round(ms / 60000))} min` : h < 48 ? `In ${h} hr` : `In ${Math.round(h / 24)} days`;
+}
+function personRow(m, t) {
+  const shared = m.id === uid ? [] : common(m);
+  const showHere = t && (!t.planned || t.startsAt <= Date.now());
+  return `<div class="person">
+    <span class="em">${face(m.emoji, 44)}</span>
+    <div style="flex:1;min-width:0">
+      <b>${esc(m.name)}</b>${m.verified ? ` <span class="badge">✓ Verified</span>` : ""}${t && m.id === t.hostId && !t.group ? ` <span class="muted">· host</span>` : ""}${m.id === uid ? ` <span class="muted">· you</span>` : ""}
+      <div class="muted">${esc(m.archetype)}${m.tags.length ? " · " + m.tags.map(esc).join(" · ") : ""}</div>
+      ${m.interests.length ? `<div>${m.interests.map((i) => `<span class="pill">${esc(interestLabel(i))}</span>`).join("")}</div>` : ""}
+      ${shared.length ? `<div class="common">In common: ${shared.map((i) => esc(interestLabel(i))).join(", ")}</div>` : ""}
+    </div>
+    ${showHere ? `<span class="muted" style="white-space:nowrap">${m.here ? "✓ Here" : "On the way"}</span>` : ""}
+  </div>`;
+}
+function chatHtml(t, empty) {
+  return t.chat.length
+    ? t.chat.map((c) => { const mine = c.name === store.get("name") && c.emoji === me()?.emoji; return `<div class="bub ${mine ? "me" : ""}">${mine ? "" : `<small>${face(c.emoji, 18)} ${esc(c.name)}</small>`}${esc(c.text)}</div>`; }).join("")
+    : `<p class="muted" style="margin:4px 2px">${empty}</p>`;
+}
+
+// ---------- Phone size on a laptop ----------
+// The phone is drawn at 375 × 730 and scaled to fill the screen's height.
+// Press + or - (on a laptop) to make it bigger or smaller; the page scrolls if it's taller than the screen.
+let phoneSize = (() => { try { return Number(localStorage.getItem("phoneSize")) || 1; } catch { return 1; } })();
+function fitPhone() {
+  const d = document.getElementById("device");
+  if (innerWidth <= 600) { d.style.zoom = ""; return; }
+  d.style.zoom = (Math.max(0.6, (innerHeight - 8) / 758) * phoneSize).toFixed(3); // 758 = phone + its margins
+}
+addEventListener("keydown", (e) => {
+  if (e.target.closest("input, select, textarea") || e.metaKey || e.ctrlKey) return;
+  if (e.key === "+" || e.key === "=") phoneSize = Math.min(1.6, phoneSize + 0.1);
+  else if (e.key === "-" || e.key === "_") phoneSize = Math.max(0.7, phoneSize - 0.1);
+  else return;
+  try { localStorage.setItem("phoneSize", phoneSize); } catch {}
+  fitPhone();
+});
+addEventListener("resize", fitPhone);
+
+// ---------- Render ----------
+// Every screen is: a header, a scrolling page, and the tab bar.
+function render() {
+  const screen = document.getElementById("screen");
+  const oldScroll = screen.querySelector(".scroll, .ob");
+  const y = oldScroll ? oldScroll.scrollTop : 0;
+  screen.replaceChildren();
+  if (!uid || !profile) { screen.append(onboardView()); return; }
+  if (!state) return screen.append($(`<div class="ob" style="align-items:center;justify-content:center;gap:14px"><span class="spinner" style="width:28px;height:28px"></span><p class="muted" style="margin:0">Connecting…</p></div>`));
+  if (sub === "verify") return screen.append(page(verifyView(), { title: "Get verified", back: afterVerify === "profile" }));
+  let view;
+  if (sub === "open") view = page(openView(), { back: true });
+  else if (sub === "plan") view = page(planView(), { back: true });
+  else if (sub === "group") view = page(groupView(), { back: true });
+  else if (sub === "detail") view = page(detailView(), { title: "Plan", back: true });
+  else if (sub === "feedback") view = page(feedbackView(), { title: "Feedback", back: true });
+  else if (tab === "plans") view = page(plansView(), { right: "new" });
+  else if (tab === "groups") view = page(groupsView());
+  else if (tab === "profile") view = page(profileView(), { right: "none" });
+  else view = page(homeView());
+  screen.append(view);
+  screen.append(tabbar());
+  if (sheet) screen.append(sheetView());
+  const s = screen.querySelector(".scroll");
+  if (s && keepScroll) s.scrollTop = y;
+}
+
+function page(content, opts = {}) {
+  const m = me() || { emoji: "🙂" };
+  const type = ARCHETYPES[profile?.archetype] || ARCHETYPES.easygoing;
+  const f = $(`
+    <header class="hdr">
+      ${opts.back ? `<button class="back" id="hback" aria-label="Back">${ICONS.back}</button>` : `<span></span>`}
+      ${opts.title ? `<span class="ctitle">${esc(opts.title)}</span>` : ""}
+      ${opts.right === "new" ? `<button class="btn sm pink" id="hnew">${ic("plus", 16, 2.6)} New plan</button>`
+        : opts.right === "none" || opts.back ? `<span style="width:44px"></span>`
+        : `<button class="avbtn tex ${cardFor(type)}" id="hprof" aria-label="Profile">${face(m.emoji, 34)}${profile?.verified ? `<span class="tick">✓</span>` : ""}</button>`}
+    </header>
+    <main class="scroll"></main>`);
+  f.querySelector(".scroll").append(content);
+  f.querySelector("#hback")?.addEventListener("click", () => {
+    if (sub === "verify") { sub = null; tab = "profile"; } else sub = null;
+    render();
+  });
+  f.querySelector("#hprof")?.addEventListener("click", () => { tab = "profile"; sub = null; render(); });
+  f.querySelector("#hnew")?.addEventListener("click", () => startForm("plan", "event"));
+  return f;
+}
+
+function tabbar() {
+  const n = (myTable() || myQueue() ? 1 : 0) + myPlans().length;
+  const item = (k, label) => `<button data-tab="${k}" class="${tab === k && !sub ? "on" : ""}">${ICONS[k]}${label}${k === "groups" && n ? `<span class="bdg">${n}</span>` : ""}</button>`;
+  const f = $(`<nav class="tabbar">
+    ${item("home", "Home")}${item("plans", "Plans")}
+    <button id="plus" aria-label="Meet up"><span class="plus tex g-pink">${ICONS.plus}</span></button>
+    ${item("groups", "Groups")}${item("profile", "Profile")}
+  </nav>`);
+  f.querySelectorAll("[data-tab]").forEach((b) => b.onclick = () => { tab = b.dataset.tab; sub = null; edits = null; render(); });
+  f.querySelector("#plus").onclick = () => { sheet = true; render(); };
+  return f;
+}
+
+// Open a form with a fresh, unchecked place.
+function startForm(which, mode) {
+  draft.mode = mode; draft.place = ""; draft.placeOk = false;
+  sub = which; sheet = false; render();
+}
+
+// The + menu: every way to meet up, in one place.
+function sheetView() {
+  const busy = myTable() || myQueue();
+  const f = $(`
+    <div class="backdrop" id="bd"></div>
+    <div class="sheet">
+      <div class="grab"></div>
+      <h3>Meet <em style="color:var(--pink)">up</em></h3>
+      <div class="list">
+        <button class="li" data-go="spin"><span class="ic tex g-lime">${ic("dice", 22)}</span><span class="tx"><b>Spin</b><span class="muted">Jump into an open group now</span></span><span class="chev">›</span></button>
+        <button class="li" data-go="open"><span class="ic tex g-food">${ic("seat", 22)}</span><span class="tx"><b>Start a group now</b><span class="muted">Pick a spot, people join you</span></span><span class="chev">›</span></button>
+        <button class="li" data-go="group"><span class="ic tex g-blue">${ic("groups", 22)}</span><span class="tx"><b>Get a random group</b><span class="muted">We'll match you with a few people</span></span><span class="chev">›</span></button>
+        <button class="li" data-go="plan"><span class="ic tex g-event">${ic("calendar", 22)}</span><span class="tx"><b>Plan an outing</b><span class="muted">For later this week</span></span><span class="chev">›</span></button>
+      </div>
+      ${busy ? `<p class="muted" style="margin:12px 4px 0">You're already in a group. Starting a new one leaves it.</p>` : ""}
+    </div>`);
+  f.querySelector("#bd").onclick = () => { sheet = false; render(); };
+  f.querySelectorAll("[data-go]").forEach((b) => b.onclick = () => {
+    const go = b.dataset.go;
+    if (go === "spin") { sheet = false; api("spin", { mode: filter === "all" ? undefined : filter }); render(); return; }
+    startForm(go, go === "plan" ? "event" : filter === "all" || filter === "event" ? "food" : filter);
+  });
+  return f;
+}
+
+// Testing only: start over as a brand-new person in this tab.
+function resetProfile() {
+  if (!confirm("Start over as a new person? Open groups stay open.")) return;
+  try { sessionStorage.clear(); } catch {}
+  if (socket) { socket.onclose = null; socket.close(); }
+  location.reload();
+}
+
+// ---------- Onboarding: sign up, the personality quiz, your result, then verification ----------
+function onboardView() {
+  const step = quiz.step;
+  const a = quiz.answers;
+  const go = (n) => { quiz.step = n; render(); };
+  const ob = (html, withBack) => $(`
+    ${withBack ? `<header class="hdr"><button class="back" id="back" aria-label="Back">${ICONS.back}</button><span></span></header>` : ""}
+    <div class="ob">${html}</div>`);
+
+  // Step 0: trying it with other people, or on your own?
+  if (step === 0) {
+    const f = ob(`
+      <div class="poster tex g-pink">
+        <h1 class="huge">Side<br><em style="color:var(--dark)">Quest</em></h1>
+        <p>An easy, no-pressure way to go out and make friends. Always 3 or more, always somewhere public.</p>
+      </div>
+      <h2>Trying it with other people right now?</h2>
+      <div class="choice">
+        <button class="opt ${mode === "live" ? "on" : ""}" data-mode="live"><span class="ic tex g-lime">${ic("groups", 24)}</span><span><b>Yes, with other people</b><span class="muted">You'll see each other's groups and plans live.</span></span></button>
+        <button class="opt ${mode === "solo" ? "on" : ""}" data-mode="solo"><span class="ic tex g-blue">${ic("person", 24)}</span><span><b>No, just me</b><span class="muted">Practice mode. Pretend people fill in, so you can try everything.</span></span></button>
+      </div>
+      <div class="grow"></div>`);
+    f.querySelectorAll("[data-mode]").forEach((b) => b.onclick = () => {
+      mode = b.dataset.mode; store.set("mode", mode);
+      b.parentElement.querySelectorAll(".opt").forEach((x) => x.classList.toggle("on", x === b));
+      setTimeout(() => go(1), 280);
+    });
+    return f;
+  }
+
+  // Step 1: sign up.
+  if (step === 1) {
+    const f = ob(`
+      <h1 style="margin-top:4px">Nice to <em>meet</em> you</h1>
+      <p class="sub">${mode === "solo" ? "Practice mode. Everyone else you'll see is pretend." : "You'll see real people's groups and plans."}</p>
+      <label class="lbl" for="name">First name</label>
+      <input id="name" maxlength="20" placeholder="Your first name" autocomplete="off" value="${esc(quiz.name)}">
+      <label class="lbl" for="email">KU email</label>
+      <input id="email" type="email" maxlength="60" placeholder="you@ku.edu" autocomplete="off" value="${esc(quiz.email)}">
+      <p class="muted">Only for KU students. Your email stays private.</p>
+      <div class="grow"></div>
+      <button class="btn" id="next">Get started</button>`, true);
+    f.querySelector("#back").onclick = () => go(0);
+    f.querySelector("#next").onclick = () => {
+      quiz.name = document.getElementById("name").value.trim();
+      quiz.email = document.getElementById("email").value.trim();
+      if (!quiz.name) return toast("Add your first name");
+      if (!/^[^@\s]+@ku\.edu$/i.test(quiz.email)) return toast("Use your @ku.edu email");
+      go(2);
+    };
+    return f;
+  }
+
+  // Step 2: what the quiz is for, as cards you swipe through.
+  if (step === 2) {
+    const CARDS = [
+      { g: "g-night", h: `${esc(quiz.name)}, what kind of <em style="color:var(--lime)">friend</em> are you?`, p: "A one-minute quiz. No wrong answers.",
+        art: `<div class="crew">${["🌻", "🍜", "🧠", "🎧"].map((e) => face(e, 108)).join("")}</div>`, artBottom: true },
+      { g: "g-pink", h: `Get your <em style="color:var(--dark)">friend type</em>`, p: "You'll be one of six, like The Sunshine or The Foodie. It shows next to your name.", art: ic("smile", 64, 1.8) },
+      { g: "g-lime", h: `See who you <em style="color:var(--dark)">click</em> with`, p: "Your answers help us put you with people you'll get along with.", art: ic("groups", 64, 1.8) },
+      { g: "g-blue", h: `Some answers stay <em style="color:var(--lime)">private</em>`, p: "Nobody ever sees your gender or who you'd like to meet.", art: ic("lock", 64, 1.8) },
+    ];
+    const f = ob(`
+      <div class="swipe" id="swipe">${CARDS.map((c, i) => `
+        <section class="scard poster tex ${c.g}" aria-label="${i + 1} of ${CARDS.length}">
+          ${c.artBottom ? "" : `<div class="sart">${c.art}</div>`}
+          <div><h1>${c.h}</h1><p>${c.p}</p></div>
+          ${c.artBottom ? c.art : ""}
+        </section>`).join("")}</div>
+      <div class="dots">${CARDS.map((_, i) => `<button data-dot="${i}" class="${i === 0 ? "on" : ""}" aria-label="Card ${i + 1}"><i></i></button>`).join("")}</div>
+      <div class="qnav"><button class="btn plain" id="skip" style="flex:0 0 auto;width:auto;padding:16px 14px">Skip</button><button class="btn pink" id="next">Next</button></div>`, true);
+    const track = f.querySelector("#swipe"), next = f.querySelector("#next"), skip = f.querySelector("#skip");
+    const at = () => Math.round(track.scrollLeft / (track.firstElementChild.offsetWidth + 12));
+    const smooth = matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+    const goCard = (i) => track.scrollTo({ left: i * (track.firstElementChild.offsetWidth + 12), behavior: smooth });
+    const show = () => {
+      const i = at(), last = i >= CARDS.length - 1;
+      track.parentElement.querySelectorAll("[data-dot]").forEach((d) => d.classList.toggle("on", Number(d.dataset.dot) === i));
+      next.textContent = last ? "Start the quiz" : "Next";
+      skip.style.visibility = last ? "hidden" : "";
+    };
+    track.onscroll = () => { clearTimeout(track.t); track.t = setTimeout(show, 60); };
+    f.querySelectorAll("[data-dot]").forEach((d) => d.onclick = () => goCard(Number(d.dataset.dot)));
+    next.onclick = () => { const i = at(); if (i >= CARDS.length - 1) go(Q0); else goCard(i + 1); };
+    skip.onclick = () => go(Q0);
+    f.querySelector("#back").onclick = () => go(1);
+    return f;
+  }
+
+  // Your result.
+  if (step >= RESULT) {
+    const key = archetypeFor(a), type = ARCHETYPES[key];
+    const f = ob(`
+      <div class="poster tex ${cardFor(type)}" style="text-align:center">
+        <div style="font-size:92px;line-height:1.1;margin:6px 0"><span class="hop">${face(type.emoji, 220, "margin:-6px 0 6px")}</span></div>
+        <h1 class="huge" style="font-size:56px"><span style="font-size:.5em;display:block;margin-bottom:6px">You're</span>${type.label}</h1>
+        <p style="max-width:none">${type.about}</p>
+      </div>
+      <div class="card" style="margin-top:0">
+        <b>You click with</b>
+        <p style="margin:4px 0 0">${type.meets}</p>
+      </div>
+      ${a.interests.length ? `<div>${a.interests.map((i) => `<span class="pill">${esc(interestLabel(i))}</span>`).join(" ")}</div>` : ""}
+      <p class="muted">Your friend type shows next to your name. You can change your answers anytime in your profile.</p>
+      <div class="grow"></div>
+      <div class="qnav"><button class="btn ghost" id="redo" style="flex:0 0 auto;width:auto;padding:16px 20px">Retake</button><button class="btn" id="go">Next: get verified</button></div>`, true);
+    f.querySelector("#back").onclick = () => go(RESULT - 1);
+    f.querySelector("#redo").onclick = () => go(Q0);
+    f.querySelector("#go").onclick = () => {
+      store.set("name", quiz.name);
+      const p = { archetype: key, vibe: a.vibe, free: a.free, interests: a.interests, gender: a.gender, comfort: a.comfort, minutes: a.minutes, diet: a.diet, budget: a.budget, access: a.access, email: quiz.email, verified: !!a.verified };
+      draft.minutes = Number(a.minutes) || 30;
+      quiz.step = 0;
+      if (!uid) { uid = crypto.randomUUID().slice(0, 8); store.set("uid", uid); profile = p; store.set("profile", JSON.stringify(p)); connect(); }
+      else saveProfile(p); // retook the quiz
+      if (p.verified) { sub = null; tab = "profile"; } else { sub = "verify"; afterVerify = "home"; }
+      render();
+    };
+    return f;
+  }
+
+  // A question. Back and Next are always there, so people can move around freely.
+  const qi = step - Q0, Q = QUESTIONS[qi];
+  const head = `<div class="progress" role="progressbar" aria-label="Question ${qi + 1} of ${QUESTIONS.length}" aria-valuemin="1" aria-valuemax="${QUESTIONS.length}" aria-valuenow="${qi + 1}">${QUESTIONS.map((_, i) => `<i class="${i <= qi ? "on" : ""}"></i>`).join("")}</div>
+    <h1>${Q.q}</h1>`;
+  const nav = (label) => `<div class="qnav"><button class="btn ghost" id="prev" style="flex:0 0 auto;width:auto;padding:16px 20px">Back</button><button class="btn" id="next" ${answered(Q, a) ? "" : "disabled"}>${label || "Next"}</button></div>`;
+  const wire = (f) => {
+    f.querySelector("#back").onclick = () => go(step - 1);
+    f.querySelector("#prev").onclick = () => go(step - 1);
+    f.querySelector("#next").onclick = () => { if (answered(Q, a)) go(step + 1); };
+  };
+
+  if (Q.key === "interests") {
+    const f = ob(`${head}<p class="sub">${Q.note}</p>
+      <div class="chips">${INTERESTS.map(([k, l]) => `<button class="chip ${a.interests.includes(k) ? "on" : ""}" data-i="${k}">${l}</button>`).join("")}</div>
+      <div class="grow"></div>
+      ${nav(a.interests.length ? `Next · ${a.interests.length} picked` : "Skip")}`, true);
+    f.querySelectorAll("[data-i]").forEach((b) => b.onclick = () => {
+      const k = b.dataset.i;
+      if (a.interests.includes(k)) a.interests = a.interests.filter((x) => x !== k);
+      else if (a.interests.length >= MAX_INTERESTS) return toast(`You can pick up to ${MAX_INTERESTS}`);
+      else a.interests = [...a.interests, k];
+      render();
+    });
+    wire(f);
+    return f;
+  }
+
+  if (Q.key === "extras") {
+    const f = ob(`${head}<p class="sub">${Q.note}</p>
+      <label class="lbl" style="margin-top:4px">Food</label>
+      <div class="chips">${DIETS.map(([k, l]) => `<button class="chip ${a.diet.includes(k) ? "on" : ""}" data-diet="${k}">${l}</button>`).join("")}</div>
+      <label class="lbl">Budget</label>
+      <div class="chips">${BUDGETS.map(([k, l]) => `<button class="chip ${a.budget === k ? "on" : ""}" data-budget="${k}">${l}</button>`).join("")}</div>
+      <label class="lbl">Getting there</label>
+      <div class="chips"><button class="chip ${a.access ? "on" : ""}" data-access>♿ I need an accessible spot</button></div>
+      <div class="grow"></div>
+      ${nav(a.diet.length || a.budget || a.access ? "Next" : "Skip")}`, true);
+    f.querySelectorAll("[data-diet]").forEach((b) => b.onclick = () => { const k = b.dataset.diet; a.diet = a.diet.includes(k) ? a.diet.filter((d) => d !== k) : [...a.diet, k]; render(); });
+    f.querySelectorAll("[data-budget]").forEach((b) => b.onclick = () => { a.budget = a.budget === b.dataset.budget ? null : b.dataset.budget; render(); });
+    f.querySelector("[data-access]").onclick = () => { a.access = !a.access; render(); };
+    wire(f);
+    return f;
+  }
+
+  if (Q.key === "agree") {
+    const f = ob(`${head}
+      <div class="list">
+        <div class="li"><span class="ic tex g-pink">${ic("groups", 22)}</span><span class="tx">People of every gender, sexuality, race, religion and background are welcome at every table.</span></div>
+        <div class="li"><span class="ic tex g-lime">${ic("heart", 22)}</span><span class="tx">Be kind. Disrespect, hate or harassment gets you removed from Side Quest.</span></div>
+        <div class="li"><span class="ic tex g-blue">${ic("pin", 22)}</span><span class="tx">Always meet in public, and leave any group anytime, no explanation needed.</span></div>
+      </div>
+      <div class="grow"></div>
+      ${nav("I'm in")}`, true);
+    wire(f);
+    return f;
+  }
+
+  // Single choice. Tapping an answer highlights it and moves on after a beat;
+  // Back and Next let people return and change it.
+  const options = Q.key === "comfort" ? comfortOptions(a.gender) : Q.options;
+  const note = Q.key === "comfort" && a.gender === "unsaid"
+    ? "Matching by gender needs your gender, so you'll be matched with anyone. You can change this later in your profile."
+    : Q.note;
+  const f = ob(`${head}
+    ${note ? `<p class="sub">${note}</p>` : ""}
+    <div class="options">${options.map(([k, l]) => `<button class="opt ${a[Q.key] === k ? "on" : ""}" data-a="${k}"><span>${l}</span><span class="check">${ic("check", 14, 3)}</span></button>`).join("")}</div>
+    <div class="grow"></div>
+    ${nav()}`, true);
+  f.querySelectorAll("[data-a]").forEach((b) => b.onclick = () => {
+    a[Q.key] = b.dataset.a;
+    if (Q.key === "gender" && a.gender === "unsaid") a.comfort = "anyone";
+    b.parentElement.querySelectorAll(".opt").forEach((x) => x.classList.toggle("on", x === b));
+    const here = quiz.step;
+    setTimeout(() => { if (quiz.step === here) go(step + 1); }, 320);
+  });
+  wire(f);
+  return f;
+}
+
+// ---------- Verification (prototype: nothing is really checked) ----------
+function verifyView() {
+  const f = $(`
+    <div class="poster tex g-lime" style="text-align:center;margin-top:6px">
+      <div style="color:var(--dark);margin-bottom:4px">${ic("id", 56, 1.8)}</div>
+      <h1 class="huge" style="font-size:52px">Get <em style="color:#1b1f7a">verified</em></h1>
+      <p style="max-width:none">Verified KU students get a ✓ next to their name, so your group knows you're real.</p>
+    </div>
+    <label class="lbl" style="margin-top:0">KU email</label>
+    <input id="vemail" type="email" value="${esc(profile.email || "")}" placeholder="you@ku.edu">
+    <label class="lbl">Photo of your KU student ID</label>
+    <input id="vphoto" type="file" accept="image/*">
+    ${verify.photo ? `<img class="idprev" src="${verify.photo}" alt="Your student ID">` : ""}
+    <p class="muted">Prototype: your photo stays on this device and isn't actually checked.</p>
+    <button class="btn" id="vgo" ${verify.checking ? "disabled" : ""}>${verify.checking ? `<span class="spinner"></span> Checking…` : "Verify me"}</button>
+    <button class="btn plain" id="vskip" style="margin-top:6px">Skip for now</button>`);
+  const done = () => { sub = null; tab = afterVerify || "home"; afterVerify = null; verify = { photo: null, checking: false }; render(); };
+  f.querySelector("#vphoto").onchange = (e) => {
+    const file = e.target.files[0];
+    if (file) { if (verify.photo) URL.revokeObjectURL(verify.photo); verify.photo = URL.createObjectURL(file); render(); }
+  };
+  f.querySelector("#vgo").onclick = () => {
+    const email = document.getElementById("vemail").value.trim();
+    if (!/^[^@\s]+@ku\.edu$/i.test(email)) return toast("Use your @ku.edu email");
+    if (!verify.photo) return toast("Add a photo of your student ID");
+    verify.checking = true; render();
+    setTimeout(() => { saveProfile({ ...profile, email, verified: true }); toast("You're verified ✓"); done(); }, 1400);
+  };
+  f.querySelector("#vskip").onclick = done;
+  return f;
+}
+
+// ---------- Home ----------
+function homeView() {
+  const now = state.tables.filter((t) => !t.planned && !t.group && state.fits.includes(t.id) && !t.members.some((m) => m.id === uid) && (filter === "all" || t.mode === filter));
+  const soon = state.tables.filter((t) => t.planned && state.fits.includes(t.id) && (filter === "all" || t.mode === filter)).sort((a, b) => a.startsAt - b.startsAt).slice(0, 5);
+  const waiting = Object.values(state.queues).reduce((n, q) => n + q.length, 0);
+  const t = myTable(), q = myQueue();
+  const f = $(`
+    <h1 class="largetitle">Hi <em>${esc(store.get("name"))}</em>,<br>what are you up for?</h1>
+    <p class="sub"><span class="live" style="font-weight:700"><span class="dot" ${mode === "solo" ? 'style="background:var(--yellow)"' : ""}></span>${mode === "solo" ? "Practice mode · everyone else is pretend" : state.online.length === 1 ? "Just you online right now" : `${state.online.length} people online right now`}</span></p>
+    ${t || q ? `<button class="inbanner tex g-night" id="mine"><span class="dot"></span><span style="flex:1"><b>${t ? `You're in a group at ${esc(t.spot)}` : "Finding your group…"}</b><br><span style="font-size:14px">Tap to open</span></span><span>›</span></button>` : ""}
+    <div class="chips scrollx">
+      <button class="chip ${filter === "all" ? "on" : ""}" data-f="all">Everything</button>
+      ${modes().map((k) => `<button class="chip ${filter === k ? "on" : ""}" data-f="${k}">${ic(k, 16)} ${act(k).label}</button>`).join("")}
+    </div>
+    <button class="hero tex g-pink" id="spin">
+      <b>Spin</b><span class="s">Jump into an open group now</span><span class="big">${ic("dice", 72, 1.8)}</span>
+    </button>
+    <div class="tiles">
+      <button class="tile tex g-lime" id="open"><span class="big">${ic("seat", 34)}</span><b>Start a group</b><span class="s">Pick the spot, people join you</span></button>
+      <button class="tile tex g-blue" id="group"><span class="big">${ic("groups", 34)}</span><b>Random group</b><span class="s">${waiting ? `${waiting} waiting now` : "We'll match you up"}</span></button>
+    </div>
+    <div class="sec">Happening <em style="color:var(--pink);margin-right:auto;padding-left:6px">now</em></div>
+    <div id="now"></div>
+    <div class="sec">Coming <em style="color:var(--violet);margin-right:auto;padding-left:6px">up</em> <button id="allplans">See all</button></div>
+    <div id="soon"></div>`);
+  f.querySelector("#mine")?.addEventListener("click", () => { tab = "groups"; render(); });
+  f.querySelectorAll("[data-f]").forEach((b) => b.onclick = () => { filter = b.dataset.f; render(); });
+  f.querySelector("#spin").onclick = () => api("spin", { mode: filter === "all" ? undefined : filter });
+  f.querySelector("#open").onclick = () => startForm("open", filter === "all" ? "food" : filter);
+  f.querySelector("#group").onclick = () => startForm("group", filter === "all" || filter === "event" ? "food" : filter);
+  f.querySelector("#allplans").onclick = () => { tab = "plans"; render(); };
+  const nowEl = f.querySelector("#now");
+  const hiddenNow = state.tables.filter((t) => !t.planned && notMatch(t) && (filter === "all" || t.mode === filter));
+  if (!now.length) nowEl.append(emptyCard(`No open ${filter === "all" ? "" : act(filter).label.toLowerCase() + " "}groups that fit you right now.`, `${ic("seat", 18)} Start one`, () => startForm("open", filter === "all" ? "food" : filter)));
+  now.forEach((x) => nowEl.append(groupCard(x)));
+  hiddenNow.forEach((x) => nowEl.append(groupCard(x, true)));
+  // Plans scroll sideways when there are some; the empty card lines up with the rest.
+  const soonEl = f.querySelector("#soon");
+  if (!soon.length) soonEl.append(emptyCard("No plans yet. Know about something happening this week?", `${ic("calendar", 18)} Plan an outing`, () => startForm("plan", "event")));
+  else {
+    const row = document.createElement("div"); row.className = "carousel";
+    soon.forEach((x) => row.append(planCard(x)));
+    soonEl.append(row);
+  }
+  return f;
+}
+
+function emptyCard(text, label, onClick) {
+  const f = $(`<div class="card" style="text-align:center;margin-top:0"><p class="muted" style="margin:4px 0 12px">${text}</p><button class="btn ghost">${label}</button></div>`);
+  f.querySelector("button").onclick = onClick;
+  return f;
+}
+
+function groupCard(t, nomatch) {
+  const full = t.members.length >= t.chairs;
+  const host = t.members.find((m) => m.id === t.hostId) || t.members[0];
+  const shared = sharedIn(t);
+  const card = $(`
+    <div class="gcard ${nomatch ? "nomatch" : ""}">
+      <div class="row" style="justify-content:space-between">
+        <div style="flex:0"><span class="tag ${t.mode}">${ic(t.mode, 14, 2.4)} ${act(t.mode).label}</span></div>
+        <div class="muted" style="text-align:right;font-weight:700">${minsLeft(t)} min left</div>
+      </div>
+      <h3>${esc(t.spot)}</h3>
+      <div class="muted">${face(host.emoji, 22)} ${esc(host.name)}'s group · ${esc(t.topic)}</div>
+      ${shared.length ? `<div class="common">In common: ${shared.map((i) => esc(interestLabel(i))).join(", ")}</div>` : ""}
+      <div class="row" style="margin-top:12px">
+        <div class="chairs">${t.members.map((m) => inSeat(m.emoji)).join("")}${seats(t.chairs - t.members.length)}</div>
+        <button class="btn sm pink" style="flex:none" ${full || nomatch ? "disabled" : ""}>${full ? "Full" : nomatch ? "Not a match" : "Join"}</button>
+      </div>
+      ${nomatch ? `<div class="why">${WHY}</div>` : ""}
+    </div>`);
+  card.querySelector("button").onclick = () => api("join", { tableId: t.id });
+  return card;
+}
+
+function planCard(t, nomatch) {
+  const going = t.members.some((m) => m.id === uid);
+  const full = t.members.length >= t.chairs;
+  const shared = sharedIn(t);
+  const card = $(`
+    <div class="pcard ${nomatch ? "nomatch" : ""}">
+      <div class="top tex g-${t.mode}">
+        <div class="row" style="justify-content:space-between;padding-right:28px">
+          <div style="flex:0"><span class="tag light">${ic(t.mode, 14, 2.4)} ${act(t.mode).label}</span></div>
+          <div style="text-align:right;font-weight:700;font-size:13px">${startsIn(t)}</div>
+        </div>
+        <h3>${esc(t.title || act(t.mode).label)}</h3>
+      </div>
+      <div class="bot">
+        <div class="when">${whenText(t)}</div>
+        <div class="muted">${ic("pin", 14)} ${esc(t.spot)}</div>
+        ${shared.length ? `<div><span class="common">In common: ${shared.map((i) => esc(interestLabel(i))).join(", ")}</span></div>` : ""}
+        <div class="row" style="margin-top:10px">
+          <div class="chairs">${t.members.map((m) => inSeat(m.emoji)).join("")}${seats(t.chairs - t.members.length)}</div>
+          ${going ? `<span class="status" style="flex:none;padding:9px 13px;font-size:14px">✓ Going</span>` : `<button class="btn sm" style="flex:none" data-join ${full || nomatch ? "disabled" : ""}>${full ? "Full" : nomatch ? "Not a match" : "I'm in"}</button>`}
+        </div>
+        ${nomatch ? `<div class="why">${WHY}</div>` : ""}
+      </div>
+    </div>`);
+  card.querySelector(".pcard").onclick = (e) => {
+    if (e.target.closest("[data-join]")) api("join", { tableId: t.id });
+    detailId = t.id; sub = "detail"; render();
+  };
+  return card;
+}
+
+// ---------- Plans: outings for later ----------
+function plansView() {
+  const all = state.tables.filter((t) => t.planned).sort((a, b) => a.startsAt - b.startsAt);
+  const mine = all.filter((t) => t.members.some((m) => m.id === uid));
+  const open = all.filter((t) => !mine.includes(t) && state.fits.includes(t.id) && (filter === "all" || t.mode === filter));
+  const f = $(`
+    <h1 class="largetitle">Plans for <em>later</em></h1>
+    <p class="sub">Something happening this week? See who wants to go.</p>
+    <div class="chips scrollx">
+      <button class="chip ${filter === "all" ? "on" : ""}" data-f="all">Everything</button>
+      ${modes().map((k) => `<button class="chip ${filter === k ? "on" : ""}" data-f="${k}">${ic(k, 16)} ${act(k).label}</button>`).join("")}
+    </div>
+    ${mine.length ? `<div class="sec">You're going</div><div id="mine"></div>` : ""}
+    <div class="sec">Open plans</div>
+    <div id="open"></div>`);
+  f.querySelectorAll("[data-f]").forEach((b) => b.onclick = () => { filter = b.dataset.f; render(); });
+  const mineEl = f.querySelector("#mine");
+  mine.forEach((t) => mineEl.append(planCard(t)));
+  const openEl = f.querySelector("#open");
+  const hiddenPlans = all.filter((t) => !mine.includes(t) && notMatch(t) && (filter === "all" || t.mode === filter));
+  if (!open.length) openEl.append(emptyCard("No open plans that fit you yet.", `${ic("calendar", 18)} Plan an outing`, () => startForm("plan", "event")));
+  open.forEach((t) => openEl.append(planCard(t)));
+  hiddenPlans.forEach((t) => openEl.append(planCard(t, true)));
+  return f;
+}
+
+function detailView() {
+  const t = state.tables.find((x) => x.id === detailId);
+  if (!t) return $(`<p class="muted">That plan has ended or was cancelled.</p>`);
+  const going = t.members.some((m) => m.id === uid);
+  const started = t.startsAt <= Date.now();
+  const meHere = t.members.find((m) => m.id === uid)?.here;
+  const f = $(`
+    <div class="poster tex g-${t.mode}" style="margin-top:4px">
+      <span class="tag light">${ic(t.mode, 14, 2.4)} ${act(t.mode).label}</span> <span style="font-weight:700;font-size:13px;margin-left:6px">${startsIn(t)}</span>
+      <h1 class="huge" style="font-size:50px;margin-top:14px">${esc(t.title || act(t.mode).label)}</h1>
+    </div>
+    <div class="list">
+      <div class="li"><span class="ic" style="background:var(--soft)">${ic("calendar", 20)}</span><span class="tx"><b>${whenText(t)}</b><span class="muted">${Math.round((t.endsAt - t.startsAt) / 60000)} min</span></span></div>
+      <div class="li"><span class="ic" style="background:var(--soft)">${ic("pin", 20)}</span><span class="tx"><b>${esc(t.spot)} <span class="badge">✓ Public place</span></b>${t.hint ? `<span class="muted">${esc(t.hint)}</span>` : ""}</span></div>
+    </div>
+    <div class="sec">${t.members.length} going · ${t.chairs - t.members.length === 1 ? "1 spot" : `${t.chairs - t.members.length} spots`} left</div>
+    <div class="card" style="margin-top:0">${t.members.map((m) => personRow(m, t)).join("")}</div>
+    <div class="row">
+      ${going
+        ? `${started ? `<button class="btn go" id="here" ${meHere ? "disabled" : ""}>${meHere ? "✓ You're here" : "I'm here"}</button>` : `<span class="status">✓ You're going</span>`}<button class="btn ghost" id="leave">Can't make it</button>`
+        : notMatch(t) ? `<p class="muted" style="text-align:center">${WHY}</p>`
+        : `<button class="btn pink" id="join" ${t.members.length >= t.chairs ? "disabled" : ""}>${t.members.length >= t.chairs ? "Full" : "I'm in"}</button>`}
+    </div>
+    ${going ? `<div class="sec">Group chat</div>
+    <div class="card" style="margin-top:0">
+      <div class="chat" id="chat">${chatHtml(t, `"Should we meet out front?" "I'll grab tickets"…`)}</div>
+      <form class="send" id="send"><input id="msg" maxlength="200" placeholder="Message" autocomplete="off"><button aria-label="Send">${ICONS.send}</button></form>
+    </div>` : `<p class="muted" style="text-align:center">Tap I'm in to see the group chat.</p>`}`);
+  f.querySelector("#join")?.addEventListener("click", () => api("join", { tableId: t.id }));
+  f.querySelector("#leave")?.addEventListener("click", () => { api("leave", { tableId: t.id }); sub = null; render(); });
+  f.querySelector("#here")?.addEventListener("click", () => api("checkin", { tableId: t.id }));
+  f.querySelector("#send")?.addEventListener("submit", (e) => { e.preventDefault(); const i = document.getElementById("msg"); if (i.value.trim()) api("chat", { tableId: t.id, text: i.value }); i.value = ""; });
+  requestAnimationFrame(() => { const c = document.getElementById("chat"); if (c) c.scrollTop = c.scrollHeight; });
+  return f;
+}
+
+// ---------- My groups: the group you're in now, and plans you're going to ----------
+function groupsView() {
+  const t = myTable(), q = myQueue(), plans = myPlans();
+  const f = $(`<div id="nowpart"></div>${plans.length ? `<div class="sec">Plans you're going to</div><div id="plans"></div>` : ""}`);
+  const nowPart = f.querySelector("#nowpart");
+  if (t) nowPart.append(tableView(t));
+  else if (q) nowPart.append(waitingView(q));
+  else {
+    nowPart.append($(`
+      <h1 class="largetitle">My <em>groups</em></h1>
+      <div class="poster tex g-night" style="text-align:center">
+        <div style="color:var(--lime)">${ic("seat", 44, 1.8)}</div>
+        <h1 class="huge" style="font-size:40px">No group <em style="color:var(--pink)">yet</em></h1>
+        <p style="max-width:none">Spin, start a group or get matched. It only takes a minute.</p>
+        <button class="btn lime" id="meet" style="margin-top:16px">Meet up</button>
+      </div>`));
+    nowPart.querySelector("#meet").onclick = () => { sheet = true; render(); };
+  }
+  const plansEl = f.querySelector("#plans");
+  plans.forEach((p) => plansEl.append(planCard(p)));
+  return f;
+}
+
+// ---------- Forms ----------
+function activityGrid(list) {
+  return `<div class="actgrid">${list.map((k) => `<button type="button" data-m="${k}" class="${draft.mode === k ? "on" : ""}">${ic(k, 20)}${act(k).label}</button>`).join("")}</div>`;
+}
+
+// Where: type a place, pick a suggestion, and we check that it's a verified
+// public place (not a dorm room or someone's home) before you can post.
+const PRIVATE = /\b(dorm|room|apt|apartment|house|home|my place|residence|hall\s*\d|suite|unit|floor)\b|\d+\s+\w+\s+(st|street|ave|avenue|rd|road|dr|drive|ln|lane|ct|court)\b/i;
+// Case doesn't matter, and the part in brackets is optional.
+const normPlace = (s) => String(s ?? "").trim().toLowerCase().replace(/\s+/g, " ");
+const findPlace = (text) => state.places.find((p) => normPlace(p) === normPlace(text) || normPlace(p.replace(/\s*\(.*\)/, "")) === normPlace(text));
+// "Starbucks" alone could be any of the eight on campus.
+const severalPlaces = (text) => normPlace(text).length > 2 && state.places.filter((p) => normPlace(p).startsWith(normPlace(text))).length > 1;
+// Which floor you're on, so your group isn't searching the whole building.
+const FLOORS = ["Ground floor", "1st floor", "2nd floor", "3rd floor", "4th floor", "5th floor or higher", "Outside / out front"];
+function floorSelect(optional) {
+  return `<select id="floor"><option value="">${optional ? "Floor (optional)" : "Pick a floor"}</option>${FLOORS.map((x) => `<option ${x === draft.floor ? "selected" : ""}>${x}</option>`).join("")}</select>`;
+}
+const withFloor = () => [draft.floor, draft.hint.trim()].filter(Boolean).join(" · ");
+function placeField(placeholder) {
+  return `<div class="place">
+      <input id="place" maxlength="60" placeholder="${placeholder}" autocomplete="off" value="${esc(draft.place)}">
+      <span class="pstate" id="pstate">${draft.placeOk ? `<span style="color:var(--go)">✓</span>` : ""}</span>
+      <div class="sugg hidden" id="sugg"></div>
+    </div>
+    <p class="pmsg ${draft.placeOk ? "ok" : "wait"}" id="pmsg">${draft.placeOk ? "✓ Verified public place" : "Type a restaurant, venue, library or park. We check that it's public."}</p>`;
+}
+function wirePlace(f, onChange) {
+  const input = f.querySelector("#place"), sugg = f.querySelector("#sugg"), pstate = f.querySelector("#pstate"), pmsg = f.querySelector("#pmsg");
+  let timer = null, run = 0;
+  const setMsg = (cls, text, icon) => { pmsg.className = "pmsg " + cls; pmsg.textContent = text; pstate.innerHTML = icon || ""; };
+  const suggest = () => {
+    const q = input.value.trim().toLowerCase();
+    const forMode = act(draft.mode).spots;
+    const pool = [...forMode, ...state.places.filter((p) => !forMode.includes(p))];
+    const hits = (q ? pool.filter((p) => p.toLowerCase().includes(q)) : forMode).slice(0, 8);
+    sugg.innerHTML = hits.map((p) => `<button type="button" data-p="${esc(p)}">${ic("pin", 15)} ${esc(p)}${forMode.includes(p) ? "" : ` <span class="muted">· public place</span>`}</button>`).join("");
+    sugg.classList.toggle("hidden", !hits.length || draft.placeOk);
+    sugg.querySelectorAll("[data-p]").forEach((b) => b.onmousedown = (e) => { e.preventDefault(); input.value = b.dataset.p; check(); });
+  };
+  // Pretend to look the place up (a real version would call a maps service).
+  const check = () => {
+    const text = input.value.trim();
+    draft.place = text; draft.placeOk = false; onChange();
+    sugg.classList.add("hidden");
+    if (!text) return setMsg("wait", "Type a restaurant, venue, library or park. We check that it's public.");
+    const id = ++run;
+    setMsg("wait", "Checking it's a verified public place…", `<span class="spinner"></span>`);
+    setTimeout(() => {
+      if (id !== run) return;
+      const match = findPlace(text);
+      if (match) { input.value = match; draft.place = match; draft.placeOk = true; setMsg("ok", "✓ Verified public place", `<span style="color:var(--go)">✓</span>`); }
+      else if (severalPlaces(text)) { setMsg("bad", "There's more than one. Pick which one from the list.", `<span style="color:var(--danger)">?</span>`); suggest(); sugg.classList.remove("hidden"); }
+      else if (PRIVATE.test(text)) setMsg("bad", "That looks like a private place, like a dorm room or a home. For safety, meetups have to be somewhere public.", `<span style="color:var(--danger)">✕</span>`);
+      else setMsg("bad", "We couldn't verify that place. Try a public spot like a restaurant, venue, library or park.", `<span style="color:var(--danger)">✕</span>`);
+      onChange();
+    }, 900);
+  };
+  input.oninput = () => { draft.place = input.value; draft.placeOk = false; onChange(); pstate.innerHTML = ""; setMsg("wait", "Pick a place from the list, or finish typing."); suggest(); clearTimeout(timer); timer = setTimeout(() => { if (findPlace(input.value)) check(); }, 700); };
+  input.onfocus = suggest;
+  input.onblur = () => { clearTimeout(timer); setTimeout(() => sugg.classList.add("hidden"), 150); if (input.value.trim() && !draft.placeOk) check(); };
+  input.onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); input.blur(); } };
+}
+
+function openView() {
+  const f = $(`
+    <h1 class="largetitle" style="font-size:40px">Start a group <em>now</em></h1>
+    <p class="sub">Pick a public spot and people nearby can join you.</p>
+    <label class="lbl" style="margin-top:0">What for?</label>
+    ${activityGrid(modes())}
+    <label class="lbl" for="place">Where?</label>
+    ${placeField("Search places, like Mrs. E's")}
+    <label class="lbl" for="floor">How to find you</label>
+    ${floorSelect(false)}
+    <input id="hint" maxlength="60" placeholder="By the windows, green backpack" value="${esc(draft.hint)}" style="margin-top:8px">
+    <p class="muted" style="margin:6px 2px 0">Tell people which floor you're on and what to look for.</p>
+    <label class="lbl" for="topic">${draft.mode === "study" ? "Studying" : "Topic"} (optional)</label>
+    <input id="topic" maxlength="40" placeholder="${draft.mode === "study" ? "BIO 150, anything quiet…" : "Anything, music, cats…"}" value="${esc(draft.topic)}">
+    <div class="two">
+      <div><label class="lbl" for="minutes">For how long?</label>
+        <select id="minutes">${[15, 30, 45, 60].map((m) => `<option value="${m}" ${m == draft.minutes ? "selected" : ""}>${m} min</option>`).join("")}</select></div>
+      <div><label class="lbl" for="chairs">Group size</label>
+        <select id="chairs">${state.sizes.map((c) => `<option value="${c}" ${c == draft.chairs ? "selected" : ""}>${c} people</option>`).join("")}</select></div>
+    </div>
+    <p class="muted">Groups are at least ${state.sizes[0]} people, including you, so nobody meets one-on-one.</p>
+    <button class="btn pink" id="post" ${draft.placeOk ? "" : "disabled"}>Start my group</button>`);
+  const save = () => ["floor", "hint", "topic", "minutes", "chairs"].forEach((k) => draft[k] = document.getElementById(k).value);
+  wirePlace(f, () => { const b = document.getElementById("post"); if (b) b.disabled = !draft.placeOk; });
+  f.querySelectorAll("[data-m]").forEach((b) => b.onclick = () => { save(); draft.mode = b.dataset.m; keepScroll = true; render(); keepScroll = false; });
+  f.querySelector("#post").onclick = () => {
+    save();
+    if (!draft.floor) { document.getElementById("floor").focus(); return toast("Add which floor you're on"); }
+    api("open", { ...draft, spot: draft.place, hint: withFloor() });
+    draft.hint = ""; draft.floor = "";
+    sub = null; render();
+  };
+  return f;
+}
+
+// The next two weeks, for picking a day.
+function dayOptions() {
+  return Array.from({ length: 14 }, (_, i) => {
+    const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + i);
+    return [i, i === 0 ? "Today" : i === 1 ? "Tomorrow" : d.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" })];
+  });
+}
+function timeOptions() {
+  const out = [];
+  for (let m = 7 * 60; m <= 23 * 60 + 30; m += 30) {
+    const d = new Date(); d.setHours(0, m, 0, 0);
+    out.push([`${Math.floor(m / 60)}:${String(m % 60).padStart(2, "0")}`, d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })]);
+  }
+  return out;
+}
+
+function planView() {
+  if (!draft.time) draft.time = "19:00";
+  if (!draft.planMinutes) draft.planMinutes = 120;
+  const f = $(`
+    <h1 class="largetitle" style="font-size:40px">Plan an <em>outing</em></h1>
+    <p class="sub">Something going on later this week? Post it and see who wants to come.</p>
+    <label class="lbl" style="margin-top:0">What kind of plan?</label>
+    ${activityGrid(modes())}
+    <label class="lbl" for="title">What's going on?</label>
+    <input id="title" maxlength="60" placeholder="${draft.mode === "event" ? "Jazz night, KU basketball…" : draft.mode === "food" ? "Trying the new taco place…" : draft.mode === "study" ? "Finals study session…" : "Sunset walk, board games…"}" value="${esc(draft.title)}">
+    <label class="lbl" for="place">Where?</label>
+    ${placeField("Search places, like Liberty Hall")}
+    <div class="two">
+      <div><label class="lbl" for="day">Day</label>
+        <select id="day">${dayOptions().map(([v, l]) => `<option value="${v}" ${v == draft.day ? "selected" : ""}>${l}</option>`).join("")}</select></div>
+      <div><label class="lbl" for="time">Time</label>
+        <select id="time">${timeOptions().map(([v, l]) => `<option value="${v}" ${v === draft.time ? "selected" : ""}>${l}</option>`).join("")}</select></div>
+      <div><label class="lbl" for="planMinutes">How long?</label>
+        <select id="planMinutes">${[[60, "1 hour"], [90, "1.5 hours"], [120, "2 hours"], [180, "3 hours"]].map(([v, l]) => `<option value="${v}" ${v == draft.planMinutes ? "selected" : ""}>${l}</option>`).join("")}</select></div>
+      <div><label class="lbl" for="chairs">Group size</label>
+        <select id="chairs">${state.sizes.map((c) => `<option value="${c}" ${c == draft.chairs ? "selected" : ""}>${c} people</option>`).join("")}</select></div>
+    </div>
+    <label class="lbl" for="floor">Where to meet up (optional)</label>
+    ${floorSelect(true)}
+    <input id="hint" maxlength="60" placeholder="By the front doors, under the sign" value="${esc(draft.hint)}" style="margin-top:8px">
+    <p class="muted" style="margin:6px 2px 0">If you're meeting inside, say which floor.</p>
+    <p class="muted">Plans are at least ${state.sizes[0]} people, including you.</p>
+    <button class="btn pink" id="post" ${draft.placeOk ? "" : "disabled"}>Post my plan</button>`);
+  const save = () => ["title", "day", "time", "planMinutes", "chairs", "floor", "hint"].forEach((k) => draft[k] = document.getElementById(k).value);
+  wirePlace(f, () => { const b = document.getElementById("post"); if (b) b.disabled = !draft.placeOk; });
+  f.querySelectorAll("[data-m]").forEach((b) => b.onclick = () => { save(); draft.mode = b.dataset.m; keepScroll = true; render(); keepScroll = false; });
+  f.querySelector("#post").onclick = () => {
+    save();
+    if (!draft.title.trim()) return toast("Add what's going on");
+    if (!draft.placeOk) return toast("Pick a verified public place");
+    const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + Number(draft.day));
+    const [h, m] = draft.time.split(":").map(Number); d.setHours(h, m);
+    if (d.getTime() < Date.now()) return toast("That time's already passed. Pick a later one.");
+    api("open", { mode: draft.mode, title: draft.title, spot: draft.place, hint: withFloor(), chairs: draft.chairs, minutes: draft.planMinutes, startsAt: d.getTime() });
+    draft.title = ""; draft.hint = ""; draft.floor = ""; draft.place = ""; draft.placeOk = false;
+    sub = null; tab = "plans"; render();
+    toast("Plan posted. See who's in!");
+  };
+  return f;
+}
+
+// ---------- Random group: setup ----------
+function groupView() {
+  const list = modes().filter((k) => k !== "event"); // events are planned ahead
+  if (!list.includes(draft.mode)) draft.mode = list[0];
+  const f = $(`
+    <h1 class="largetitle" style="font-size:40px">Get a <em>random</em> group</h1>
+    <p class="sub">We'll find people whose settings fit yours, and lean toward people who like the same things. If it isn't full after ${Math.round(state.groupWaitMs / 60000)} min, you'll start with whoever's there (at least ${state.groupMin}).</p>
+    <label class="lbl" style="margin-top:0">What for?</label>
+    ${activityGrid(list)}
+    <label class="lbl" for="gspot">Where would you like to meet?</label>
+    <select id="gspot"><option value="">Anywhere, surprise me</option>${act(draft.mode).spots.map((s) => `<option ${s === draft.gspot ? "selected" : ""}>${esc(s)}</option>`).join("")}</select>
+    <label class="lbl" for="gsize">How many people, including you?</label>
+    <select id="gsize">${state.sizes.map((c) => `<option value="${c}" ${c == draft.size ? "selected" : ""}>Up to ${c} people</option>`).join("")}</select>
+    <button class="btn pink" id="find" style="margin-top:22px">Find my group</button>`);
+  const save = () => { draft.gspot = document.getElementById("gspot").value; draft.size = Number(document.getElementById("gsize").value); };
+  f.querySelectorAll("[data-m]").forEach((b) => b.onclick = () => {
+    save(); draft.mode = b.dataset.m;
+    if (!act(draft.mode).spots.includes(draft.gspot)) draft.gspot = ""; // that spot isn't for this activity
+    keepScroll = true; render(); keepScroll = false;
+  });
+  f.querySelector("#find").onclick = () => {
+    save();
+    sub = null; tab = "groups"; foundBefore = 0;
+    api("queue", { mode: draft.mode, spot: draft.gspot, size: draft.size });
+    render();
+  };
+  return f;
+}
+
+// ---------- Random group: waiting ----------
+// A ring counts down the wait. Each found person pops into a seat.
+const RING = 2 * Math.PI * 66;
+function waitInfo(mode) {
+  const mine = state.queues[mode].find((e) => e.uid === uid);
+  const size = mine?.size || state.groupSize;
+  const found = Math.min(state.myLine, size); // people in line who fit with you, you included
+  const left = Math.max(0, state.groupWaitMs - (Date.now() - (state.myStart || Date.now())));
+  const secs = Math.ceil(left / 1000);
+  const mmss = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}`;
+  const need = state.groupMin - found;
+  const msg = found >= size ? "Your group is full. Starting now…"
+    : found >= state.groupMin
+      ? (left > 0 ? `If nobody else joins, you'll start with ${found} when the timer ends.` : `Starting with ${found} people…`)
+      : (left > 0 ? `${need} more and you can start. We only match you with people whose settings fit yours.`
+                  : `Still looking. You'll start as soon as ${need} more ${need === 1 ? "person joins" : "people join"}.`);
+  return { size, found, left, mmss, msg };
+}
+function waitingView(mode) {
+  const { size, found, left, mmss, msg } = waitInfo(mode);
+  const myEmoji = me()?.emoji || "🙂";
+  const slots = Array.from({ length: size }, (_, i) =>
+    i === 0 ? `<span class="slot me">${face(myEmoji, 30)}</span>`
+    : i < found ? `<span class="slot found ${i >= foundBefore ? "pop" : ""}">${ic("person", 20)}</span>`
+    : `<span class="slot empty"></span>`).join("");
+  foundBefore = found;
+  const f = $(`
+    <span class="tag ${mode}">${ic(mode, 14, 2.4)} ${act(mode).label}</span>
+    <h1 class="largetitle" style="margin-top:10px">Finding your <em>group…</em></h1>
+    <div class="poster tex g-night" style="text-align:center">
+      <p class="live" style="justify-content:center;max-width:none;margin:0 0 6px"><span class="dot" style="background:var(--lime)"></span>${found} of ${size} people found</p>
+      <div class="ring">
+        <svg width="160" height="160" viewBox="0 0 160 160">
+          <circle class="track" cx="80" cy="80" r="66"></circle>
+          <circle class="fill" id="ringFill" cx="80" cy="80" r="66" stroke-dasharray="${RING}" stroke-dashoffset="${RING * (1 - left / state.groupWaitMs)}"></circle>
+        </svg>
+        <div class="clock"><span id="ringClock">${mmss}</span><small>to form</small></div>
+      </div>
+      <div class="slots">${slots}</div>
+      <p id="ringMsg" style="max-width:none;font-weight:600">${msg}</p>
+    </div>
+    <button class="btn ghost" id="cancel">Stop looking</button>`);
+  f.querySelector("#cancel").onclick = () => api("unqueue");
+  return f;
+}
+// Tick the ring every second without redrawing the page.
+setInterval(() => {
+  const mode = state && myQueue();
+  const fill = document.getElementById("ringFill");
+  if (!mode || !fill) return;
+  const { left, mmss, msg } = waitInfo(mode);
+  fill.setAttribute("stroke-dashoffset", RING * (1 - left / state.groupWaitMs));
+  document.getElementById("ringClock").textContent = mmss;
+  document.getElementById("ringMsg").textContent = msg;
+}, 1000);
+
+// ---------- Your group right now ----------
+function tableView(t) {
+  const meHere = t.members.find((m) => m.id === uid)?.here;
+  const waiting = t.members.length === 1 && !t.group;
+  const f = $(`
+    ${t.group ? `<div class="banner tex" style="background:${t.group.hex}">${esc(t.group.name)} group<small>Hold up your screen so your group can spot you</small></div>` : ""}
+    <div class="poster tex g-${t.mode}" style="margin-top:4px">
+      <span class="tag light">${ic(t.mode, 14, 2.4)} ${act(t.mode).label}</span> <span style="font-weight:700;font-size:13px;margin-left:6px">${minsLeft(t)} min left</span>
+      <h1 class="huge" style="font-size:50px;margin-top:12px">${esc(t.spot)}</h1>
+      <p>${t.hint ? ic("pin", 15) + " " + esc(t.hint) + " · " : ""}${esc(t.topic)}</p>
+    </div>
+    <div class="card" style="margin-top:0">
+      <b>${waiting ? "Waiting for people to join…" : "In this group"}</b>
+      ${t.members.map((m) => personRow(m, t)).join("")}
+      ${t.chairs > t.members.length ? `<div class="chairs" style="margin-top:8px">${seats(t.chairs - t.members.length)}<span class="muted" style="margin-left:6px">${t.chairs - t.members.length} open</span></div>` : ""}
+    </div>
+    <div class="row">
+      <button class="btn go" id="here" ${meHere ? "disabled" : ""}>${meHere ? "✓ You're here" : "I'm here"}</button>
+      <button class="btn ghost" id="leave">Leave</button>
+    </div>
+    <div class="sec">Group chat</div>
+    <div class="card" style="margin-top:0">
+      <div class="chat" id="chat">${chatHtml(t, `"Running 5 min late," "I'm in the red hoodie"…`)}</div>
+      <form class="send" id="send"><input id="msg" maxlength="200" placeholder="Message" autocomplete="off"><button aria-label="Send">${ICONS.send}</button></form>
+    </div>`);
+  f.querySelector("#here").onclick = () => api("checkin");
+  f.querySelector("#leave").onclick = () => api("leave");
+  f.querySelector("#send").onsubmit = (e) => { e.preventDefault(); const i = document.getElementById("msg"); if (i.value.trim()) api("chat", { text: i.value }); i.value = ""; };
+  requestAnimationFrame(() => { const c = document.getElementById("chat"); if (c) c.scrollTop = c.scrollHeight; });
+  return f;
+}
+
+// ---------- Profile: who you are, your account and your preferences ----------
+function profileView() {
+  const saved = () => ({ gender: profile.gender || "unsaid", comfort: profile.comfort || "anyone", minutes: String(profile.minutes || 30), interests: [...(profile.interests || [])], diet: [...(profile.diet || [])], budget: profile.budget || null, access: !!profile.access });
+  if (!edits) edits = saved();
+  const s = edits;
+  const type = ARCHETYPES[profile.archetype] || ARCHETYPES.easygoing;
+  const changed = JSON.stringify(s) !== JSON.stringify(saved());
+  const f = $(`
+    <div class="poster tex ${cardFor(type)}" style="text-align:center;margin-top:4px">
+      <div style="font-size:72px;line-height:1.1">${face(type.emoji, 180, "margin:-8px 0 6px")}</div>
+      <h1 class="huge" style="font-size:58px">${esc(store.get("name"))}</h1>
+      <p style="max-width:none;margin-top:6px">${type.label} · ${type.about}</p>
+      ${profile.verified ? `<span class="tag" style="background:var(--lime);color:var(--dark);margin-top:10px">✓ Verified KU student</span>` : ""}
+    </div>
+    <div class="card" style="margin-top:0"><b>You click with</b><p style="margin:4px 0 0">${type.meets}</p></div>
+
+    <div class="card fbcard">
+      <h3>What do you <em style="color:var(--lime)">think?</em></h3>
+      <p class="muted">You're helping test Side Quest. Tell us what works and what doesn't.</p>
+      <button class="btn lime" id="feedback">Send feedback</button>
+    </div>
+
+    <div class="sec">How you're trying it</div>
+    <div class="list">
+      <button class="li" id="mode"><span class="ic tex ${mode === "solo" ? "g-blue" : "g-lime"}">${ic(mode === "solo" ? "person" : "groups", 20)}</span><span class="tx"><b>${mode === "solo" ? "On my own" : "With other people"}</b><span class="muted">${mode === "solo" ? "Practice mode. Everyone else is pretend." : "You see real people's groups and plans."}</span></span><span class="btn sm ghost" style="flex:none">Switch</span></button>
+    </div>
+
+    <div class="sec">Account</div>
+    <div class="list">
+      <div class="li"><span class="ic" style="background:var(--soft)">${ic("mail", 20)}</span><span class="tx"><b>KU email</b><span class="muted">${esc(profile.email || "Not added")}</span></span></div>
+      <button class="li" id="verify"><span class="ic" style="background:var(--soft)">${ic("id", 20)}</span><span class="tx"><b>Student ID</b><span class="muted">${profile.verified ? "Verified" : "Not verified yet"}</span></span>${profile.verified ? `<span class="badge">✓</span>` : `<span class="btn sm pink" style="flex:none">Verify</span>`}</button>
+    </div>
+    <p class="muted" style="margin:6px 4px">Your email and ID are private. Others only see the ✓.</p>
+
+    <div class="sec">Interests</div>
+    <div class="chips">${INTERESTS.map(([k, l]) => `<button class="chip ${s.interests.includes(k) ? "on" : ""}" data-i="${k}">${l}</button>`).join("")}</div>
+
+    <div class="sec">Who you'd like to meet</div>
+    <div class="card" style="margin-top:0">
+      <label class="lbl" style="margin-top:0">I am a…</label>
+      <div class="chips">${GENDERS.map(([k, l]) => `<button class="chip ${s.gender === k ? "on" : ""}" data-g="${k}">${l}</button>`).join("")}</div>
+      <label class="lbl">I'd like to meet…</label>
+      <div class="options" style="margin-top:0">${comfortOptions(s.gender).map(([k, l]) => `<button class="opt ${s.comfort === k ? "on" : ""}" data-c="${k}"><span>${l}</span><span class="check">${ic("check", 14, 3)}</span></button>`).join("")}</div>
+      ${s.gender === "unsaid" ? `<p class="muted">Matching by gender needs your gender, so you'll be matched with anyone.</p>` : ""}
+      <p class="muted" style="margin-bottom:0">Private. Nobody sees your gender or this setting.</p>
+    </div>
+
+    <div class="sec">Plans and needs</div>
+    <div class="card" style="margin-top:0">
+      <label class="lbl" style="margin-top:0" for="smin">How long you like to hang out with new people</label>
+      <select id="smin">${TIMES.map(([m, l]) => `<option value="${m}" ${m === s.minutes ? "selected" : ""}>${l}</option>`).join("")}</select>
+      <label class="lbl">Food</label>
+      <div class="chips">${DIETS.map(([k, l]) => `<button class="chip ${s.diet.includes(k) ? "on" : ""}" data-diet="${k}">${l}</button>`).join("")}</div>
+      <label class="lbl">Budget</label>
+      <div class="chips">${BUDGETS.map(([k, l]) => `<button class="chip ${s.budget === k ? "on" : ""}" data-budget="${k}">${l}</button>`).join("")}</div>
+      <label class="lbl">Getting there</label>
+      <div class="chips"><button class="chip ${s.access ? "on" : ""}" data-access>♿ I need an accessible spot</button></div>
+    </div>
+
+    <button class="btn pink" id="save" ${changed ? "" : "disabled"}>${changed ? "Save changes" : "All changes saved"}</button>
+    <div class="list" style="margin-top:22px">
+      <button class="li" id="retake"><span class="ic tex g-blue">${ic("retake", 20)}</span><span class="tx"><b>Retake the quiz</b></span><span class="chev">›</span></button>
+      <button class="li" id="reset"><span class="ic" style="background:var(--soft)">${ic("reset", 20)}</span><span class="tx"><b>Reset profile</b><span class="muted">Testing only</span></span><span class="chev">›</span></button>
+    </div>`);
+  const keepMin = () => { s.minutes = document.getElementById("smin").value; };
+  const rerender = () => { keepMin(); keepScroll = true; render(); keepScroll = false; };
+  f.querySelector("#verify").onclick = () => { if (!profile.verified) { sub = "verify"; afterVerify = "profile"; render(); } };
+  f.querySelector("#feedback").onclick = () => { sub = "feedback"; render(); };
+  f.querySelector("#mode").onclick = () => setMode(mode === "solo" ? "live" : "solo");
+  f.querySelectorAll("[data-i]").forEach((b) => b.onclick = () => {
+    const k = b.dataset.i;
+    if (s.interests.includes(k)) s.interests = s.interests.filter((x) => x !== k);
+    else if (s.interests.length >= MAX_INTERESTS) return toast(`You can pick up to ${MAX_INTERESTS}`);
+    else s.interests = [...s.interests, k];
+    rerender();
+  });
+  f.querySelectorAll("[data-g]").forEach((b) => b.onclick = () => { s.gender = b.dataset.g; if (s.gender === "unsaid") s.comfort = "anyone"; rerender(); });
+  f.querySelectorAll("[data-c]").forEach((b) => b.onclick = () => { s.comfort = b.dataset.c; rerender(); });
+  f.querySelectorAll("[data-diet]").forEach((b) => b.onclick = () => { const k = b.dataset.diet; s.diet = s.diet.includes(k) ? s.diet.filter((d) => d !== k) : [...s.diet, k]; rerender(); });
+  f.querySelectorAll("[data-budget]").forEach((b) => b.onclick = () => { s.budget = s.budget === b.dataset.budget ? null : b.dataset.budget; rerender(); });
+  f.querySelector("[data-access]").onclick = () => { s.access = !s.access; rerender(); };
+  f.querySelector("#smin").onchange = rerender;
+  f.querySelector("#save").onclick = () => {
+    keepMin();
+    saveProfile({ ...profile, ...s });
+    edits = null;
+    toast("Saved ✓");
+    rerender();
+  };
+  f.querySelector("#retake").onclick = () => {
+    quiz = { step: Q0, name: store.get("name") || "", email: profile.email || "", answers: { ...profile, interests: [...(profile.interests || [])], diet: [...(profile.diet || [])] } };
+    profile = null; edits = null;
+    render();
+  };
+  f.querySelector("#reset").onclick = resetProfile;
+  return f;
+}
+
+// ---------- Feedback (for testing) ----------
+// Saved anonymously on the server, and read at /parties/open-seat/feedback.
+const FEELINGS = [["love", "Love it"], ["okay", "It's okay"], ["confused", "A bit confusing"], ["no", "Not for me"]];
+const PARTS = ["The quiz", "Finding a group", "Plans", "Group chat", "The look", "Something else"];
+let fb = { feeling: "", parts: [], text: "" };
+function feedbackView() {
+  const f = $(`
+    <h1 class="largetitle" style="font-size:40px">How's it <em>going?</em></h1>
+    <p class="sub">Anything helps, even one word. It's anonymous: we don't save your name or email.</p>
+    <label class="lbl" style="margin-top:0">So far, Side Quest is…</label>
+    <div class="chips">${FEELINGS.map(([k, l]) => `<button class="chip ${fb.feeling === k ? "on" : ""}" data-feel="${k}">${l}</button>`).join("")}</div>
+    <label class="lbl">What's it about? (pick any)</label>
+    <div class="chips">${PARTS.map((k) => `<button class="chip ${fb.parts.includes(k) ? "on" : ""}" data-part="${esc(k)}">${k}</button>`).join("")}</div>
+    <label class="lbl" for="fbtext">Tell us more</label>
+    <textarea id="fbtext" maxlength="1000" placeholder="What worked, what was confusing, what you wish it did…">${esc(fb.text)}</textarea>
+    <button class="btn pink" id="fbsend" style="margin-top:18px">Send feedback</button>`);
+  const keep = () => { fb.text = document.getElementById("fbtext").value; };
+  const again = () => { keep(); keepScroll = true; render(); keepScroll = false; };
+  f.querySelectorAll("[data-feel]").forEach((b) => b.onclick = () => { fb.feeling = fb.feeling === b.dataset.feel ? "" : b.dataset.feel; again(); });
+  f.querySelectorAll("[data-part]").forEach((b) => b.onclick = () => { const k = b.dataset.part; fb.parts = fb.parts.includes(k) ? fb.parts.filter((x) => x !== k) : [...fb.parts, k]; again(); });
+  f.querySelector("#fbsend").onclick = async (e) => {
+    keep();
+    if (!fb.feeling && !fb.text.trim()) return toast("Pick how it's going, or write a few words");
+    e.target.disabled = true; e.target.innerHTML = `<span class="spinner"></span> Sending…`;
+    try {
+      const r = await fetch(`${SERVER}/parties/open-seat/feedback`, { method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ ...fb, friendType: (ARCHETYPES[profile.archetype] || {}).label, mode, device: innerWidth <= 600 ? "phone" : "laptop" }) });
+      if (!r.ok) throw new Error();
+      fb = { feeling: "", parts: [], text: "" };
+      sub = null; render(); toast("Thank you! We read every one.");
+    } catch {
+      e.target.disabled = false; e.target.textContent = "Send feedback";
+      toast("Couldn't send. Check your connection and try again.");
+    }
+  };
+  return f;
+}
+
+// Live updates redraw the screen. Don't redraw while someone is filling in a
+// form or editing their profile, and keep the scroll spot and any half-typed
+// chat message.
+function liveRender() {
+  if (!profile) return; // mid-quiz
+  if (!document.querySelector("#screen .scroll")) return render(); // first data after connecting
+  if (sub === "feedback") return;
+  if (!myTable() && !myQueue() && (["open", "plan", "group", "verify"].includes(sub) || (tab === "profile" && !sub) || sheet)) return;
+  const msg = document.getElementById("msg");
+  const typed = msg && msg.value, focused = msg && document.activeElement === msg;
+  keepScroll = true; render(); keepScroll = false;
+  const m2 = document.getElementById("msg");
+  if (m2 && typed) m2.value = typed;
+  if (m2 && focused) m2.focus();
+}
+
+// The status bar clock.
+function tick() { document.getElementById("clock").textContent = new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }).replace(/\s?[AP]M/i, ""); }
+tick(); setInterval(tick, 20000);
+
+fitPhone();
+setInterval(() => { if (uid && state) liveRender(); }, 15000);
+// Testing: a duplicated tab (or one opened from a link) copies who you are, so
+// two tabs end up as the same person and the second one can't join anything.
+// Tabs check with each other and say so.
+const TAB = Math.random().toString(36).slice(2);
+try {
+  const bc = new BroadcastChannel("side-quest-tabs");
+  bc.onmessage = (e) => {
+    const m = e.data || {};
+    if (m.t === "hi" && m.uid && m.uid === uid && m.tab !== TAB) bc.postMessage({ t: "same", to: m.tab });
+    if (m.t === "same" && m.to === TAB) showDupe();
+  };
+  if (uid) bc.postMessage({ t: "hi", uid, tab: TAB });
+  window.announceTab = () => bc.postMessage({ t: "hi", uid, tab: TAB });
+} catch {}
+function showDupe() {
+  if (document.getElementById("dupe")) return;
+  const d = $(`<div class="dupe" id="dupe">${ic("alert", 16, 2.4)} This tab is the same person as another open tab, so it can't join their groups. To test as someone new, start fresh here.<br><button id="fresh">Start as a new person</button></div>`);
+  d.querySelector("#fresh").onclick = () => { try { sessionStorage.clear(); } catch {} if (socket) { socket.onclose = null; socket.close(); } location.reload(); };
+  document.getElementById("device").append(d);
+}
+
+if (uid && profile) connect();
+render();
+</script>
+</body>
+</html>
